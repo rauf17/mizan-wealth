@@ -1,12 +1,21 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import DashboardShell from "../../components/DashboardShell";
+import TrendChart from "../../components/TrendChart";
+import GrowthChart from "../../components/GrowthChart";
 import { getData, saveData, STORAGE_KEYS } from "../../lib/storage";
 import { calculateZakat, getAssetSummary } from "../../lib/zakatEngine";
 import { fetchMetalRates, DEFAULT_METAL_RATES } from "../../lib/api";
-import { ZakatAsset, ZakatLiability, ZakatRecord, MetalRates, ZakatCalculationResult } from "../../types";
+import {
+  ZakatAsset,
+  ZakatLiability,
+  ZakatRecord,
+  MetalRates,
+  ZakatCalculationResult,
+  GrowthProjectionYear,
+} from "../../types";
 
 export default function DashboardPage() {
   const [mounted, setMounted] = useState(false);
@@ -17,13 +26,75 @@ export default function DashboardPage() {
     nisabStandard: "silver" as "gold" | "silver",
     currency: "USD",
   });
-  
-  // Save status notification state
+
+  // History & Analytics States
+  const [historyRecords, setHistoryRecords] = useState<ZakatRecord[]>([]);
+
+  // Growth Modeler States
+  const [growthPrincipal, setGrowthPrincipal] = useState("10000");
+  const [annualContribution, setAnnualContribution] = useState("2000");
+  const [growthExpectedReturn, setGrowthExpectedReturn] = useState("8");
+  const [growthDuration, setGrowthDuration] = useState("10");
+  const [deductZakat, setDeductZakat] = useState(true);
+  const [deductPurification, setDeductPurification] = useState(false);
+  const [purificationRate, setPurificationRate] = useState("0.5");
+  const [growthData, setGrowthData] = useState<GrowthProjectionYear[]>([]);
+
+  // AI Insights States
+  const [aiInsights, setAiInsights] = useState<string>("");
+  const [loadingInsights, setLoadingInsights] = useState(false);
+
   const [saveStatus, setSaveStatus] = useState<string | null>(null);
+
+  // Generate Growth Projection Logic
+  const generateGrowthProjection = useCallback(() => {
+    const principal = Math.max(0, Number(growthPrincipal) || 0);
+    const contribution = Math.max(0, Number(annualContribution) || 0);
+    const rate = Math.max(0, Number(growthExpectedReturn) || 0) / 100;
+    const years = Math.min(30, Math.max(1, Number(growthDuration) || 10));
+    const purifRate = Math.max(0, Number(purificationRate) || 0) / 100;
+
+    const projection: GrowthProjectionYear[] = [];
+    let balance = principal;
+
+    for (let yr = 1; yr <= years; yr++) {
+      const starting = balance;
+      const gains = balance * rate;
+      const totalBeforeDeductions = balance + contribution + gains;
+
+      // Zakat Deduction (2.5% of wealth)
+      const zakatDeducted = deductZakat ? totalBeforeDeductions * 0.025 : 0;
+      const purifiedDeducted = deductPurification ? totalBeforeDeductions * purifRate : 0;
+
+      const ending = totalBeforeDeductions - zakatDeducted - purifiedDeducted;
+
+      projection.push({
+        year: yr,
+        startingBalance: starting,
+        contributions: contribution,
+        investmentGains: gains,
+        zakatDeducted,
+        purifiedDeducted,
+        endingBalance: ending,
+      });
+
+      balance = ending;
+    }
+
+    setGrowthData(projection);
+  }, [
+    growthPrincipal,
+    annualContribution,
+    growthExpectedReturn,
+    growthDuration,
+    deductZakat,
+    deductPurification,
+    purificationRate,
+  ]);
 
   useEffect(() => {
     setMounted(true);
-    
+
     // Load local storage states
     const localAssets = getData<ZakatAsset[]>(STORAGE_KEYS.ZAKAT_ASSETS, []);
     const localLiabilities = getData<ZakatLiability[]>(STORAGE_KEYS.ZAKAT_LIABILITIES, []);
@@ -31,10 +102,17 @@ export default function DashboardPage() {
       nisabStandard: "silver" as "gold" | "silver",
       currency: "USD",
     });
-    
+    const localHistory = getData<ZakatRecord[]>(STORAGE_KEYS.CALCULATION_HISTORY, []);
+
     setAssets(localAssets);
     setLiabilities(localLiabilities);
     setSettings(localSettings);
+    setHistoryRecords(localHistory);
+
+    // Set default growth modeler starting balance based on actual current net assets
+    const totalLiab = localLiabilities.reduce((sum, item) => sum + item.value, 0);
+    const result = calculateZakat(localAssets, totalLiab, DEFAULT_METAL_RATES, localSettings.nisabStandard);
+    setGrowthPrincipal(Math.round(result.netZakatable || 10000).toString());
 
     // Fetch live metal rates
     const loadRates = async () => {
@@ -44,13 +122,43 @@ export default function DashboardPage() {
     loadRates();
   }, []);
 
-  if (!mounted) {
-    return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
-        <span className="text-muted-foreground animate-pulse font-medium">Loading metrics...</span>
-      </div>
-    );
-  }
+  // Recalculate growth projection when inputs change
+  useEffect(() => {
+    if (!mounted) return;
+    generateGrowthProjection();
+  }, [mounted, generateGrowthProjection]);
+
+  // Fetch AI insights when assets change
+  useEffect(() => {
+    if (!mounted || assets.length === 0) return;
+
+    const getInsights = async () => {
+      setLoadingInsights(true);
+      try {
+        const totalLiabilitiesVal = liabilities.reduce((sum, item) => sum + item.value, 0);
+        const calculationResult = calculateZakat(assets, totalLiabilitiesVal, rates, settings.nisabStandard);
+        
+        const response = await fetch("/api/ai/insights", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            assets,
+            calculation: calculationResult,
+          }),
+        });
+        if (response.ok) {
+          const data = await response.json();
+          setAiInsights(data.insights);
+        }
+      } catch (err) {
+        console.error("Failed to load insights:", err);
+      } finally {
+        setLoadingInsights(false);
+      }
+    };
+
+    getInsights();
+  }, [mounted, assets, liabilities, rates, settings.nisabStandard]);
 
   // Calculate sum of liabilities
   const totalLiabilitiesVal = liabilities.reduce((sum, item) => sum + item.value, 0);
@@ -68,7 +176,7 @@ export default function DashboardPage() {
   // Trigger snapshot save
   const handleSaveSnapshot = () => {
     const history = getData<ZakatRecord[]>(STORAGE_KEYS.CALCULATION_HISTORY, []);
-    
+
     const newRecord: ZakatRecord = {
       id: `calc_${Date.now()}`,
       assets: [...assets],
@@ -77,8 +185,10 @@ export default function DashboardPage() {
       createdAt: new Date().toISOString(),
     };
 
-    saveData(STORAGE_KEYS.CALCULATION_HISTORY, [newRecord, ...history]);
-    
+    const updatedHistory = [newRecord, ...history];
+    saveData(STORAGE_KEYS.CALCULATION_HISTORY, updatedHistory);
+    setHistoryRecords(updatedHistory);
+
     setSaveStatus("Declaration saved successfully to history.");
     setTimeout(() => setSaveStatus(null), 3000);
   };
@@ -99,6 +209,12 @@ export default function DashboardPage() {
     crypto: "Cryptocurrency",
     other: "Other Holdings",
   };
+
+  // Compute total simulated summary values
+  const totalSimulatedContributions = growthData.reduce((sum, y) => sum + y.contributions, 0);
+  const totalSimulatedGains = growthData.reduce((sum, y) => sum + y.investmentGains, 0);
+  const totalSimulatedZakat = growthData.reduce((sum, y) => sum + y.zakatDeducted, 0);
+  const finalBalance = growthData[growthData.length - 1]?.endingBalance || 0;
 
   return (
     <DashboardShell>
@@ -148,7 +264,7 @@ export default function DashboardPage() {
               Gross Wealth
             </div>
             <div className="text-2xl font-bold text-primary">
-              ${calculationResult.totalAssets.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+              ${calculationResult.totalAssets.toLocaleString(undefined, { minimumFractionDigits: 2 })}
             </div>
             <div className="text-[11px] text-muted-foreground mt-1.5 leading-snug">
               Combined value of all asset inventory holdings.
@@ -161,7 +277,7 @@ export default function DashboardPage() {
               Total Liabilities
             </div>
             <div className="text-2xl font-bold text-red-600">
-              -${calculationResult.totalLiabilities.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+              -${calculationResult.totalLiabilities.toLocaleString(undefined, { minimumFractionDigits: 2 })}
             </div>
             <div className="text-[11px] text-muted-foreground mt-1.5 leading-snug">
               Outstanding short-term debts and bills deducted.
@@ -174,7 +290,7 @@ export default function DashboardPage() {
               Zakatable Wealth
             </div>
             <div className="text-2xl font-bold text-emerald-800">
-              ${calculationResult.netZakatable.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+              ${calculationResult.netZakatable.toLocaleString(undefined, { minimumFractionDigits: 2 })}
             </div>
             <div className="text-[11px] text-muted-foreground mt-1.5 leading-snug">
               Eligible wealth matching lunar holding constraints.
@@ -187,7 +303,7 @@ export default function DashboardPage() {
               Zakat Due (2.5%)
             </div>
             <div className="text-3xl font-extrabold text-primary">
-              ${calculationResult.zakatDue.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+              ${calculationResult.zakatDue.toLocaleString(undefined, { minimumFractionDigits: 2 })}
             </div>
             <div className="text-[11px] text-muted-foreground mt-1.5 leading-snug">
               {calculationResult.isNisabReached
@@ -196,6 +312,29 @@ export default function DashboardPage() {
             </div>
           </div>
         </div>
+
+        {/* AI Advisor Insights Panel */}
+        {assets.length > 0 && (
+          <div className="bg-white rounded-2xl border border-accent/20 p-6 shadow-sm border-l-4 border-l-accent space-y-4">
+            <h2 className="text-base font-heading font-bold text-primary flex items-center gap-2">
+              <svg className="w-5 h-5 text-accent" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+              </svg>
+              AI Wealth Advisor Insights
+            </h2>
+            {loadingInsights ? (
+              <div className="space-y-2 py-4">
+                <div className="h-4 bg-muted rounded animate-pulse w-3/4"></div>
+                <div className="h-4 bg-muted rounded animate-pulse w-5/6"></div>
+                <div className="h-4 bg-muted rounded animate-pulse w-1/2"></div>
+              </div>
+            ) : (
+              <div className="text-sm text-primary/80 leading-relaxed whitespace-pre-line space-y-2">
+                {aiInsights}
+              </div>
+            )}
+          </div>
+        )}
 
         {/* Nisab Progress and Rate Feed */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
@@ -211,7 +350,7 @@ export default function DashboardPage() {
               <div className="flex items-center gap-2">
                 <span className="text-xs font-medium text-muted-foreground">Nisab Limit:</span>
                 <span className="text-sm font-bold text-primary">
-                  ${calculationResult.nisabThreshold.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                  ${calculationResult.nisabThreshold.toLocaleString(undefined, { minimumFractionDigits: 2 })}
                 </span>
               </div>
             </div>
@@ -292,6 +431,140 @@ export default function DashboardPage() {
           </div>
         </div>
 
+        {/* Wealth Trend Tracking Charts (localStorage history) */}
+        {historyRecords.length > 0 && (
+          <div className="bg-white rounded-2xl border border-border p-6 shadow-sm space-y-4">
+            <h2 className="text-base font-heading font-bold text-primary">Historical Wealth Trend</h2>
+            <TrendChart records={historyRecords} />
+          </div>
+        )}
+
+        {/* Growth Projection Modeler Section */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+          {/* Growth Settings Card */}
+          <div className="bg-white rounded-2xl border border-border p-6 shadow-sm lg:col-span-4 space-y-5">
+            <h2 className="text-base font-heading font-bold text-primary">Growth Calculator</h2>
+            <p className="text-xs text-muted-foreground">
+              Simulate investment compounds with annual Zakat/Purification rates.
+            </p>
+            <div className="space-y-4 text-sm">
+              <div>
+                <label className="block text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-1">
+                  Starting Balance ($)
+                </label>
+                <input
+                  type="number"
+                  value={growthPrincipal}
+                  onChange={(e) => setGrowthPrincipal(e.target.value)}
+                  className="w-full rounded-xl border border-border bg-background px-3.5 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-primary"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-1">
+                  Annual Contribution ($)
+                </label>
+                <input
+                  type="number"
+                  value={annualContribution}
+                  onChange={(e) => setAnnualContribution(e.target.value)}
+                  className="w-full rounded-xl border border-border bg-background px-3.5 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-primary"
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-1">
+                    Expected Return (%)
+                  </label>
+                  <input
+                    type="number"
+                    value={growthExpectedReturn}
+                    onChange={(e) => setGrowthExpectedReturn(e.target.value)}
+                    className="w-full rounded-xl border border-border bg-background px-3.5 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-primary"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-1">
+                    Duration (Years)
+                  </label>
+                  <input
+                    type="number"
+                    min="1"
+                    max="30"
+                    value={growthDuration}
+                    onChange={(e) => setGrowthDuration(e.target.value)}
+                    className="w-full rounded-xl border border-border bg-background px-3.5 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-primary"
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-2 pt-2 border-t border-border/40">
+                <label className="flex items-center gap-2 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={deductZakat}
+                    onChange={() => setDeductZakat(!deductZakat)}
+                    className="rounded text-primary focus:ring-primary"
+                  />
+                  <span className="text-xs text-primary font-semibold">Deduct Annual Zakat (2.5%)</span>
+                </label>
+
+                <label className="flex items-center gap-2 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={deductPurification}
+                    onChange={() => setDeductPurification(!deductPurification)}
+                    className="rounded text-primary focus:ring-primary"
+                  />
+                  <span className="text-xs text-primary font-semibold">Deduct Dividend Purification</span>
+                </label>
+              </div>
+
+              {deductPurification && (
+                <div className="animate-fade-in">
+                  <label className="block text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-1">
+                    Purification Rate (%)
+                  </label>
+                  <input
+                    type="number"
+                    step="any"
+                    value={purificationRate}
+                    onChange={(e) => setPurificationRate(e.target.value)}
+                    className="w-full rounded-xl border border-border bg-background px-3.5 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-primary"
+                  />
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Growth Chart View */}
+          <div className="bg-white rounded-2xl border border-border p-6 shadow-sm lg:col-span-8 flex flex-col justify-between space-y-6">
+            <h2 className="text-base font-heading font-bold text-primary">Halal Net Yield Projections</h2>
+            <GrowthChart data={growthData} />
+
+            {/* Simulated summary */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-xs pt-4 border-t border-border/40">
+              <div>
+                <span className="text-muted-foreground block">Contributions</span>
+                <strong className="text-primary text-sm font-bold">${Math.round(totalSimulatedContributions).toLocaleString()}</strong>
+              </div>
+              <div>
+                <span className="text-muted-foreground block">Investment Gains</span>
+                <strong className="text-primary text-sm font-bold">${Math.round(totalSimulatedGains).toLocaleString()}</strong>
+              </div>
+              <div>
+                <span className="text-muted-foreground block text-accent">Zakat Generosity</span>
+                <strong className="text-primary text-sm font-bold">${Math.round(totalSimulatedZakat).toLocaleString()}</strong>
+              </div>
+              <div>
+                <span className="text-muted-foreground block">Final Balance</span>
+                <strong className="text-emerald-800 text-sm font-extrabold">${Math.round(finalBalance).toLocaleString()}</strong>
+              </div>
+            </div>
+          </div>
+        </div>
+
         {/* Asset Breakdown Chart Grid */}
         <div className="bg-white rounded-2xl border border-border p-6 shadow-sm">
           <h2 className="text-base font-heading font-bold text-primary mb-4">Asset Class Distribution</h2>
@@ -307,7 +580,9 @@ export default function DashboardPage() {
                   <div key={type} className="space-y-1.5">
                     <div className="flex justify-between text-xs">
                       <span className="font-bold text-primary">{assetTypeNames[type] || type}</span>
-                      <span className="text-muted-foreground">${summary.value.toLocaleString(undefined, { maximumFractionDigits: 2 })} ({percent}%)</span>
+                      <span className="text-muted-foreground">
+                        ${summary.value.toLocaleString(undefined, { maximumFractionDigits: 2 })} ({percent}%)
+                      </span>
                     </div>
                     <div className="w-full bg-muted h-2 rounded-full overflow-hidden">
                       <div className="bg-accent h-full rounded-full" style={{ width: `${percent}%` }} />
