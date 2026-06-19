@@ -7,17 +7,38 @@ export const SHARIAH_CONSTANTS = {
 };
 
 /**
+ * Checks if a lunar year (354 days) has passed since the acquisition date.
+ */
+export function isLunarYearPassed(acquisitionDate: string, currentDate = new Date()): boolean {
+  if (!acquisitionDate) return false;
+  try {
+    const acq = new Date(acquisitionDate);
+    if (isNaN(acq.getTime())) return false; // Safe fallback for invalid dates
+    const diffTime = currentDate.getTime() - acq.getTime();
+    const diffDays = diffTime / (1000 * 60 * 60 * 24);
+    return diffDays >= 354;
+  } catch (e) {
+    console.error("Failed to parse acquisitionDate:", acquisitionDate, e);
+    return false;
+  }
+}
+
+/**
  * Calculates the Nisab threshold based on gold/silver prices and selected standard.
  */
 export function calculateNisabThreshold(
   rates: MetalRates,
   standard: "gold" | "silver" = "silver"
 ): number {
+  // Ensure rates are valid positive numbers
+  const goldRate = Math.max(0, rates?.goldPerGram || 0);
+  const silverRate = Math.max(0, rates?.silverPerGram || 0);
+
   if (standard === "gold") {
-    return SHARIAH_CONSTANTS.GOLD_NISAB_GRAMS * rates.goldPerGram;
+    return SHARIAH_CONSTANTS.GOLD_NISAB_GRAMS * goldRate;
   }
   // Default to silver standard (standard recommendation for maximum charity benefit)
-  return SHARIAH_CONSTANTS.SILVER_NISAB_GRAMS * rates.silverPerGram;
+  return SHARIAH_CONSTANTS.SILVER_NISAB_GRAMS * silverRate;
 }
 
 /**
@@ -27,14 +48,34 @@ export function calculateZakat(
   assets: ZakatAsset[],
   totalLiabilities: number,
   rates: MetalRates,
-  nisabStandard: "gold" | "silver" = "silver"
+  nisabStandard: "gold" | "silver" = "silver",
+  calculationDate = new Date()
 ): ZakatCalculationResult {
-  // Sum up all zakatable values
-  const totalAssets = assets.reduce((sum, asset) => sum + asset.value, 0);
-  const netZakatableAssets = assets.reduce((sum, asset) => sum + asset.zakatableAmount, 0);
+  // Standardize liabilities (must be positive number)
+  const sanitizedLiabilities = Math.max(0, totalLiabilities || 0);
 
-  // Subtract liabilities from zakatable assets (some jurisprudence allows subtracting short term debt)
-  const netZakatable = Math.max(0, netZakatableAssets - totalLiabilities);
+  // Sum up all asset values and calculate eligible wealth based on Hawl rule
+  let totalAssets = 0;
+  let netZakatableAssets = 0;
+
+  assets.forEach((asset) => {
+    // Value must be non-negative
+    const val = Math.max(0, asset.value || 0);
+    totalAssets += val;
+
+    // Check lunar year holding condition (Hawl)
+    const passedHawl =
+      asset.hasPassedHawl !== undefined
+        ? asset.hasPassedHawl
+        : isLunarYearPassed(asset.acquisitionDate, calculationDate);
+
+    if (passedHawl) {
+      netZakatableAssets += Math.max(0, asset.zakatableAmount || 0);
+    }
+  });
+
+  // Subtract liabilities from eligible zakatable assets
+  const netZakatable = Math.max(0, netZakatableAssets - sanitizedLiabilities);
 
   // Determine Nisab threshold
   const nisabThreshold = calculateNisabThreshold(rates, nisabStandard);
@@ -44,13 +85,13 @@ export function calculateZakat(
 
   return {
     totalAssets,
-    totalLiabilities,
+    totalLiabilities: sanitizedLiabilities,
     netZakatable,
     nisabThreshold,
-    zakatDue,
+    zakatDue: Number(zakatDue.toFixed(2)),
     rate: SHARIAH_CONSTANTS.ZAKAT_RATE,
     isNisabReached,
-    calculationDate: new Date().toISOString(),
+    calculationDate: calculationDate.toISOString(),
   };
 }
 
@@ -64,8 +105,10 @@ export function getAssetSummary(assets: ZakatAsset[]) {
     if (!summary[asset.type]) {
       summary[asset.type] = { value: 0, zakatable: 0 };
     }
-    summary[asset.type].value += asset.value;
-    summary[asset.type].zakatable += asset.zakatableAmount;
+    const val = Math.max(0, asset.value || 0);
+    const zak = Math.max(0, asset.zakatableAmount || 0);
+    summary[asset.type].value += val;
+    summary[asset.type].zakatable += zak;
   });
 
   return summary;

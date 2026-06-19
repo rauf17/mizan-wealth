@@ -16,6 +16,8 @@ export interface ZakatAsset {
   zakatableAmount: number;
   notes?: string;
   createdAt: string;
+  acquisitionDate: string; // ISO or YYYY-MM-DD
+  hasPassedHawl?: boolean; // Override or cache for lunar year rule
 }
 
 export interface MetalRates {
