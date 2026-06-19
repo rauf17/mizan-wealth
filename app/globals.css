@@ -3,33 +3,91 @@
 @tailwind utilities;
 
 :root {
-  --background: #FAFAF8; /* Brand soft cream */
-  --foreground: #112626; /* Brand deep teal/black for text readability */
-  --card: #FFFFFF;
-  --card-foreground: #112626;
-  --primary: #0F4C4C; /* Brand Pine Green */
+  /* Canvas & Base Elements */
+  --background: #FAFAF8; /* Soft calm cream */
+  --foreground: #0F172A; /* Slate-900 for serious financial readability */
+  
+  /* Brand Core Colors */
+  --primary: #0F4C4C; /* Deep Teal */
   --primary-foreground: #FAFAF8;
-  --secondary: #C9A227; /* Brand Luxury Gold */
-  --secondary-foreground: #112626;
-  --muted: #F2F2EC;
-  --muted-foreground: #4E6363;
-  --border: #E2E2D5;
+  
+  --accent: #C9A227; /* Muted Gold */
+  --accent-foreground: #0F172A;
+  
+  --card: #FFFFFF;
+  --card-foreground: #0F172A;
+
+  /* Slate Scale for borders, subtexts, and backgrounds */
+  --slate-50: #F8FAFC;
+  --slate-100: #F1F5F9;
+  --slate-200: #E2E8F0;
+  --slate-300: #CBD5E1;
+  --slate-400: #94A3B8;
+  --slate-500: #64748B;
+  --slate-600: #475569;
+  --slate-700: #334155;
+  --slate-800: #1E293B;
+  --slate-900: #0F172A;
+
+  --border: var(--slate-200);
+  --muted: var(--slate-100);
+  --muted-foreground: var(--slate-500);
 }
 
 body {
   color: var(--foreground);
   background: var(--background);
+  font-feature-settings: "cv02", "cv03", "cv04", "cv11";
 }
 
-@layer utilities {
-  .text-brand-gradient {
-    background: linear-gradient(135deg, #0F4C4C 30%, #C9A227 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
+@layer components {
+  /* Typography Scale */
+  .font-h1 {
+    @apply font-heading font-bold text-slate-900 text-2xl md:text-3xl tracking-tight;
   }
-  .gold-brand-gradient {
-    background: linear-gradient(135deg, #E9C650 0%, #C9A227 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
+  
+  .font-h2 {
+    @apply font-heading font-bold text-slate-900 text-lg md:text-xl tracking-tight;
+  }
+  
+  .font-h3 {
+    @apply font-heading font-semibold text-slate-900 text-sm md:text-base;
+  }
+  
+  .font-body {
+    @apply font-sans font-normal text-slate-600 text-sm leading-relaxed;
+  }
+  
+  .font-small {
+    @apply font-sans text-slate-500 text-xs;
+  }
+
+  /* Premium Components System */
+  
+  /* Cards */
+  .mizan-card {
+    @apply bg-white rounded-xl border border-slate-200/80 p-6 shadow-[0_1px_3px_0_rgba(15,23,42,0.03),0_1px_2px_-1px_rgba(15,23,42,0.03)] transition-all duration-200;
+  }
+
+  /* Inputs & Selects */
+  .mizan-input {
+    @apply w-full rounded-lg border border-slate-200 bg-white px-4 py-2.5 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all duration-150;
+  }
+  
+  .mizan-select {
+    @apply w-full rounded-lg border border-slate-200 bg-white px-4 py-2.5 text-sm text-slate-900 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all duration-150;
+  }
+
+  /* Buttons */
+  .btn-primary {
+    @apply inline-flex items-center justify-center px-5 py-2.5 rounded-lg bg-primary text-white text-sm font-semibold hover:bg-primary/95 transition-all duration-150 disabled:opacity-50 disabled:cursor-not-allowed select-none;
+  }
+  
+  .btn-secondary {
+    @apply inline-flex items-center justify-center px-5 py-2.5 rounded-lg border border-slate-200 bg-white text-slate-700 text-sm font-semibold hover:bg-slate-50 transition-all duration-150 disabled:opacity-50 disabled:cursor-not-allowed select-none;
+  }
+  
+  .btn-ghost {
+    @apply inline-flex items-center justify-center px-4 py-2 rounded-lg text-slate-500 hover:text-slate-900 hover:bg-slate-100/80 text-sm font-semibold transition-all duration-150 disabled:opacity-50 select-none;
   }
 }
