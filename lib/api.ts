@@ -15,7 +15,7 @@ export async function fetchMetalRates(): Promise<MetalRates> {
   try {
     // We can fetch from a public endpoint or route, e.g., our internal API route
     // which delegates to external metal price endpoints.
-    const res = await fetch("/api/metal-prices", {
+    const res = await fetch("/api/prices/metals", {
       next: { revalidate: 3600 }, // cache for 1 hour
     });
     if (!res.ok) throw new Error("Failed to fetch rates from server route");
