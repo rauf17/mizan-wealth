@@ -242,7 +242,7 @@ export default function AssetsPage() {
                 </svg>
                 Add Liability
               </h2>
-              <form onSubmit={handleAddLiability} className="space-y-4">
+              <form onSubmit={handleAddLiability} className="space-y-6">
                 <Input
                   type="text"
                   required

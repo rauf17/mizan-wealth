@@ -179,7 +179,7 @@ Ending Balance: $${Math.round(pt.data.endingBalance).toLocaleString()}`}
         </svg>
       </div>
       <div className="text-[10px] text-muted-foreground text-center">
-        * Hover over dots to view compound interest additions and Zakat deductions year-by-year.
+        * Hover over dots to view compound return and Zakat deductions year-by-year.
       </div>
     </div>
   );
