@@ -1,0 +1,198 @@
+"use client";
+
+import React, { useState } from "react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+
+interface DashboardShellProps {
+  children: React.ReactNode;
+}
+
+export default function DashboardShell({ children }: DashboardShellProps) {
+  const pathname = usePathname();
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+  const navigationItems = [
+    {
+      name: "Overview",
+      href: "/dashboard",
+      icon: (
+        <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6a2 2 0 012-2h2a2 2 0 012 2v4a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v4a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v4a2 2 0 01-2 2H6a2 2 0 01-2-2v-4zM14 16a2 2 0 012-2h2a2 2 0 012 2v4a2 2 0 01-2 2h-2a2 2 0 01-2-2v-4z" />
+        </svg>
+      ),
+    },
+    {
+      name: "Asset Inventory",
+      href: "/assets",
+      icon: (
+        <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+      ),
+    },
+    {
+      name: "History",
+      href: "/history",
+      icon: (
+        <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+      ),
+    },
+    {
+      name: "Reports",
+      href: "/reports",
+      icon: (
+        <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+        </svg>
+      ),
+    },
+    {
+      name: "Settings",
+      href: "/settings",
+      icon: (
+        <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+        </svg>
+      ),
+    },
+  ];
+
+  return (
+    <div className="min-h-screen flex bg-background text-foreground">
+      {/* Desktop Sidebar */}
+      <aside className="hidden md:flex flex-col w-64 bg-white border-r border-border/80 sticky top-0 h-screen">
+        {/* Sidebar Header */}
+        <div className="h-16 flex items-center gap-2.5 px-6 border-b border-border/40">
+          <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center font-heading font-extrabold text-white shadow-md">
+            M
+          </div>
+          <span className="font-heading font-bold text-base tracking-wider text-primary">
+            MIZAN WEALTH
+          </span>
+        </div>
+
+        {/* Sidebar Nav */}
+        <nav className="flex-1 px-4 py-6 space-y-1.5">
+          {navigationItems.map((item) => {
+            const isActive = pathname === item.href;
+            return (
+              <Link
+                key={item.href}
+                href={item.href}
+                className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all ${
+                  isActive
+                    ? "bg-primary text-white shadow-md shadow-primary/10"
+                    : "text-muted-foreground hover:bg-muted hover:text-primary"
+                }`}
+              >
+                {item.icon}
+                {item.name}
+              </Link>
+            );
+          })}
+        </nav>
+
+        {/* Sidebar Footer */}
+        <div className="p-4 border-t border-border/40">
+          <div className="p-3.5 rounded-xl bg-muted/60 border border-border/30 text-center">
+            <span className="text-[10px] font-semibold text-accent uppercase tracking-wider block mb-0.5">
+              Secure Local Storage
+            </span>
+            <p className="text-[11px] text-muted-foreground leading-snug">
+              Calculations are processed 100% locally.
+            </p>
+          </div>
+        </div>
+      </aside>
+
+      {/* Mobile Shell Content */}
+      <div className="flex-1 flex flex-col min-w-0">
+        {/* Mobile Header */}
+        <header className="md:hidden h-16 bg-white border-b border-border/80 px-6 flex items-center justify-between sticky top-0 z-40">
+          <div className="flex items-center gap-2">
+            <div className="w-7 h-7 rounded-lg bg-primary flex items-center justify-center font-heading font-extrabold text-white shadow-sm">
+              M
+            </div>
+            <span className="font-heading font-bold text-sm tracking-wider text-primary">
+              MIZAN WEALTH
+            </span>
+          </div>
+
+          <button
+            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+            className="p-1.5 rounded-lg border border-border/80 hover:bg-muted text-primary transition-colors"
+            aria-label="Toggle Menu"
+          >
+            <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              {isMobileMenuOpen ? (
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              ) : (
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+              )}
+            </svg>
+          </button>
+        </header>
+
+        {/* Mobile Menu Slide-over */}
+        {isMobileMenuOpen && (
+          <div className="md:hidden fixed inset-0 z-30 flex">
+            {/* Backdrop */}
+            <div
+              className="fixed inset-0 bg-black/35 backdrop-blur-sm"
+              onClick={() => setIsMobileMenuOpen(false)}
+            />
+
+            {/* Content Drawer */}
+            <nav className="relative flex flex-col w-4/5 max-w-sm bg-white h-full p-6 shadow-2xl space-y-2 animate-slide-in">
+              <div className="flex items-center gap-2.5 mb-6 pb-4 border-b border-border/40">
+                <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center font-heading font-extrabold text-white">
+                  M
+                </div>
+                <span className="font-heading font-bold text-base tracking-wider text-primary">
+                  MIZAN WEALTH
+                </span>
+              </div>
+
+              {navigationItems.map((item) => {
+                const isActive = pathname === item.href;
+                return (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all ${
+                      isActive
+                        ? "bg-primary text-white shadow-md shadow-primary/10"
+                        : "text-muted-foreground hover:bg-muted hover:text-primary"
+                    }`}
+                  >
+                    {item.icon}
+                    {item.name}
+                  </Link>
+                );
+              })}
+
+              <div className="absolute bottom-6 left-6 right-6 p-4 rounded-xl bg-muted/60 border border-border/30 text-center">
+                <span className="text-[10px] font-semibold text-accent uppercase tracking-wider block mb-0.5">
+                  Secure Local Storage
+                </span>
+                <p className="text-[11px] text-muted-foreground">
+                  Processed completely on-device.
+                </p>
+              </div>
+            </nav>
+          </div>
+        )}
+
+        {/* Main Content Area */}
+        <main className="flex-1 overflow-y-auto px-6 py-8 md:px-10 md:py-10 max-w-7xl mx-auto w-full">
+          {children}
+        </main>
+      </div>
+    </div>
+  );
+}

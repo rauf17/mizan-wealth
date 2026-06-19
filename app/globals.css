@@ -3,17 +3,17 @@
 @tailwind utilities;
 
 :root {
-  --background: #0b0f19; /* Deep Slate Navy */
-  --foreground: #f1f5f9; /* Slate 100 */
-  --card: #131c2e; /* Slate/Navy Card */
-  --card-foreground: #f1f5f9;
-  --primary: #10b981; /* Shariah Emerald Green */
-  --primary-foreground: #ffffff;
-  --secondary: #eab308; /* Luxury Gold/Yellow */
-  --secondary-foreground: #0b0f19;
-  --muted: #1e293b;
-  --muted-foreground: #94a3b8;
-  --border: #1e293b;
+  --background: #FAFAF8; /* Brand soft cream */
+  --foreground: #112626; /* Brand deep teal/black for text readability */
+  --card: #FFFFFF;
+  --card-foreground: #112626;
+  --primary: #0F4C4C; /* Brand Pine Green */
+  --primary-foreground: #FAFAF8;
+  --secondary: #C9A227; /* Brand Luxury Gold */
+  --secondary-foreground: #112626;
+  --muted: #F2F2EC;
+  --muted-foreground: #4E6363;
+  --border: #E2E2D5;
 }
 
 body {
@@ -22,13 +22,13 @@ body {
 }
 
 @layer utilities {
-  .text-gradient {
-    background: linear-gradient(135deg, var(--foreground) 30%, #a7f3d0 100%);
+  .text-brand-gradient {
+    background: linear-gradient(135deg, #0F4C4C 30%, #C9A227 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
   }
-  .gold-gradient {
-    background: linear-gradient(135deg, #fef08a 0%, #eab308 100%);
+  .gold-brand-gradient {
+    background: linear-gradient(135deg, #E9C650 0%, #C9A227 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
   }
