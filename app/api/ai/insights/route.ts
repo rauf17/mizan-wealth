@@ -20,11 +20,17 @@ export async function POST(req: Request) {
 
     const apiKey = process.env.GEMINI_API_KEY || process.env.GOOGLE_API_KEY;
 
+    let structuredOutput = {
+      position: "",
+      optimization: "",
+      donations: ""
+    };
+    let source = "Mizan Heuristic Rule Engine (Local Fallback)";
+
     if (apiKey) {
-      // Setup the prompt for Gemini
       const promptText = `
 You are Mizan Wealth Advisor, a Shariah-compliant financial planner.
-Analyze the user's wealth position and provide 3-4 bullet points of concise, highly actionable Shariah financial advice in Markdown format.
+Analyze the user's wealth position and provide Shariah financial advice.
 
 Assets Checklist:
 ${assets.map(a => `- ${a.name} (${a.type}): Market Value = $${a.value}, Zakatable Amount = $${a.zakatableAmount}, Acquired = ${a.acquisitionDate}`).join("\n")}
@@ -37,12 +43,12 @@ Zakat Calculation Summary:
 - Zakat Due (2.5%): $${calculation.zakatDue}
 - Nisab Reached: ${calculation.isNisabReached ? "YES" : "NO"}
 
-Guidance requirements:
-- Keep recommendations specific to the asset composition.
-- Highlight Zakat obligations or Nisab warnings.
-- Mention dividend purification if they hold stock assets.
-- Frame points under Islamic wealth management goals (e.g. growth, purification, preservation, social charity).
-- Keep sentences concise. Avoid introductory boilerplate.
+You MUST respond ONLY with a raw JSON object in this format (do not wrap in markdown \`\`\`json blocks):
+{
+  "position": "A short 1-2 sentence paragraph summarizing their current Zakat status and whether Nisab is met.",
+  "optimization": "2 bullet points of custom wealth optimization tips (rebalancing cash, purification on stock dividends, debt planning) in markdown format.",
+  "donations": "2 bullet points of donation recommendations (where to distribute Zakat e.g. local charities, relatives, verified Asnaf channels) in markdown format."
+}
 `;
 
       try {
@@ -54,77 +60,83 @@ Guidance requirements:
             body: JSON.stringify({
               contents: [{ parts: [{ text: promptText }] }]
             }),
-            next: { revalidate: 600 } // cache for 10 minutes
+            next: { revalidate: 600 }
           }
         );
 
         if (geminiRes.ok) {
           const resData = await geminiRes.json();
-          const insightText = resData.candidates?.[0]?.content?.parts?.[0]?.text;
-          if (insightText) {
-            return NextResponse.json({
-              insights: insightText,
-              source: "Gemini AI Advisor"
-            });
+          let rawText = resData.candidates?.[0]?.content?.parts?.[0]?.text || "";
+          
+          // Clean up markdown block wraps if returned by the LLM
+          rawText = rawText.replace(/```json/g, "").replace(/```/g, "").trim();
+          
+          const parsed = JSON.parse(rawText);
+          if (parsed.position && parsed.optimization && parsed.donations) {
+            structuredOutput = parsed;
+            source = "Gemini AI Advisor";
           }
         }
-        console.warn("Gemini API call returned non-OK status, falling back to local engine.");
       } catch (geminiError) {
-        console.error("Gemini API call exception:", geminiError);
+        console.warn("Structured Gemini parse failed, falling back to local:", geminiError);
       }
     }
 
-    // Local heuristic insights advisor (fallback)
-    const localRecommendations: string[] = [];
+    // If Gemini key was missing, or the call/parsing failed, populate with the local rule engine
+    if (!structuredOutput.position) {
+      // 1. Shariah Position Summary
+      if (calculation.isNisabReached) {
+        structuredOutput.position = `Your net assets ($${calculation.netZakatable.toLocaleString()}) exceed the Nisab threshold ($${calculation.nisabThreshold.toLocaleString()}). Zakat is mandatory at the standard rate of 2.5%, amounting to $${calculation.zakatDue.toLocaleString()}.`;
+      } else {
+        structuredOutput.position = `Your net assets ($${calculation.netZakatable.toLocaleString()}) are below the Nisab threshold ($${calculation.nisabThreshold.toLocaleString()}). Zakat is not currently mandatory.`;
+      }
 
-    // Rule 1: Nisab status check
-    if (calculation.isNisabReached) {
-      localRecommendations.push(
-        `**Zakat Obligation**: Your net assets ($${calculation.netZakatable.toLocaleString()}) exceed the Nisab threshold ($${calculation.nisabThreshold.toLocaleString()}). A Zakat amount of **$${calculation.zakatDue.toLocaleString()}** (2.5%) is mandatory. Plan its distribution to eligible recipients (Asnaf).`
-      );
-    } else {
-      localRecommendations.push(
-        `**Nisab Status**: Your net assets ($${calculation.netZakatable.toLocaleString()}) are currently below the Nisab threshold ($${calculation.nisabThreshold.toLocaleString()}). Zakat is not due. However, giving voluntary charity (*Sadaqah*) is highly recommended to purify your wealth.`
-      );
+      // 2. Wealth Optimization Tips
+      const optBullets: string[] = [];
+      const stockAssets = assets.filter(a => a.type === "stock");
+      const cashAssets = assets.filter(a => a.type === "cash");
+      const totalCash = cashAssets.reduce((sum, a) => sum + a.value, 0);
+      const cashPct = calculation.totalAssets > 0 ? (totalCash / calculation.totalAssets) * 100 : 0;
+
+      if (cashPct > 50) {
+        optBullets.push(`**Rebalance Cash Liquidity**: Over ${Math.round(cashPct)}% of your wealth is liquid. Consider rebalancing into halal investments to avoid purchasing power erosion from inflation.`);
+      } else {
+        optBullets.push(`**Wealth Preservation**: Maintain a cash emergency reserve of 3-6 months of expenses, ensuring it is held in non-interest-bearing checking/savings accounts.`);
+      }
+
+      if (stockAssets.length > 0) {
+        optBullets.push(`**Dividend Purification**: Apply screens to your stock assets. Purify non-compliant gains by donating dividend portions matching purification ratios to charity.`);
+      } else {
+        optBullets.push(`**Asset Diversification**: Explore Shariah-compliant equity funds, Sukuk, or physical precious metals to grow your wealth in a halal manner.`);
+      }
+
+      if (calculation.totalLiabilities > 0) {
+        optBullets.push(`**Settle Active Debts**: Plan to pay down outstanding liabilities ($${calculation.totalLiabilities.toLocaleString()}) to decrease Zakat burdens and secure your financial foundation.`);
+      }
+
+      structuredOutput.optimization = optBullets.map(b => `- ${b}`).join("\n");
+
+      // 3. Donation Recommendations
+      const donationBullets: string[] = [];
+      if (calculation.isNisabReached) {
+        donationBullets.push(`**Asnaf Distribution**: Plan the distribution of your due Zakat ($${calculation.zakatDue.toLocaleString()}) to the eight eligible categories defined in the Quran (focusing on the poor, needy, and debt-ridden).`);
+        donationBullets.push(`**Immediate Relatives**: Prioritize distributing Zakat to relatives in need (excluding dependents like parents/children), which earns double reward (charity + strengthening family ties).`);
+      } else {
+        donationBullets.push(`**Voluntary Sadaqah**: Since Zakat is not mandatory, consider setting up a monthly voluntary Sadaqah program to support community causes and bring blessings to your wealth.`);
+        donationBullets.push(`**Local Charity focus**: Direct regular donations to local food banks, educational initiatives, or orphans support organizations.`);
+      }
+
+      structuredOutput.donations = donationBullets.map(b => `- ${b}`).join("\n");
     }
-
-    // Rule 2: Asset liquidity check
-    const cashAssets = assets.filter(a => a.type === "cash");
-    const totalCashVal = cashAssets.reduce((sum, a) => sum + a.value, 0);
-    const cashPercent = calculation.totalAssets > 0 ? (totalCashVal / calculation.totalAssets) * 100 : 0;
-    if (cashPercent > 50) {
-      localRecommendations.push(
-        `**Cash Liquidity**: Over ${Math.round(cashPercent)}% of your wealth is held in cash savings. To protect your wealth against inflation and support the community economy, consider reallocating cash into productive, Shariah-compliant equities or investment funds.`
-      );
-    }
-
-    // Rule 3: Stock asset check (purification)
-    const stockAssets = assets.filter(a => a.type === "stock");
-    if (stockAssets.length > 0) {
-      const stockVal = stockAssets.reduce((sum, a) => sum + a.value, 0);
-      localRecommendations.push(
-        `**Dividend Purification**: You hold stock investments totaling $${stockVal.toLocaleString()}. Ensure you screen your portfolio tickers (like Apple, Microsoft) for debt/cash purity ratios and purify any non-operating interest dividend gains.`
-      );
-    }
-
-    // Rule 4: Liabilities check
-    if (calculation.totalLiabilities > 0) {
-      localRecommendations.push(
-        `**Liabilities Check**: Your current outstanding deductions stand at $${calculation.totalLiabilities.toLocaleString()}. While short-term liabilities reduce your net zakatable wealth, it is recommended to pay off interest-bearing debts first to secure peace of mind and barakah.`
-      );
-    }
-
-    // Format output as Markdown bullets
-    const insightsMarkdown = localRecommendations.map(rec => `- ${rec}`).join("\n\n");
 
     return NextResponse.json({
-      insights: insightsMarkdown,
-      source: "Mizan Heuristic Rule Engine (Local Fallback)"
+      insights: structuredOutput,
+      source
     });
   } catch (error) {
-    console.error("Advisory insights generation failed:", error);
+    console.error("Advisory insights parsing exception:", error);
     return NextResponse.json(
-      { error: "Server error during advisory compiling." },
+      { error: "Server error during structured advisory compilation." },
       { status: 500 }
     );
   }

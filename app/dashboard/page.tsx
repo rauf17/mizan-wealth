@@ -41,10 +41,42 @@ export default function DashboardPage() {
   const [growthData, setGrowthData] = useState<GrowthProjectionYear[]>([]);
 
   // AI Insights States
-  const [aiInsights, setAiInsights] = useState<string>("");
+  const [aiInsights, setAiInsights] = useState<{ position: string; optimization: string; donations: string } | null>(null);
+  const [insightsSource, setInsightsSource] = useState<string>("");
   const [loadingInsights, setLoadingInsights] = useState(false);
 
   const [saveStatus, setSaveStatus] = useState<string | null>(null);
+
+  // Helper to render markdown bullets with custom styles and bolding
+  const renderInsightList = (text: string, dotColorClass: string) => {
+    if (!text) return null;
+    const lines = text.split("\n").filter((line) => line.trim() !== "");
+    return (
+      <ul className="space-y-3">
+        {lines.map((line, idx) => {
+          const cleanText = line.replace(/^\s*[-*•]\s*/, "").trim();
+          const parts = cleanText.split(/(\*\*.*?\*\*)/g);
+          return (
+            <li key={idx} className="flex items-start gap-2.5 text-[11px] text-muted-foreground leading-relaxed">
+              <span className={`w-1.5 h-1.5 rounded-full ${dotColorClass} mt-1.5 flex-shrink-0`} />
+              <span className="flex-1">
+                {parts.map((part, pIdx) => {
+                  if (part.startsWith("**") && part.endsWith("**")) {
+                    return (
+                      <strong key={pIdx} className="font-semibold text-primary font-heading mr-0.5">
+                        {part.slice(2, -2)}
+                      </strong>
+                    );
+                  }
+                  return <span key={pIdx}>{part}</span>;
+                })}
+              </span>
+            </li>
+          );
+        })}
+      </ul>
+    );
+  };
 
   // Generate Growth Projection Logic
   const generateGrowthProjection = useCallback(() => {
@@ -149,6 +181,7 @@ export default function DashboardPage() {
         if (response.ok) {
           const data = await response.json();
           setAiInsights(data.insights);
+          setInsightsSource(data.source || "");
         }
       } catch (err) {
         console.error("Failed to load insights:", err);
@@ -315,22 +348,73 @@ export default function DashboardPage() {
 
         {/* AI Advisor Insights Panel */}
         {assets.length > 0 && (
-          <div className="bg-white rounded-2xl border border-accent/20 p-6 shadow-sm border-l-4 border-l-accent space-y-4">
-            <h2 className="text-base font-heading font-bold text-primary flex items-center gap-2">
-              <svg className="w-5 h-5 text-accent" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
-              </svg>
-              AI Wealth Advisor Insights
-            </h2>
+          <div className="bg-gradient-to-br from-white to-background rounded-2xl border border-border/85 p-6 shadow-sm relative overflow-hidden group hover:shadow-md transition-all duration-300">
+            {/* Top decorative gold/pine gradient line */}
+            <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-primary to-accent" />
+            
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-border/40">
+              <h2 className="text-base font-heading font-bold text-primary flex items-center gap-2">
+                <div className="w-8 h-8 rounded-lg bg-primary/5 flex items-center justify-center text-primary group-hover:scale-105 transition-transform duration-300">
+                  <svg className="w-4 h-4 text-accent" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+                  </svg>
+                </div>
+                AI Wealth Advisor Insights
+              </h2>
+              {insightsSource && !loadingInsights && (
+                <span className="text-[10px] bg-muted/70 border border-border/40 px-2.5 py-1 rounded-full text-muted-foreground font-medium select-none self-start sm:self-auto">
+                  {insightsSource}
+                </span>
+              )}
+            </div>
+
             {loadingInsights ? (
-              <div className="space-y-2 py-4">
+              <div className="space-y-3 py-6">
                 <div className="h-4 bg-muted rounded animate-pulse w-3/4"></div>
                 <div className="h-4 bg-muted rounded animate-pulse w-5/6"></div>
-                <div className="h-4 bg-muted rounded animate-pulse w-1/2"></div>
+                <div className="h-4 bg-muted rounded animate-pulse w-2/3"></div>
+              </div>
+            ) : aiInsights ? (
+              <div className="space-y-6 pt-2">
+                {/* Position Summary Banner */}
+                <div className="bg-primary/5 border border-primary/10 p-4 rounded-xl">
+                  <p className="text-xs text-primary font-medium leading-relaxed">
+                    {aiInsights.position}
+                  </p>
+                </div>
+
+                {/* Sub-grid of Optimization and Donations */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {/* Optimization */}
+                  <div className="p-5 rounded-xl bg-white border border-border/50 shadow-sm space-y-4 hover:border-primary/20 transition-colors duration-200">
+                    <h3 className="text-xs font-semibold text-primary uppercase tracking-wider flex items-center gap-2 font-heading">
+                      <div className="w-5 h-5 rounded bg-primary/10 flex items-center justify-center">
+                        <svg className="w-3 h-3 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+                        </svg>
+                      </div>
+                      Wealth Optimization
+                    </h3>
+                    {renderInsightList(aiInsights.optimization, "bg-primary")}
+                  </div>
+
+                  {/* Donations */}
+                  <div className="p-5 rounded-xl bg-white border border-border/50 shadow-sm space-y-4 hover:border-accent/20 transition-colors duration-200">
+                    <h3 className="text-xs font-semibold text-accent uppercase tracking-wider flex items-center gap-2 font-heading">
+                      <div className="w-5 h-5 rounded bg-accent/10 flex items-center justify-center">
+                        <svg className="w-3 h-3 text-accent" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 21l-8.244-8.244a5.5 5.5 0 017.778-7.778L12 5.515l.466-.466a5.5 5.5 0 117.778 7.778L12 21z" />
+                        </svg>
+                      </div>
+                      Donation & Zakat Channels
+                    </h3>
+                    {renderInsightList(aiInsights.donations, "bg-accent")}
+                  </div>
+                </div>
               </div>
             ) : (
-              <div className="text-sm text-primary/80 leading-relaxed whitespace-pre-line space-y-2">
-                {aiInsights}
+              <div className="text-center py-6 text-xs text-muted-foreground">
+                No insights could be computed. Please check your asset inputs.
               </div>
             )}
           </div>
