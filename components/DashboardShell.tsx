@@ -62,31 +62,31 @@ export default function DashboardShell({ children }: DashboardShellProps) {
   ];
 
   return (
-    <div className="min-h-screen flex bg-background text-foreground">
+    <div className="min-h-screen flex bg-background text-foreground font-sans">
       {/* Desktop Sidebar */}
-      <aside className="hidden md:flex flex-col w-64 bg-white border-r border-border/80 sticky top-0 h-screen">
+      <aside className="hidden md:flex flex-col w-64 bg-white border-r border-slate-200/80 sticky top-0 h-screen">
         {/* Sidebar Header */}
-        <div className="h-16 flex items-center gap-2.5 px-6 border-b border-border/40">
-          <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center font-heading font-extrabold text-white shadow-md">
+        <div className="h-16 flex items-center gap-2.5 px-6 border-b border-slate-100">
+          <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center font-heading font-bold text-white shadow-sm select-none">
             M
           </div>
-          <span className="font-heading font-bold text-base tracking-wider text-primary">
+          <span className="font-heading font-bold text-sm tracking-wider text-primary select-none">
             MIZAN WEALTH
           </span>
         </div>
 
         {/* Sidebar Nav */}
-        <nav className="flex-1 px-4 py-6 space-y-1.5">
+        <nav className="flex-1 px-4 py-6 space-y-1">
           {navigationItems.map((item) => {
             const isActive = pathname === item.href;
             return (
               <Link
                 key={item.href}
                 href={item.href}
-                className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all ${
+                className={`flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-semibold transition-all duration-150 ${
                   isActive
-                    ? "bg-primary text-white shadow-md shadow-primary/10"
-                    : "text-muted-foreground hover:bg-muted hover:text-primary"
+                    ? "bg-primary text-primary-foreground shadow-sm"
+                    : "text-slate-500 hover:text-slate-900 hover:bg-slate-100/80"
                 }`}
               >
                 {item.icon}
@@ -97,12 +97,12 @@ export default function DashboardShell({ children }: DashboardShellProps) {
         </nav>
 
         {/* Sidebar Footer */}
-        <div className="p-4 border-t border-border/40">
-          <div className="p-3.5 rounded-xl bg-muted/60 border border-border/30 text-center">
-            <span className="text-[10px] font-semibold text-accent uppercase tracking-wider block mb-0.5">
+        <div className="p-4 border-t border-slate-100">
+          <div className="p-3 rounded-lg bg-slate-50 border border-slate-200/60 text-center">
+            <span className="text-[10px] font-semibold text-accent uppercase tracking-wider block mb-1 font-heading">
               Secure Local Storage
             </span>
-            <p className="text-[11px] text-muted-foreground leading-snug">
+            <p className="text-[11px] text-slate-500 leading-normal">
               Calculations are processed 100% locally.
             </p>
           </div>
@@ -112,19 +112,19 @@ export default function DashboardShell({ children }: DashboardShellProps) {
       {/* Mobile Shell Content */}
       <div className="flex-1 flex flex-col min-w-0">
         {/* Mobile Header */}
-        <header className="md:hidden h-16 bg-white border-b border-border/80 px-6 flex items-center justify-between sticky top-0 z-40">
+        <header className="md:hidden h-16 bg-white border-b border-slate-200/80 px-6 flex items-center justify-between sticky top-0 z-40">
           <div className="flex items-center gap-2">
-            <div className="w-7 h-7 rounded-lg bg-primary flex items-center justify-center font-heading font-extrabold text-white shadow-sm">
+            <div className="w-7 h-7 rounded-lg bg-primary flex items-center justify-center font-heading font-bold text-white shadow-sm select-none">
               M
             </div>
-            <span className="font-heading font-bold text-sm tracking-wider text-primary">
+            <span className="font-heading font-bold text-sm tracking-wider text-primary select-none">
               MIZAN WEALTH
             </span>
           </div>
 
           <button
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-            className="p-1.5 rounded-lg border border-border/80 hover:bg-muted text-primary transition-colors"
+            className="p-1.5 rounded-lg border border-slate-200 hover:bg-slate-50 text-primary transition-colors"
             aria-label="Toggle Menu"
           >
             <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -142,14 +142,14 @@ export default function DashboardShell({ children }: DashboardShellProps) {
           <div className="md:hidden fixed inset-0 z-30 flex">
             {/* Backdrop */}
             <div
-              className="fixed inset-0 bg-black/35 backdrop-blur-sm"
+              className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm"
               onClick={() => setIsMobileMenuOpen(false)}
             />
 
             {/* Content Drawer */}
-            <nav className="relative flex flex-col w-4/5 max-w-sm bg-white h-full p-6 shadow-2xl space-y-2 animate-slide-in">
-              <div className="flex items-center gap-2.5 mb-6 pb-4 border-b border-border/40">
-                <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center font-heading font-extrabold text-white">
+            <nav className="relative flex flex-col w-4/5 max-w-sm bg-white h-full p-6 shadow-xl space-y-1.5 border-r border-slate-200 animate-slide-in">
+              <div className="flex items-center gap-2.5 mb-6 pb-4 border-b border-slate-100">
+                <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center font-heading font-bold text-white">
                   M
                 </div>
                 <span className="font-heading font-bold text-base tracking-wider text-primary">
@@ -164,10 +164,10 @@ export default function DashboardShell({ children }: DashboardShellProps) {
                     key={item.href}
                     href={item.href}
                     onClick={() => setIsMobileMenuOpen(false)}
-                    className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all ${
+                    className={`flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-semibold transition-all duration-150 ${
                       isActive
-                        ? "bg-primary text-white shadow-md shadow-primary/10"
-                        : "text-muted-foreground hover:bg-muted hover:text-primary"
+                        ? "bg-primary text-primary-foreground shadow-sm"
+                        : "text-slate-500 hover:text-slate-900 hover:bg-slate-100/80"
                     }`}
                   >
                     {item.icon}
@@ -176,11 +176,11 @@ export default function DashboardShell({ children }: DashboardShellProps) {
                 );
               })}
 
-              <div className="absolute bottom-6 left-6 right-6 p-4 rounded-xl bg-muted/60 border border-border/30 text-center">
-                <span className="text-[10px] font-semibold text-accent uppercase tracking-wider block mb-0.5">
+              <div className="absolute bottom-6 left-6 right-6 p-4 rounded-lg bg-slate-50 border border-slate-200/60 text-center">
+                <span className="text-[10px] font-semibold text-accent uppercase tracking-wider block mb-1 font-heading">
                   Secure Local Storage
                 </span>
-                <p className="text-[11px] text-muted-foreground">
+                <p className="text-[11px] text-slate-500">
                   Processed completely on-device.
                 </p>
               </div>
@@ -189,7 +189,7 @@ export default function DashboardShell({ children }: DashboardShellProps) {
         )}
 
         {/* Main Content Area */}
-        <main className="flex-1 overflow-y-auto px-6 py-8 md:px-10 md:py-10 max-w-7xl mx-auto w-full">
+        <main className="flex-1 overflow-y-auto px-6 py-8 md:px-8 md:py-8 max-w-7xl mx-auto w-full">
           {children}
         </main>
       </div>

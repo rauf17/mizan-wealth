@@ -80,14 +80,25 @@ body {
 
   /* Buttons */
   .btn-primary {
-    @apply inline-flex items-center justify-center px-5 py-2.5 rounded-lg bg-primary text-white text-sm font-semibold hover:bg-primary/95 transition-all duration-150 disabled:opacity-50 disabled:cursor-not-allowed select-none;
+    @apply inline-flex items-center justify-center px-5 py-2.5 rounded-lg bg-primary text-white text-sm font-semibold transition-all duration-150 disabled:opacity-50 disabled:cursor-not-allowed select-none;
+    &:hover:not(:disabled) {
+      background-color: #0c3d3d; /* slightly darker deep teal */
+    }
   }
   
   .btn-secondary {
-    @apply inline-flex items-center justify-center px-5 py-2.5 rounded-lg border border-slate-200 bg-white text-slate-700 text-sm font-semibold hover:bg-slate-50 transition-all duration-150 disabled:opacity-50 disabled:cursor-not-allowed select-none;
+    @apply inline-flex items-center justify-center px-5 py-2.5 rounded-lg border border-slate-200 bg-white text-slate-700 text-sm font-semibold transition-all duration-150 disabled:opacity-50 disabled:cursor-not-allowed select-none;
+    &:hover:not(:disabled) {
+      background-color: var(--slate-50);
+      border-color: var(--slate-300);
+    }
   }
   
   .btn-ghost {
-    @apply inline-flex items-center justify-center px-4 py-2 rounded-lg text-slate-500 hover:text-slate-900 hover:bg-slate-100/80 text-sm font-semibold transition-all duration-150 disabled:opacity-50 select-none;
+    @apply inline-flex items-center justify-center px-4 py-2 rounded-lg text-slate-500 text-sm font-semibold transition-all duration-150 disabled:opacity-50 select-none;
+    &:hover:not(:disabled) {
+      color: var(--slate-900);
+      background-color: var(--slate-100);
+    }
   }
 }
