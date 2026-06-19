@@ -172,8 +172,8 @@ export default function ReportsPage() {
               <strong className="text-base font-bold text-slate-900">${result.netZakatable.toLocaleString(undefined, { minimumFractionDigits: 2 })}</strong>
             </div>
             <div>
-              <span className="text-[10px] font-semibold text-accent uppercase tracking-wider block mb-1">Zakat Obligation</span>
-              <strong className="text-base font-extrabold text-primary">${result.zakatDue.toLocaleString(undefined, { minimumFractionDigits: 2 })}</strong>
+              <span className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider block mb-1">Zakat Obligation</span>
+              <strong className="text-base font-extrabold text-accent">${result.zakatDue.toLocaleString(undefined, { minimumFractionDigits: 2 })}</strong>
             </div>
           </div>
         </Card>

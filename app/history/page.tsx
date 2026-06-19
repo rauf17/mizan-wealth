@@ -116,10 +116,10 @@ export default function HistoryPage() {
 
                         {/* Zakat Due */}
                         <div className="text-right">
-                          <span className="text-[10px] text-accent uppercase font-bold block mb-0.5">
+                          <span className="text-[10px] text-slate-400 uppercase font-bold block mb-0.5">
                             Zakat Due
                           </span>
-                          <span className="text-sm font-extrabold text-primary">
+                          <span className="text-sm font-extrabold text-accent">
                             ${record.result.zakatDue.toLocaleString(undefined, { minimumFractionDigits: 2 })}
                           </span>
                         </div>

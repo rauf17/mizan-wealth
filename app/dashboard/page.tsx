@@ -300,8 +300,8 @@ export default function DashboardPage() {
                   Wealth Balance Summary
                 </span>
                 <div className="flex items-center gap-2">
-                  <span className={`w-2.5 h-2.5 rounded-full ${calculationResult.isNisabReached ? "bg-primary" : "bg-slate-300"}`} />
-                  <span className="text-xs font-bold text-slate-700 uppercase tracking-wider select-none">
+                  <span className={`w-2.5 h-2.5 rounded-full ${calculationResult.isNisabReached ? "bg-accent" : "bg-slate-300"}`} />
+                  <span className={`text-xs font-bold uppercase tracking-wider select-none ${calculationResult.isNisabReached ? "text-accent" : "text-slate-500"}`}>
                     {calculationResult.isNisabReached ? "Above Nisab" : "Below Nisab"}
                   </span>
                 </div>
@@ -312,7 +312,7 @@ export default function DashboardPage() {
                 <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider font-heading">
                   Zakat Due (2.5%)
                 </span>
-                <div className="text-5xl font-extrabold text-primary font-heading tracking-tight">
+                <div className="text-5xl font-extrabold text-accent font-heading tracking-tight">
                   ${calculationResult.zakatDue.toLocaleString(undefined, { minimumFractionDigits: 2 })}
                 </div>
               </div>
@@ -346,8 +346,8 @@ export default function DashboardPage() {
               </div>
 
               {/* Nisab Comparison Indicator */}
-              <div className="mt-6 p-4 rounded-lg bg-slate-50/50 border border-slate-100 flex items-start gap-3">
-                <svg className={`w-4 h-4 mt-0.5 flex-shrink-0 ${calculationResult.isNisabReached ? "text-primary" : "text-slate-400"}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <div className={`mt-6 p-4 rounded-lg bg-slate-50/50 flex items-start gap-3 border ${calculationResult.isNisabReached ? "border-[var(--accent)]/20" : "border-slate-100"}`}>
+                <svg className={`w-4 h-4 mt-0.5 flex-shrink-0 ${calculationResult.isNisabReached ? "text-accent" : "text-slate-400"}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   {calculationResult.isNisabReached ? (
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                   ) : (
@@ -357,7 +357,7 @@ export default function DashboardPage() {
                 <div className="text-xs text-slate-500 leading-relaxed">
                   {calculationResult.isNisabReached ? (
                     <span>
-                      Your net eligible assets of <strong className="text-slate-700">${calculationResult.netZakatable.toLocaleString(undefined, { minimumFractionDigits: 2 })}</strong> exceed the Nisab threshold (<strong className="text-slate-700">${calculationResult.nisabThreshold.toLocaleString(undefined, { minimumFractionDigits: 2 })}</strong> using the {settings.nisabStandard} standard) by <strong className="text-slate-700">{(calculationResult.netZakatable / calculationResult.nisabThreshold).toFixed(1)}x</strong>. Zakat is due.
+                      Your net eligible assets of <strong className="text-slate-700">${calculationResult.netZakatable.toLocaleString(undefined, { minimumFractionDigits: 2 })}</strong> exceed the Nisab threshold (<strong className="text-slate-700">${calculationResult.nisabThreshold.toLocaleString(undefined, { minimumFractionDigits: 2 })}</strong> using the {settings.nisabStandard} standard) by <strong className="text-accent">{(calculationResult.netZakatable / calculationResult.nisabThreshold).toFixed(1)}x</strong>. Zakat is due.
                     </span>
                   ) : (
                     <span>
@@ -634,8 +634,8 @@ export default function DashboardPage() {
                           <strong className="text-slate-900 text-sm font-bold">${Math.round(totalSimulatedGains).toLocaleString()}</strong>
                         </div>
                         <div>
-                          <span className="text-accent block font-semibold">Zakat Deductions</span>
-                          <strong className="text-slate-900 text-sm font-bold">${Math.round(totalSimulatedZakat).toLocaleString()}</strong>
+                          <span className="text-slate-400 block font-medium">Zakat Deductions</span>
+                          <strong className="text-accent text-sm font-bold">${Math.round(totalSimulatedZakat).toLocaleString()}</strong>
                         </div>
                         <div>
                           <span className="text-slate-500 block font-bold">Final Balance</span>

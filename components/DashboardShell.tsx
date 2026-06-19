@@ -81,7 +81,7 @@ export default function DashboardShell({ children }: DashboardShellProps) {
                 href={item.href}
                 className={`flex items-center gap-3 pl-5 pr-4 py-3 rounded-r-lg text-sm font-semibold transition-all duration-150 border-l-2 ${
                   isActive
-                    ? "border-primary bg-slate-50 text-primary"
+                    ? "border-accent bg-slate-50 text-primary"
                     : "border-transparent text-slate-500 hover:text-slate-900 hover:bg-slate-100/80"
                 }`}
               >
@@ -150,7 +150,7 @@ export default function DashboardShell({ children }: DashboardShellProps) {
                     onClick={() => setIsMobileMenuOpen(false)}
                     className={`flex items-center gap-3 pl-4 pr-3 py-3 rounded-r-lg text-sm font-semibold transition-all duration-150 border-l-2 ${
                       isActive
-                        ? "border-primary bg-slate-50 text-primary"
+                        ? "border-accent bg-slate-50 text-primary"
                         : "border-transparent text-slate-500 hover:text-slate-900 hover:bg-slate-100/80"
                     }`}
                   >
