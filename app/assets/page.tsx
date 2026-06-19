@@ -162,58 +162,71 @@ export default function AssetsPage() {
                 </svg>
                 Add Asset
               </h2>
-              <form onSubmit={handleAddAsset} className="space-y-4">
-                <Select
-                  label="Asset Class"
-                  value={assetType}
-                  onChange={(e) => handleTypeChange(e.target.value as AssetType)}
-                >
-                  {Object.entries(assetTypeLabels).map(([key, label]) => (
-                    <option key={key} value={key}>
-                      {label}
-                    </option>
-                  ))}
-                </Select>
-
-                <Input
-                  type="text"
-                  required
-                  label="Description / Name"
-                  placeholder="e.g. Chase Savings, Gold Ring"
-                  value={assetName}
-                  onChange={(e) => setAssetName(e.target.value)}
-                />
-
-                <div className="grid grid-cols-2 gap-4">
-                  <Input
-                    type="number"
-                    required
-                    min="0"
-                    step="any"
-                    label="Value ($)"
-                    placeholder="0.00"
-                    value={assetValue}
-                    onChange={(e) => setAssetValue(e.target.value)}
-                  />
+              <form onSubmit={handleAddAsset} className="space-y-6">
+                {/* Group 1: Classification */}
+                <div className="space-y-4">
+                  <Select
+                    label="Asset Class"
+                    value={assetType}
+                    onChange={(e) => handleTypeChange(e.target.value as AssetType)}
+                  >
+                    {Object.entries(assetTypeLabels).map(([key, label]) => (
+                      <option key={key} value={key}>
+                        {label}
+                      </option>
+                    ))}
+                  </Select>
 
                   <Input
-                    type="number"
+                    type="text"
                     required
-                    min="0"
-                    max="100"
-                    label="Zakatable %"
-                    value={zakatablePercent}
-                    onChange={(e) => setZakatablePercent(e.target.value)}
+                    label="Description / Name"
+                    placeholder="e.g. Chase Savings, Gold Ring"
+                    value={assetName}
+                    onChange={(e) => setAssetName(e.target.value)}
                   />
                 </div>
 
-                <Input
-                  type="date"
-                  required
-                  label="Acquisition Date (Hawl Start)"
-                  value={acquisitionDate}
-                  onChange={(e) => setAcquisitionDate(e.target.value)}
-                />
+                {/* Divider */}
+                <div className="border-t border-slate-100" />
+
+                {/* Group 2: Valuation */}
+                <div className="space-y-4">
+                  <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1">
+                    Valuation & Timing
+                  </span>
+                  
+                  <div className="grid grid-cols-2 gap-4">
+                    <Input
+                      type="number"
+                      required
+                      min="0"
+                      step="any"
+                      label="Value ($)"
+                      placeholder="0.00"
+                      value={assetValue}
+                      onChange={(e) => setAssetValue(e.target.value)}
+                    />
+
+                    <Input
+                      type="number"
+                      required
+                      min="0"
+                      max="100"
+                      label="Zakatable %"
+                      value={zakatablePercent}
+                      onChange={(e) => setZakatablePercent(e.target.value)}
+                    />
+                  </div>
+
+                  <Input
+                    type="date"
+                    required
+                    label="Acquisition Date (Hawl Start)"
+                    value={acquisitionDate}
+                    onChange={(e) => setAcquisitionDate(e.target.value)}
+                  />
+                </div>
 
                 <Button type="submit" className="w-full">
                   Record Asset
@@ -261,9 +274,9 @@ export default function AssetsPage() {
           <div className="lg:col-span-7 space-y-6">
             {/* Assets List */}
             <Card>
-              <h2 className="text-sm font-heading font-bold text-slate-800 mb-5 flex items-center justify-between">
+              <h2 className="text-sm font-heading font-bold text-slate-800 mb-5 flex items-center justify-between border-b border-slate-100 pb-4">
                 <span>Asset Inventory Ledger</span>
-                <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-primary/5 text-primary border border-primary/10 select-none">
+                <span className="text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-primary/5 text-primary border border-primary/10 select-none">
                   {assets.length} Item{assets.length !== 1 ? "s" : ""}
                 </span>
               </h2>
@@ -273,57 +286,63 @@ export default function AssetsPage() {
                   <p className="text-slate-400 text-xs font-semibold">No assets recorded yet.</p>
                 </div>
               ) : (
-                <div className="overflow-x-auto">
-                  <table className="w-full text-left text-xs">
-                    <thead>
-                      <tr className="text-[10px] text-slate-400 uppercase border-b border-slate-100 pb-2">
-                        <th className="py-2.5 font-bold tracking-wider">Asset Details</th>
-                        <th className="py-2.5 font-bold tracking-wider text-right">Market Value</th>
-                        <th className="py-2.5 font-bold tracking-wider text-right">Zakatable</th>
-                        <th className="py-2.5 font-bold tracking-wider text-center">Action</th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-slate-100">
-                      {assets.map((item) => (
-                        <tr key={item.id} className="hover:bg-slate-50/50 transition-colors">
-                          <td className="py-3 pr-2">
-                            <div className="font-bold text-slate-800">{item.name}</div>
-                            <div className="text-[10px] text-slate-400 flex items-center gap-1.5 mt-0.5">
-                              <span>{assetTypeLabels[item.type]}</span>
-                              <span>&bull;</span>
-                              <span>Held since: {item.acquisitionDate}</span>
-                            </div>
-                          </td>
-                          <td className="py-3 text-right font-semibold text-slate-700">
+                <div className="divide-y divide-slate-100">
+                  {assets.map((item) => (
+                    <div
+                      key={item.id}
+                      className="flex flex-col sm:flex-row sm:items-center justify-between py-4 first:pt-0 last:pb-0 gap-4 hover:bg-slate-50/30 transition-colors px-1"
+                    >
+                      <div className="space-y-1">
+                        <span className="font-bold text-slate-800 text-sm block">
+                          {item.name}
+                        </span>
+                        <div className="flex items-center gap-1.5 text-[10px] text-slate-400 font-semibold uppercase tracking-wider">
+                          <span>{assetTypeLabels[item.type]}</span>
+                          <span>&bull;</span>
+                          <span>Held since {item.acquisitionDate}</span>
+                        </div>
+                      </div>
+
+                      <div className="flex items-center justify-between sm:justify-end gap-8">
+                        <div className="text-right">
+                          <span className="text-[10px] text-slate-400 uppercase font-semibold block mb-0.5">
+                            Market Value
+                          </span>
+                          <span className="text-xs sm:text-sm font-bold text-slate-700">
                             ${item.value.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-                          </td>
-                          <td className="py-3 text-right text-primary font-extrabold">
+                          </span>
+                        </div>
+
+                        <div className="text-right">
+                          <span className="text-[10px] text-primary uppercase font-bold block mb-0.5">
+                            Zakatable Amount
+                          </span>
+                          <span className="text-xs sm:text-sm font-extrabold text-primary">
                             ${item.zakatableAmount.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-                          </td>
-                          <td className="py-3 text-center">
-                            <button
-                              onClick={() => handleDeleteAsset(item.id)}
-                              className="p-1.5 rounded-lg hover:bg-slate-50 text-slate-400 hover:text-slate-700 transition-colors"
-                              title="Delete item"
-                            >
-                              <svg className="w-4.5 h-4.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                              </svg>
-                            </button>
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
+                          </span>
+                        </div>
+
+                        <button
+                          onClick={() => handleDeleteAsset(item.id)}
+                          className="p-2 rounded-lg hover:bg-slate-100 text-slate-400 hover:text-slate-700 transition-colors"
+                          title="Delete asset"
+                        >
+                          <svg className="w-4.5 h-4.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                          </svg>
+                        </button>
+                      </div>
+                    </div>
+                  ))}
                 </div>
               )}
             </Card>
 
             {/* Liabilities List */}
             <Card>
-              <h2 className="text-sm font-heading font-bold text-slate-800 mb-5 flex items-center justify-between">
+              <h2 className="text-sm font-heading font-bold text-slate-800 mb-5 flex items-center justify-between border-b border-slate-100 pb-4">
                 <span>Liabilities Ledger</span>
-                <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-slate-100 text-slate-600 border border-slate-200/60 select-none">
+                <span className="text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-slate-100 text-slate-600 border border-slate-200/60 select-none">
                   {liabilities.length} Item{liabilities.length !== 1 ? "s" : ""}
                 </span>
               </h2>
@@ -333,39 +352,43 @@ export default function AssetsPage() {
                   <p className="text-slate-400 text-xs font-semibold">No liabilities recorded yet.</p>
                 </div>
               ) : (
-                <div className="overflow-x-auto">
-                  <table className="w-full text-left text-xs">
-                    <thead>
-                      <tr className="text-[10px] text-slate-400 uppercase border-b border-slate-100 pb-2">
-                        <th className="py-2.5 font-bold tracking-wider">Description</th>
-                        <th className="py-2.5 font-bold tracking-wider text-right">Amount</th>
-                        <th className="py-2.5 font-bold tracking-wider text-center">Action</th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-slate-100">
-                      {liabilities.map((item) => (
-                        <tr key={item.id} className="hover:bg-slate-50/50 transition-colors">
-                          <td className="py-3 pr-2">
-                            <div className="font-bold text-slate-800">{item.name}</div>
-                          </td>
-                          <td className="py-3 text-right font-semibold text-slate-600">
+                <div className="divide-y divide-slate-100">
+                  {liabilities.map((item) => (
+                    <div
+                      key={item.id}
+                      className="flex items-center justify-between py-4 first:pt-0 last:pb-0 gap-4 hover:bg-slate-50/30 transition-colors px-1"
+                    >
+                      <div>
+                        <span className="font-bold text-slate-800 text-sm block">
+                          {item.name}
+                        </span>
+                        <span className="text-[10px] text-slate-400 font-semibold uppercase tracking-wider block mt-0.5">
+                          Short-Term Debt Deduction
+                        </span>
+                      </div>
+
+                      <div className="flex items-center gap-6">
+                        <div className="text-right">
+                          <span className="text-[10px] text-slate-400 uppercase font-semibold block mb-0.5">
+                            Deducted Amount
+                          </span>
+                          <span className="text-xs sm:text-sm font-bold text-slate-600">
                             -${item.value.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-                          </td>
-                          <td className="py-3 text-center">
-                            <button
-                              onClick={() => handleDeleteLiability(item.id)}
-                              className="p-1.5 rounded-lg hover:bg-slate-50 text-slate-400 hover:text-slate-700 transition-colors"
-                              title="Delete item"
-                            >
-                              <svg className="w-4.5 h-4.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                              </svg>
-                            </button>
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
+                          </span>
+                        </div>
+
+                        <button
+                          onClick={() => handleDeleteLiability(item.id)}
+                          className="p-2 rounded-lg hover:bg-slate-100 text-slate-400 hover:text-slate-700 transition-colors"
+                          title="Delete liability"
+                        >
+                          <svg className="w-4.5 h-4.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                          </svg>
+                        </button>
+                      </div>
+                    </div>
+                  ))}
                 </div>
               )}
             </Card>

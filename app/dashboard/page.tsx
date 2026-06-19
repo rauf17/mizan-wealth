@@ -414,26 +414,41 @@ export default function DashboardPage() {
               <p className="text-xs text-slate-400 leading-relaxed">
                 Market rates used to determine Nisab limits (updated dynamically).
               </p>
-              <div className="divide-y divide-slate-100 text-xs">
-                <div className="py-2.5 flex justify-between">
-                  <span className="font-semibold text-slate-600">Gold Rate (24k)</span>
-                  <span className="font-bold text-slate-900">${rates.goldPerGram.toFixed(2)}/g</span>
+              
+              {/* Premium Side-by-Side Commodity pricing boxes */}
+              <div className="grid grid-cols-2 gap-4 pt-2">
+                <div className="bg-slate-50/80 border border-slate-100 rounded-lg p-3 text-center">
+                  <span className="text-[10px] text-slate-400 font-semibold uppercase tracking-wider block mb-1">
+                    Gold Price (24k)
+                  </span>
+                  <strong className="text-base font-bold text-slate-900">
+                    ${rates.goldPerGram.toFixed(2)}<span className="text-[10px] text-slate-400 font-normal">/g</span>
+                  </strong>
                 </div>
-                <div className="py-2.5 flex justify-between">
-                  <span className="font-semibold text-slate-600">Silver Rate</span>
-                  <span className="font-bold text-slate-900">${rates.silverPerGram.toFixed(2)}/g</span>
-                </div>
-                <div className="py-2.5 flex justify-between text-slate-400">
-                  <span>Gold Nisab (85g)</span>
-                  <span>${(rates.goldPerGram * 85).toLocaleString(undefined, { maximumFractionDigits: 2 })}</span>
-                </div>
-                <div className="py-2.5 flex justify-between text-slate-400">
-                  <span>Silver Nisab (595g)</span>
-                  <span>${(rates.silverPerGram * 595).toLocaleString(undefined, { maximumFractionDigits: 2 })}</span>
+                <div className="bg-slate-50/80 border border-slate-100 rounded-lg p-3 text-center">
+                  <span className="text-[10px] text-slate-400 font-semibold uppercase tracking-wider block mb-1">
+                    Silver Price
+                  </span>
+                  <strong className="text-base font-bold text-slate-900">
+                    ${rates.silverPerGram.toFixed(2)}<span className="text-[10px] text-slate-400 font-normal">/g</span>
+                  </strong>
                 </div>
               </div>
-              <div className="text-[10px] text-slate-400 text-center pt-2">
-                Feed updated on: {new Date(rates.lastUpdated).toLocaleTimeString()}
+
+              {/* Calculated standard thresholds */}
+              <div className="divide-y divide-slate-100 text-xs pt-2">
+                <div className="py-2.5 flex justify-between text-slate-500 font-medium">
+                  <span>Calculated Gold Nisab (85g)</span>
+                  <span className="font-bold text-slate-800">${(rates.goldPerGram * 85).toLocaleString(undefined, { maximumFractionDigits: 2 })}</span>
+                </div>
+                <div className="py-2.5 flex justify-between text-slate-500 font-medium">
+                  <span>Calculated Silver Nisab (595g)</span>
+                  <span className="font-bold text-slate-800">${(rates.silverPerGram * 595).toLocaleString(undefined, { maximumFractionDigits: 2 })}</span>
+                </div>
+              </div>
+
+              <div className="text-[10px] text-slate-400 text-center pt-2 select-none">
+                Feed updated: {new Date(rates.lastUpdated).toLocaleTimeString()}
               </div>
             </Card>
           </div>
