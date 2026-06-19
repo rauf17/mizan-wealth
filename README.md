@@ -4,7 +4,7 @@ Mizan Wealth is a premium, local-first Shariah-compliant financial planning and 
 
 ---
 
-## 🌟 Key Features
+## Core Features
 
 ### 1. Zakat Calculation Engine
 * **Nisab Threshold Calculations**: Automatically determines the Nisab limit using live gold (85g standard) or silver (595g standard) spot prices.

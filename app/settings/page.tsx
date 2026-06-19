@@ -70,9 +70,9 @@ export default function SettingsPage() {
   };
 
   const handleClearAllData = () => {
-    if (confirm("Are you sure you want to delete all assets, liabilities, history, and settings from this browser? This action is irreversible.")) {
+    if (confirm("Confirming this action will delete all assets, liabilities, history, and settings from local storage. This cannot be undone. Do you wish to proceed?")) {
       clearAppStorage();
-      alert("All data cleared successfully.");
+      alert("All application data has been cleared.");
       window.location.href = "/dashboard";
     }
   };

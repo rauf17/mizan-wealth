@@ -32,6 +32,11 @@ export async function POST(req: Request) {
 You are Mizan Wealth Advisor, a Shariah-compliant financial planner.
 Analyze the user's wealth position and provide Shariah financial advice.
 
+Tone and Language Guidelines:
+- Keep the language calm, factual, and strictly objective.
+- Do NOT use exclamation marks, hype words, or emotional language.
+- Frame suggestions neutrally as options or general advice for the user's consideration.
+
 Assets Checklist:
 ${assets.map(a => `- ${a.name} (${a.type}): Market Value = $${a.value}, Zakatable Amount = $${a.zakatableAmount}, Acquired = ${a.acquisitionDate}`).join("\n")}
 

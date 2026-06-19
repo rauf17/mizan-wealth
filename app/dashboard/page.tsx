@@ -634,7 +634,7 @@ export default function DashboardPage() {
                           <strong className="text-slate-900 text-sm font-bold">${Math.round(totalSimulatedGains).toLocaleString()}</strong>
                         </div>
                         <div>
-                          <span className="text-accent block font-semibold">Zakat Generosity</span>
+                          <span className="text-accent block font-semibold">Zakat Deductions</span>
                           <strong className="text-slate-900 text-sm font-bold">${Math.round(totalSimulatedZakat).toLocaleString()}</strong>
                         </div>
                         <div>

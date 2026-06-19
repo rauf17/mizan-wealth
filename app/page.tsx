@@ -31,7 +31,7 @@ export default function Home() {
       <main className="max-w-7xl mx-auto px-6 py-20 flex-1 flex flex-col items-center justify-center text-center">
         <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-slate-100 border border-slate-200/80 text-xs font-semibold text-slate-600 mb-8 select-none">
           <span className="w-1.5 h-1.5 rounded-full bg-primary" />
-          Modern Halal Wealth Management
+          Islamic Ethical Wealth Calculator
         </div>
 
         <h1 className="font-hero max-w-4xl mb-6">
@@ -39,7 +39,7 @@ export default function Home() {
         </h1>
 
         <p className="text-slate-500 text-base md:text-lg max-w-2xl mb-12 leading-relaxed">
-          An elegant suite of local-first tools designed to calculate Zakat, analyze stock purity, project growth, and model inheritance — all securely stored in your browser.
+          A suite of local-first tools to calculate Zakat, evaluate stock purification, project compound growth, and model inheritance. All data is processed and stored locally in your browser.
         </p>
 
         {/* Feature Cards Grid */}
@@ -54,7 +54,7 @@ export default function Home() {
               </div>
               <h3 className="font-h3 mb-2">Zakat Calculator</h3>
               <p className="font-body text-xs">
-                Calculate Nisab values in real-time, deduct liabilities, and track different asset classes seamlessly.
+                Calculate Nisab thresholds using live rates, list liabilities, and track different asset classes.
               </p>
             </Card>
           </Link>
@@ -69,7 +69,7 @@ export default function Home() {
               </div>
               <h3 className="font-h3 mb-2">Purity Screener</h3>
               <p className="font-body text-xs">
-                Assess stock portfolios based on debt, cash, interest income ratios, and purify non-compliant gains.
+                Screen stock assets against debt, cash, and interest income thresholds to identify required purification amounts.
               </p>
             </Card>
           </Link>
@@ -84,7 +84,7 @@ export default function Home() {
               </div>
               <h3 className="font-h3 mb-2">Growth Projection</h3>
               <p className="font-body text-xs">
-                Model compound growth, simulate regular contributions, and deduct Zakat/purification rates to see net halal yield.
+                Model wealth growth over time by projecting contributions and deducting Zakat or purification rates.
               </p>
             </Card>
           </Link>
@@ -99,7 +99,7 @@ export default function Home() {
               </div>
               <h3 className="font-h3 mb-2">Inheritance Modeler</h3>
               <p className="font-body text-xs">
-                Calculate legal shares of your estate for heirs automatically based on Islamic jurisprudence rules.
+                Calculate inheritance distributions based on Islamic jurisprudence rules.
               </p>
             </Card>
           </Link>
