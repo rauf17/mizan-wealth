@@ -47,6 +47,10 @@ export default function DashboardPage() {
 
   const [saveStatus, setSaveStatus] = useState<string | null>(null);
 
+  // Collapsible accordion states
+  const [showAI, setShowAI] = useState(false);
+  const [showGrowth, setShowGrowth] = useState(false);
+
   // Helper to render markdown bullets with custom styles and bolding
   const renderInsightList = (text: string, dotColorClass: string) => {
     if (!text) return null;
@@ -226,12 +230,6 @@ export default function DashboardPage() {
     setTimeout(() => setSaveStatus(null), 3000);
   };
 
-  // Progress to Nisab calculation
-  const progressPercent = Math.min(
-    100,
-    Math.round((calculationResult.netZakatable / calculationResult.nisabThreshold) * 100) || 0
-  );
-
   const assetTypeNames: Record<string, string> = {
     cash: "Liquid Cash",
     gold: "Gold Metals",
@@ -251,28 +249,28 @@ export default function DashboardPage() {
 
   return (
     <DashboardShell>
-      <div className="space-y-8">
+      <div className="space-y-8 max-w-5xl mx-auto">
         {/* Top Header */}
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-2">
           <div>
-            <h1 className="text-3xl font-heading font-extrabold text-primary tracking-tight">
+            <h1 className="font-h1 text-primary">
               Mizan Position Overview
             </h1>
-            <p className="text-muted-foreground mt-1 text-sm">
-              Real-time Shariah wealth evaluation based on your recorded ledger.
+            <p className="text-slate-500 mt-1 text-sm leading-relaxed">
+              Balance your wealth. Know what&apos;s due.
             </p>
           </div>
           <div className="flex gap-3">
             <button
               onClick={handleSaveSnapshot}
               disabled={assets.length === 0}
-              className="px-4 py-2.5 rounded-xl bg-primary text-white font-semibold text-sm hover:bg-primary/95 shadow-md shadow-primary/10 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+              className="btn-primary"
             >
               Save Declaration
             </button>
             <Link
               href="/assets"
-              className="px-4 py-2.5 rounded-xl border border-border hover:bg-muted text-primary bg-white font-semibold text-sm transition-all"
+              className="btn-secondary"
             >
               Manage Ledger
             </Link>
@@ -281,401 +279,382 @@ export default function DashboardPage() {
 
         {/* Save Status Banner */}
         {saveStatus && (
-          <div className="bg-emerald-50 border border-emerald-200 text-emerald-800 rounded-xl px-4 py-3 text-sm flex items-center gap-2">
-            <svg className="w-5 h-5 text-emerald-600 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <div className="bg-slate-50 border border-slate-200 text-slate-700 rounded-lg px-4 py-3 text-xs font-semibold flex items-center gap-2">
+            <svg className="w-4 h-4 text-slate-500 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
             <span>{saveStatus}</span>
           </div>
         )}
 
-        {/* Wealth Summary Cards Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          {/* Card 1: Total Assets */}
-          <div className="bg-white rounded-2xl border border-border p-6 shadow-sm">
-            <div className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">
-              Gross Wealth
-            </div>
-            <div className="text-2xl font-bold text-primary">
-              ${calculationResult.totalAssets.toLocaleString(undefined, { minimumFractionDigits: 2 })}
-            </div>
-            <div className="text-[11px] text-muted-foreground mt-1.5 leading-snug">
-              Combined value of all asset inventory holdings.
-            </div>
-          </div>
-
-          {/* Card 2: Liabilities */}
-          <div className="bg-white rounded-2xl border border-border p-6 shadow-sm">
-            <div className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">
-              Total Liabilities
-            </div>
-            <div className="text-2xl font-bold text-red-600">
-              -${calculationResult.totalLiabilities.toLocaleString(undefined, { minimumFractionDigits: 2 })}
-            </div>
-            <div className="text-[11px] text-muted-foreground mt-1.5 leading-snug">
-              Outstanding short-term debts and bills deducted.
-            </div>
-          </div>
-
-          {/* Card 3: Net Zakatable */}
-          <div className="bg-white rounded-2xl border border-border p-6 shadow-sm">
-            <div className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">
-              Zakatable Wealth
-            </div>
-            <div className="text-2xl font-bold text-emerald-800">
-              ${calculationResult.netZakatable.toLocaleString(undefined, { minimumFractionDigits: 2 })}
-            </div>
-            <div className="text-[11px] text-muted-foreground mt-1.5 leading-snug">
-              Eligible wealth matching lunar holding constraints.
-            </div>
-          </div>
-
-          {/* Card 4: Zakat Due */}
-          <div className="bg-white rounded-2xl border border-border p-6 shadow-sm ring-1 ring-primary/5">
-            <div className="text-xs font-semibold text-accent uppercase tracking-wider mb-2">
-              Zakat Due (2.5%)
-            </div>
-            <div className="text-3xl font-extrabold text-primary">
-              ${calculationResult.zakatDue.toLocaleString(undefined, { minimumFractionDigits: 2 })}
-            </div>
-            <div className="text-[11px] text-muted-foreground mt-1.5 leading-snug">
-              {calculationResult.isNisabReached
-                ? "Calculated relative to standard Nisab rate of 2.5%."
-                : "Wealth is below the Nisab threshold. Zakat is not due."}
-            </div>
-          </div>
-        </div>
-
-        {/* AI Advisor Insights Panel */}
-        {assets.length > 0 && (
-          <div className="bg-gradient-to-br from-white to-background rounded-2xl border border-border/85 p-6 shadow-sm relative overflow-hidden group hover:shadow-md transition-all duration-300">
-            {/* Top decorative gold/pine gradient line */}
-            <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-primary to-accent" />
-            
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-border/40">
-              <h2 className="text-base font-heading font-bold text-primary flex items-center gap-2">
-                <div className="w-8 h-8 rounded-lg bg-primary/5 flex items-center justify-center text-primary group-hover:scale-105 transition-transform duration-300">
-                  <svg className="w-4 h-4 text-accent" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
-                  </svg>
-                </div>
-                AI Wealth Advisor Insights
-              </h2>
-              {insightsSource && !loadingInsights && (
-                <span className="text-[10px] bg-muted/70 border border-border/40 px-2.5 py-1 rounded-full text-muted-foreground font-medium select-none self-start sm:self-auto">
-                  {insightsSource}
+        {/* Main Grid */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          {/* Column 1 & 2: Wealth Summary & History */}
+          <div className="lg:col-span-2 space-y-8">
+            {/* Wealth Summary Card (Top Priority) */}
+            <div className="mizan-card">
+              {/* Zakat Status Panel (Integrated) */}
+              <div className="flex items-center justify-between border-b border-slate-100 pb-4 mb-6">
+                <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider font-heading">
+                  Wealth Balance Summary
                 </span>
-              )}
+                <div className="flex items-center gap-2">
+                  <span className={`w-2.5 h-2.5 rounded-full ${calculationResult.isNisabReached ? "bg-primary" : "bg-slate-300"}`} />
+                  <span className="text-xs font-bold text-slate-700 uppercase tracking-wider select-none">
+                    {calculationResult.isNisabReached ? "Above Nisab" : "Below Nisab"}
+                  </span>
+                </div>
+              </div>
+
+              {/* Core Zakat Figure */}
+              <div className="space-y-1.5 mb-6">
+                <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider font-heading">
+                  Zakat Due (2.5%)
+                </span>
+                <div className="text-4xl font-extrabold text-primary font-heading tracking-tight">
+                  ${calculationResult.zakatDue.toLocaleString(undefined, { minimumFractionDigits: 2 })}
+                </div>
+              </div>
+
+              {/* Sub-Metrics Grid */}
+              <div className="grid grid-cols-3 gap-4 pt-6 border-t border-slate-100">
+                <div>
+                  <span className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider block mb-1">
+                    Gross Assets
+                  </span>
+                  <strong className="text-base sm:text-lg font-bold text-slate-900">
+                    ${calculationResult.totalAssets.toLocaleString(undefined, { minimumFractionDigits: 2 })}
+                  </strong>
+                </div>
+                <div>
+                  <span className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider block mb-1">
+                    Liabilities
+                  </span>
+                  <strong className="text-base sm:text-lg font-bold text-slate-600">
+                    -${calculationResult.totalLiabilities.toLocaleString(undefined, { minimumFractionDigits: 2 })}
+                  </strong>
+                </div>
+                <div>
+                  <span className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider block mb-1">
+                    Net Zakatable
+                  </span>
+                  <strong className="text-base sm:text-lg font-bold text-slate-900">
+                    ${calculationResult.netZakatable.toLocaleString(undefined, { minimumFractionDigits: 2 })}
+                  </strong>
+                </div>
+              </div>
+
+              {/* Nisab Comparison Indicator */}
+              <div className="mt-6 p-4 rounded-lg bg-slate-50/50 border border-slate-100 flex items-start gap-3">
+                <svg className={`w-4 h-4 mt-0.5 flex-shrink-0 ${calculationResult.isNisabReached ? "text-primary" : "text-slate-400"}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  {calculationResult.isNisabReached ? (
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  ) : (
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  )}
+                </svg>
+                <div className="text-xs text-slate-500 leading-relaxed">
+                  {calculationResult.isNisabReached ? (
+                    <span>
+                      Your net eligible assets of <strong className="text-slate-700">${calculationResult.netZakatable.toLocaleString(undefined, { minimumFractionDigits: 2 })}</strong> exceed the Nisab threshold (<strong className="text-slate-700">${calculationResult.nisabThreshold.toLocaleString(undefined, { minimumFractionDigits: 2 })}</strong> using the {settings.nisabStandard} standard) by <strong className="text-slate-700">{(calculationResult.netZakatable / calculationResult.nisabThreshold).toFixed(1)}x</strong>. Zakat is due.
+                    </span>
+                  ) : (
+                    <span>
+                      Your net eligible assets of <strong className="text-slate-700">${calculationResult.netZakatable.toLocaleString(undefined, { minimumFractionDigits: 2 })}</strong> are below the Nisab threshold (<strong className="text-slate-700">${calculationResult.nisabThreshold.toLocaleString(undefined, { minimumFractionDigits: 2 })}</strong> using the {settings.nisabStandard} standard). Zakat is not due.
+                    </span>
+                  )}
+                </div>
+              </div>
             </div>
 
-            {loadingInsights ? (
-              <div className="space-y-3 py-6">
-                <div className="h-4 bg-muted rounded animate-pulse w-3/4"></div>
-                <div className="h-4 bg-muted rounded animate-pulse w-5/6"></div>
-                <div className="h-4 bg-muted rounded animate-pulse w-2/3"></div>
-              </div>
-            ) : aiInsights ? (
-              <div className="space-y-6 pt-2">
-                {/* Position Summary Banner */}
-                <div className="bg-primary/5 border border-primary/10 p-4 rounded-xl">
-                  <p className="text-xs text-primary font-medium leading-relaxed">
-                    {aiInsights.position}
-                  </p>
-                </div>
-
-                {/* Sub-grid of Optimization and Donations */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  {/* Optimization */}
-                  <div className="p-5 rounded-xl bg-white border border-border/50 shadow-sm space-y-4 hover:border-primary/20 transition-colors duration-200">
-                    <h3 className="text-xs font-semibold text-primary uppercase tracking-wider flex items-center gap-2 font-heading">
-                      <div className="w-5 h-5 rounded bg-primary/10 flex items-center justify-center">
-                        <svg className="w-3 h-3 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
-                        </svg>
-                      </div>
-                      Wealth Optimization
-                    </h3>
-                    {renderInsightList(aiInsights.optimization, "bg-primary")}
-                  </div>
-
-                  {/* Donations */}
-                  <div className="p-5 rounded-xl bg-white border border-border/50 shadow-sm space-y-4 hover:border-accent/20 transition-colors duration-200">
-                    <h3 className="text-xs font-semibold text-accent uppercase tracking-wider flex items-center gap-2 font-heading">
-                      <div className="w-5 h-5 rounded bg-accent/10 flex items-center justify-center">
-                        <svg className="w-3 h-3 text-accent" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 21l-8.244-8.244a5.5 5.5 0 017.778-7.778L12 5.515l.466-.466a5.5 5.5 0 117.778 7.778L12 21z" />
-                        </svg>
-                      </div>
-                      Donation & Zakat Channels
-                    </h3>
-                    {renderInsightList(aiInsights.donations, "bg-accent")}
-                  </div>
-                </div>
-              </div>
-            ) : (
-              <div className="text-center py-6 text-xs text-muted-foreground">
-                No insights could be computed. Please check your asset inputs.
+            {/* Historical Snapshot (If Exists) */}
+            {historyRecords.length > 0 && (
+              <div className="mizan-card">
+                <h3 className="font-h3 text-slate-900 mb-4 font-heading font-bold">Historical Wealth Trend</h3>
+                <TrendChart records={historyRecords} />
               </div>
             )}
           </div>
-        )}
 
-        {/* Nisab Progress and Rate Feed */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-          {/* Nisab Progress Card */}
-          <div className="bg-white rounded-2xl border border-border p-6 shadow-sm lg:col-span-8 space-y-6">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-border/40">
-              <div>
-                <h2 className="text-lg font-heading font-bold text-primary">Nisab Threshold Status</h2>
-                <p className="text-xs text-muted-foreground">
-                  Using the <strong className="text-primary font-bold">{settings.nisabStandard.toUpperCase()}</strong> standard.
-                </p>
-              </div>
-              <div className="flex items-center gap-2">
-                <span className="text-xs font-medium text-muted-foreground">Nisab Limit:</span>
-                <span className="text-sm font-bold text-primary">
-                  ${calculationResult.nisabThreshold.toLocaleString(undefined, { minimumFractionDigits: 2 })}
-                </span>
-              </div>
+          {/* Column 3: Asset Breakdown & Market Rates */}
+          <div className="space-y-8">
+            {/* Asset Breakdown */}
+            <div className="mizan-card">
+              <h3 className="font-h3 text-slate-900 mb-4 font-heading font-bold">Asset Breakdown</h3>
+              {assets.length === 0 ? (
+                <div className="text-center py-6 text-slate-400 text-xs font-semibold">
+                  Add assets in the inventory ledger to see distribution metrics.
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  {Object.entries(assetSummary).map(([type, summary]) => {
+                    const percent = Math.round((summary.value / calculationResult.totalAssets) * 100) || 0;
+                    return (
+                      <div key={type} className="space-y-1.5">
+                        <div className="flex justify-between text-xs font-semibold">
+                          <span className="text-slate-700">{assetTypeNames[type] || type}</span>
+                          <span className="text-slate-500 font-medium">
+                            ${summary.value.toLocaleString(undefined, { maximumFractionDigits: 2 })} ({percent}%)
+                          </span>
+                        </div>
+                        <div className="w-full bg-slate-50 h-1.5 rounded-full overflow-hidden border border-slate-100">
+                          <div className="bg-primary h-full rounded-full transition-all duration-300" style={{ width: `${percent}%` }} />
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
             </div>
 
-            {/* Progress Bar */}
-            <div className="space-y-2">
-              <div className="flex justify-between text-xs font-semibold">
-                <span className="text-muted-foreground">Zakat Wealth Nisab Progress</span>
-                <span className="text-primary">{progressPercent}%</span>
+            {/* Market Rates Card */}
+            <div className="mizan-card space-y-4">
+              <h3 className="font-h3 text-slate-900 font-heading font-bold">Precious Metal Rates</h3>
+              <p className="text-xs text-slate-400 leading-relaxed">
+                Market rates used to determine Nisab limits (updated dynamically).
+              </p>
+              <div className="divide-y divide-slate-100 text-xs">
+                <div className="py-2.5 flex justify-between">
+                  <span className="font-semibold text-slate-600">Gold Rate (24k)</span>
+                  <span className="font-bold text-slate-900">${rates.goldPerGram.toFixed(2)}/g</span>
+                </div>
+                <div className="py-2.5 flex justify-between">
+                  <span className="font-semibold text-slate-600">Silver Rate</span>
+                  <span className="font-bold text-slate-900">${rates.silverPerGram.toFixed(2)}/g</span>
+                </div>
+                <div className="py-2.5 flex justify-between text-slate-400">
+                  <span>Gold Nisab (85g)</span>
+                  <span>${(rates.goldPerGram * 85).toLocaleString(undefined, { maximumFractionDigits: 2 })}</span>
+                </div>
+                <div className="py-2.5 flex justify-between text-slate-400">
+                  <span>Silver Nisab (595g)</span>
+                  <span>${(rates.silverPerGram * 595).toLocaleString(undefined, { maximumFractionDigits: 2 })}</span>
+                </div>
               </div>
-              <div className="w-full bg-muted h-3.5 rounded-full overflow-hidden border border-border/40">
-                <div
-                  className="bg-primary h-full rounded-full transition-all duration-500 shadow-inner"
-                  style={{ width: `${progressPercent}%` }}
-                />
+              <div className="text-[10px] text-slate-400 text-center pt-2">
+                Feed updated on: {new Date(rates.lastUpdated).toLocaleTimeString()}
               </div>
-            </div>
-
-            {/* Status Callout Banner */}
-            <div className={`p-4 rounded-xl border flex items-start gap-3 ${
-              calculationResult.isNisabReached
-                ? "bg-amber-50/60 border-accent/20 text-emerald-950"
-                : "bg-muted/40 border-border/60 text-muted-foreground"
-            }`}>
-              <div className={`w-8 h-8 rounded-full flex items-center justify-center text-white ${
-                calculationResult.isNisabReached ? "bg-accent shadow-sm" : "bg-muted-foreground/60"
-              }`}>
-                {calculationResult.isNisabReached ? (
-                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
-                  </svg>
-                ) : (
-                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-                  </svg>
-                )}
-              </div>
-              <div className="flex-1 text-sm">
-                <strong className={`block font-heading font-bold ${calculationResult.isNisabReached ? "text-primary" : "text-primary/70"}`}>
-                  {calculationResult.isNisabReached ? "Nisab Threshold Met" : "Nisab Threshold Not Reached"}
-                </strong>
-                <p className="mt-0.5 leading-relaxed text-xs">
-                  {calculationResult.isNisabReached
-                    ? "Your net eligible assets exceed the Nisab limit. Zakat is duty-bound at 2.5% of your net zakatable wealth."
-                    : "Your net assets have not reached the Nisab value threshold. Zakat is not mandatory for your current assets."}
-                </p>
-              </div>
-            </div>
-          </div>
-
-          {/* Precious Metals Market Rates Feed */}
-          <div className="bg-white rounded-2xl border border-border p-6 shadow-sm lg:col-span-4 space-y-4">
-            <h2 className="text-base font-heading font-bold text-primary">Precious Metal Rates</h2>
-            <p className="text-xs text-muted-foreground">
-              Market rates used to determine Nisab limits (updated dynamically).
-            </p>
-            <div className="divide-y divide-border/40">
-              <div className="py-2.5 flex justify-between text-sm">
-                <span className="font-semibold text-primary">Gold Rate (24k)</span>
-                <span className="font-bold text-primary">${rates.goldPerGram.toFixed(2)}/g</span>
-              </div>
-              <div className="py-2.5 flex justify-between text-sm">
-                <span className="font-semibold text-primary">Silver Rate</span>
-                <span className="font-bold text-primary">${rates.silverPerGram.toFixed(2)}/g</span>
-              </div>
-              <div className="py-2.5 flex justify-between text-xs text-muted-foreground">
-                <span>Calculated Gold Nisab (85g)</span>
-                <span>${(rates.goldPerGram * 85).toLocaleString(undefined, { maximumFractionDigits: 2 })}</span>
-              </div>
-              <div className="py-2.5 flex justify-between text-xs text-muted-foreground">
-                <span>Calculated Silver Nisab (595g)</span>
-                <span>${(rates.silverPerGram * 595).toLocaleString(undefined, { maximumFractionDigits: 2 })}</span>
-              </div>
-            </div>
-            <div className="text-[10px] text-muted-foreground text-center pt-2">
-              Feed updated on: {new Date(rates.lastUpdated).toLocaleTimeString()}
             </div>
           </div>
         </div>
 
-        {/* Wealth Trend Tracking Charts (localStorage history) */}
-        {historyRecords.length > 0 && (
-          <div className="bg-white rounded-2xl border border-border p-6 shadow-sm space-y-4">
-            <h2 className="text-base font-heading font-bold text-primary">Historical Wealth Trend</h2>
-            <TrendChart records={historyRecords} />
-          </div>
-        )}
+        {/* Collapsible Secondary Analysis & Tools */}
+        <div className="space-y-4 pt-6 border-t border-slate-200/50">
+          <div className="flex flex-col gap-4">
+            {/* AI Insights Accordion */}
+            {assets.length > 0 && (
+              <div className="border border-slate-200/60 rounded-xl bg-white overflow-hidden">
+                <button
+                  onClick={() => setShowAI(!showAI)}
+                  className="w-full flex items-center justify-between px-6 py-4 text-left hover:bg-slate-50/50 transition-colors"
+                >
+                  <div className="flex items-center gap-2">
+                    <svg className="w-5 h-5 text-accent" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+                    </svg>
+                    <span className="font-heading font-bold text-slate-800 text-sm">AI Advisor Insights</span>
+                  </div>
+                  <svg className={`w-5 h-5 text-slate-400 transition-transform duration-200 ${showAI ? "rotate-180" : ""}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                  </svg>
+                </button>
+                
+                {showAI && (
+                  <div className="px-6 pb-6 pt-2 border-t border-slate-100 animate-fade-in">
+                    {insightsSource && !loadingInsights && (
+                      <div className="flex justify-end mb-4 pt-4">
+                        <span className="text-[10px] bg-slate-100 border border-slate-200/60 px-2.5 py-1 rounded-full text-slate-500 font-semibold uppercase tracking-wider select-none">
+                          {insightsSource}
+                        </span>
+                      </div>
+                    )}
 
-        {/* Growth Projection Modeler Section */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-          {/* Growth Settings Card */}
-          <div className="bg-white rounded-2xl border border-border p-6 shadow-sm lg:col-span-4 space-y-5">
-            <h2 className="text-base font-heading font-bold text-primary">Growth Calculator</h2>
-            <p className="text-xs text-muted-foreground">
-              Simulate investment compounds with annual Zakat/Purification rates.
-            </p>
-            <div className="space-y-4 text-sm">
-              <div>
-                <label className="block text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-1">
-                  Starting Balance ($)
-                </label>
-                <input
-                  type="number"
-                  value={growthPrincipal}
-                  onChange={(e) => setGrowthPrincipal(e.target.value)}
-                  className="w-full rounded-xl border border-border bg-background px-3.5 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-primary"
-                />
+                    {loadingInsights ? (
+                      <div className="space-y-3 py-6">
+                        <div className="h-4 bg-slate-100 rounded animate-pulse w-3/4"></div>
+                        <div className="h-4 bg-slate-100 rounded animate-pulse w-5/6"></div>
+                        <div className="h-4 bg-slate-100 rounded animate-pulse w-2/3"></div>
+                      </div>
+                    ) : aiInsights ? (
+                      <div className="space-y-6 pt-2">
+                        {/* Position Summary */}
+                        <div className="bg-slate-50 border border-slate-200/60 p-4 rounded-lg">
+                          <p className="text-xs text-slate-700 font-medium leading-relaxed">
+                            {aiInsights.position}
+                          </p>
+                        </div>
+
+                        {/* Optimization & Channels Sub-grid */}
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                          {/* Optimization */}
+                          <div className="p-5 rounded-lg bg-slate-50/50 border border-slate-200/60 space-y-4">
+                            <h3 className="text-xs font-semibold text-slate-900 uppercase tracking-wider flex items-center gap-2 font-heading">
+                              <span className="w-1.5 h-1.5 rounded-full bg-primary" />
+                              Wealth Optimization
+                            </h3>
+                            {renderInsightList(aiInsights.optimization, "bg-primary")}
+                          </div>
+
+                          {/* Donations */}
+                          <div className="p-5 rounded-lg bg-slate-50/50 border border-slate-200/60 space-y-4">
+                            <h3 className="text-xs font-semibold text-slate-900 uppercase tracking-wider flex items-center gap-2 font-heading">
+                              <span className="w-1.5 h-1.5 rounded-full bg-accent" />
+                              Donation & Zakat Channels
+                            </h3>
+                            {renderInsightList(aiInsights.donations, "bg-accent")}
+                          </div>
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="text-center py-6 text-xs text-slate-500">
+                        No insights could be computed. Please check your asset inputs.
+                      </div>
+                    )}
+                  </div>
+                )}
               </div>
+            )}
 
-              <div>
-                <label className="block text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-1">
-                  Annual Contribution ($)
-                </label>
-                <input
-                  type="number"
-                  value={annualContribution}
-                  onChange={(e) => setAnnualContribution(e.target.value)}
-                  className="w-full rounded-xl border border-border bg-background px-3.5 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-primary"
-                />
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-1">
-                    Expected Return (%)
-                  </label>
-                  <input
-                    type="number"
-                    value={growthExpectedReturn}
-                    onChange={(e) => setGrowthExpectedReturn(e.target.value)}
-                    className="w-full rounded-xl border border-border bg-background px-3.5 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-primary"
-                  />
+            {/* Growth Modeler Accordion */}
+            <div className="border border-slate-200/60 rounded-xl bg-white overflow-hidden">
+              <button
+                onClick={() => setShowGrowth(!showGrowth)}
+                className="w-full flex items-center justify-between px-6 py-4 text-left hover:bg-slate-50/50 transition-colors"
+              >
+                <div className="flex items-center gap-2">
+                  <svg className="w-5 h-5 text-slate-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+                  </svg>
+                  <span className="font-heading font-bold text-slate-800 text-sm">Compound Growth Simulator</span>
                 </div>
-                <div>
-                  <label className="block text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-1">
-                    Duration (Years)
-                  </label>
-                  <input
-                    type="number"
-                    min="1"
-                    max="30"
-                    value={growthDuration}
-                    onChange={(e) => setGrowthDuration(e.target.value)}
-                    className="w-full rounded-xl border border-border bg-background px-3.5 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-primary"
-                  />
-                </div>
-              </div>
+                <svg className={`w-5 h-5 text-slate-400 transition-transform duration-200 ${showGrowth ? "rotate-180" : ""}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                </svg>
+              </button>
 
-              <div className="space-y-2 pt-2 border-t border-border/40">
-                <label className="flex items-center gap-2 cursor-pointer">
-                  <input
-                    type="checkbox"
-                    checked={deductZakat}
-                    onChange={() => setDeductZakat(!deductZakat)}
-                    className="rounded text-primary focus:ring-primary"
-                  />
-                  <span className="text-xs text-primary font-semibold">Deduct Annual Zakat (2.5%)</span>
-                </label>
+              {showGrowth && (
+                <div className="px-6 pb-6 pt-4 border-t border-slate-100 space-y-6 animate-fade-in">
+                  <div className="grid grid-cols-1 md:grid-cols-12 gap-8">
+                    {/* Settings Panel */}
+                    <div className="md:col-span-4 space-y-4 text-xs">
+                      <div>
+                        <label className="block text-[10px] font-semibold text-slate-400 uppercase tracking-wider mb-1">
+                          Starting Balance ($)
+                        </label>
+                        <input
+                          type="number"
+                          value={growthPrincipal}
+                          onChange={(e) => setGrowthPrincipal(e.target.value)}
+                          className="mizan-input"
+                        />
+                      </div>
 
-                <label className="flex items-center gap-2 cursor-pointer">
-                  <input
-                    type="checkbox"
-                    checked={deductPurification}
-                    onChange={() => setDeductPurification(!deductPurification)}
-                    className="rounded text-primary focus:ring-primary"
-                  />
-                  <span className="text-xs text-primary font-semibold">Deduct Dividend Purification</span>
-                </label>
-              </div>
+                      <div>
+                        <label className="block text-[10px] font-semibold text-slate-400 uppercase tracking-wider mb-1">
+                          Annual Contribution ($)
+                        </label>
+                        <input
+                          type="number"
+                          value={annualContribution}
+                          onChange={(e) => setAnnualContribution(e.target.value)}
+                          className="mizan-input"
+                        />
+                      </div>
 
-              {deductPurification && (
-                <div className="animate-fade-in">
-                  <label className="block text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-1">
-                    Purification Rate (%)
-                  </label>
-                  <input
-                    type="number"
-                    step="any"
-                    value={purificationRate}
-                    onChange={(e) => setPurificationRate(e.target.value)}
-                    className="w-full rounded-xl border border-border bg-background px-3.5 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-primary"
-                  />
+                      <div className="grid grid-cols-2 gap-4">
+                        <div>
+                          <label className="block text-[10px] font-semibold text-slate-400 uppercase tracking-wider mb-1">
+                            Return (%)
+                          </label>
+                          <input
+                            type="number"
+                            value={growthExpectedReturn}
+                            onChange={(e) => setGrowthExpectedReturn(e.target.value)}
+                            className="mizan-input"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-[10px] font-semibold text-slate-400 uppercase tracking-wider mb-1">
+                            Duration (Years)
+                          </label>
+                          <input
+                            type="number"
+                            min="1"
+                            max="30"
+                            value={growthDuration}
+                            onChange={(e) => setGrowthDuration(e.target.value)}
+                            className="mizan-input"
+                          />
+                        </div>
+                      </div>
+
+                      <div className="space-y-2.5 pt-3 border-t border-slate-100">
+                        <label className="flex items-center gap-2 cursor-pointer select-none">
+                          <input
+                            type="checkbox"
+                            checked={deductZakat}
+                            onChange={() => setDeductZakat(!deductZakat)}
+                            className="rounded text-primary focus:ring-primary h-4 w-4 border-slate-300"
+                          />
+                          <span className="text-[11px] text-slate-600 font-semibold">Deduct Annual Zakat (2.5%)</span>
+                        </label>
+
+                        <label className="flex items-center gap-2 cursor-pointer select-none">
+                          <input
+                            type="checkbox"
+                            checked={deductPurification}
+                            onChange={() => setDeductPurification(!deductPurification)}
+                            className="rounded text-primary focus:ring-primary h-4 w-4 border-slate-300"
+                          />
+                          <span className="text-[11px] text-slate-600 font-semibold">Deduct Dividend Purification</span>
+                        </label>
+                      </div>
+
+                      {deductPurification && (
+                        <div className="animate-fade-in">
+                          <label className="block text-[10px] font-semibold text-slate-400 uppercase tracking-wider mb-1">
+                            Purification Rate (%)
+                          </label>
+                          <input
+                            type="number"
+                            step="any"
+                            value={purificationRate}
+                            onChange={(e) => setPurificationRate(e.target.value)}
+                            className="mizan-input"
+                          />
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Chart panel */}
+                    <div className="md:col-span-8 space-y-6">
+                      <GrowthChart data={growthData} />
+
+                      {/* Simulated Summary Table */}
+                      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-xs pt-4 border-t border-slate-100">
+                        <div>
+                          <span className="text-slate-400 block font-medium">Contributions</span>
+                          <strong className="text-slate-900 text-sm font-bold">${Math.round(totalSimulatedContributions).toLocaleString()}</strong>
+                        </div>
+                        <div>
+                          <span className="text-slate-400 block font-medium">Investment Gains</span>
+                          <strong className="text-slate-900 text-sm font-bold">${Math.round(totalSimulatedGains).toLocaleString()}</strong>
+                        </div>
+                        <div>
+                          <span className="text-accent block font-semibold">Zakat Generosity</span>
+                          <strong className="text-slate-900 text-sm font-bold">${Math.round(totalSimulatedZakat).toLocaleString()}</strong>
+                        </div>
+                        <div>
+                          <span className="text-slate-500 block font-bold">Final Balance</span>
+                          <strong className="text-slate-900 text-sm font-extrabold">${Math.round(finalBalance).toLocaleString()}</strong>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               )}
             </div>
           </div>
-
-          {/* Growth Chart View */}
-          <div className="bg-white rounded-2xl border border-border p-6 shadow-sm lg:col-span-8 flex flex-col justify-between space-y-6">
-            <h2 className="text-base font-heading font-bold text-primary">Halal Net Yield Projections</h2>
-            <GrowthChart data={growthData} />
-
-            {/* Simulated summary */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-xs pt-4 border-t border-border/40">
-              <div>
-                <span className="text-muted-foreground block">Contributions</span>
-                <strong className="text-primary text-sm font-bold">${Math.round(totalSimulatedContributions).toLocaleString()}</strong>
-              </div>
-              <div>
-                <span className="text-muted-foreground block">Investment Gains</span>
-                <strong className="text-primary text-sm font-bold">${Math.round(totalSimulatedGains).toLocaleString()}</strong>
-              </div>
-              <div>
-                <span className="text-muted-foreground block text-accent">Zakat Generosity</span>
-                <strong className="text-primary text-sm font-bold">${Math.round(totalSimulatedZakat).toLocaleString()}</strong>
-              </div>
-              <div>
-                <span className="text-muted-foreground block">Final Balance</span>
-                <strong className="text-emerald-800 text-sm font-extrabold">${Math.round(finalBalance).toLocaleString()}</strong>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Asset Breakdown Chart Grid */}
-        <div className="bg-white rounded-2xl border border-border p-6 shadow-sm">
-          <h2 className="text-base font-heading font-bold text-primary mb-4">Asset Class Distribution</h2>
-          {assets.length === 0 ? (
-            <div className="text-center py-6 text-muted-foreground text-sm">
-              Add assets in the inventory ledger to see distribution metrics.
-            </div>
-          ) : (
-            <div className="space-y-4">
-              {Object.entries(assetSummary).map(([type, summary]) => {
-                const percent = Math.round((summary.value / calculationResult.totalAssets) * 100) || 0;
-                return (
-                  <div key={type} className="space-y-1.5">
-                    <div className="flex justify-between text-xs">
-                      <span className="font-bold text-primary">{assetTypeNames[type] || type}</span>
-                      <span className="text-muted-foreground">
-                        ${summary.value.toLocaleString(undefined, { maximumFractionDigits: 2 })} ({percent}%)
-                      </span>
-                    </div>
-                    <div className="w-full bg-muted h-2 rounded-full overflow-hidden">
-                      <div className="bg-accent h-full rounded-full" style={{ width: `${percent}%` }} />
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          )}
         </div>
       </div>
     </DashboardShell>

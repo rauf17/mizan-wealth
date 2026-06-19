@@ -76,17 +76,17 @@ export default function DashboardShell({ children }: DashboardShellProps) {
         </div>
 
         {/* Sidebar Nav */}
-        <nav className="flex-1 px-4 py-6 space-y-1">
+        <nav className="flex-1 pr-4 py-6 space-y-1">
           {navigationItems.map((item) => {
             const isActive = pathname === item.href;
             return (
               <Link
                 key={item.href}
                 href={item.href}
-                className={`flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-semibold transition-all duration-150 ${
+                className={`flex items-center gap-3 pl-5 pr-4 py-3 rounded-r-lg text-sm font-semibold transition-all duration-150 border-l-2 ${
                   isActive
-                    ? "bg-primary text-primary-foreground shadow-sm"
-                    : "text-slate-500 hover:text-slate-900 hover:bg-slate-100/80"
+                    ? "border-primary bg-slate-50 text-primary"
+                    : "border-transparent text-slate-500 hover:text-slate-900 hover:bg-slate-100/80"
                 }`}
               >
                 {item.icon}
@@ -97,13 +97,13 @@ export default function DashboardShell({ children }: DashboardShellProps) {
         </nav>
 
         {/* Sidebar Footer */}
-        <div className="p-4 border-t border-slate-100">
-          <div className="p-3 rounded-lg bg-slate-50 border border-slate-200/60 text-center">
+        <div className="p-6 border-t border-slate-100">
+          <div className="text-center">
             <span className="text-[10px] font-semibold text-accent uppercase tracking-wider block mb-1 font-heading">
               Secure Local Storage
             </span>
-            <p className="text-[11px] text-slate-500 leading-normal">
-              Calculations are processed 100% locally.
+            <p className="text-[11px] text-slate-400 leading-relaxed">
+              Calculations are processed 100% locally on your device.
             </p>
           </div>
         </div>
@@ -164,10 +164,10 @@ export default function DashboardShell({ children }: DashboardShellProps) {
                     key={item.href}
                     href={item.href}
                     onClick={() => setIsMobileMenuOpen(false)}
-                    className={`flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-semibold transition-all duration-150 ${
+                    className={`flex items-center gap-3 pl-4 pr-3 py-3 rounded-r-lg text-sm font-semibold transition-all duration-150 border-l-2 ${
                       isActive
-                        ? "bg-primary text-primary-foreground shadow-sm"
-                        : "text-slate-500 hover:text-slate-900 hover:bg-slate-100/80"
+                        ? "border-primary bg-slate-50 text-primary"
+                        : "border-transparent text-slate-500 hover:text-slate-900 hover:bg-slate-100/80"
                     }`}
                   >
                     {item.icon}
@@ -176,12 +176,12 @@ export default function DashboardShell({ children }: DashboardShellProps) {
                 );
               })}
 
-              <div className="absolute bottom-6 left-6 right-6 p-4 rounded-lg bg-slate-50 border border-slate-200/60 text-center">
+              <div className="absolute bottom-8 left-6 right-6 text-center">
                 <span className="text-[10px] font-semibold text-accent uppercase tracking-wider block mb-1 font-heading">
                   Secure Local Storage
                 </span>
-                <p className="text-[11px] text-slate-500">
-                  Processed completely on-device.
+                <p className="text-[11px] text-slate-400 leading-relaxed">
+                  Processed 100% locally on your device.
                 </p>
               </div>
             </nav>

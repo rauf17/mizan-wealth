@@ -67,14 +67,14 @@ export default function TrendChart({ records }: TrendChartProps) {
   }
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-2">
       {/* SVG Viewport */}
-      <div className="w-full bg-white border border-border p-4 rounded-2xl shadow-sm overflow-hidden">
+      <div className="w-full bg-white overflow-hidden">
         <svg viewBox={`0 0 ${width} ${height}`} className="w-full h-auto overflow-visible">
           <defs>
             {/* Soft gradient fill below area path */}
             <linearGradient id="areaGradient" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="#0F4C4C" stopOpacity="0.12" />
+              <stop offset="0%" stopColor="#0F4C4C" stopOpacity="0.08" />
               <stop offset="100%" stopColor="#0F4C4C" stopOpacity="0.00" />
             </linearGradient>
           </defs>
@@ -85,7 +85,7 @@ export default function TrendChart({ records }: TrendChartProps) {
             y1={paddingY}
             x2={width - paddingX}
             y2={paddingY}
-            stroke="#E2E2D5"
+            stroke="#F1F5F9"
             strokeWidth="1"
             strokeDasharray="4 4"
           />
@@ -94,7 +94,7 @@ export default function TrendChart({ records }: TrendChartProps) {
             y1={height / 2}
             x2={width - paddingX}
             y2={height / 2}
-            stroke="#E2E2D5"
+            stroke="#F1F5F9"
             strokeWidth="1"
             strokeDasharray="4 4"
           />
@@ -103,35 +103,35 @@ export default function TrendChart({ records }: TrendChartProps) {
             y1={height - paddingY}
             x2={width - paddingX}
             y2={height - paddingY}
-            stroke="#E2E2D5"
+            stroke="#E2E8F0"
             strokeWidth="1"
           />
 
           {/* Y Axis labels */}
           <text
-            x={paddingX - 10}
-            y={paddingY + 4}
+            x={paddingX - 12}
+            y={paddingY + 3}
             textAnchor="end"
-            fontSize="10"
-            className="fill-muted-foreground font-semibold"
+            fontSize="9"
+            className="fill-slate-400 font-semibold font-sans"
           >
             ${Math.round(maxVal).toLocaleString()}
           </text>
           <text
-            x={paddingX - 10}
-            y={height / 2 + 4}
+            x={paddingX - 12}
+            y={height / 2 + 3}
             textAnchor="end"
-            fontSize="10"
-            className="fill-muted-foreground font-semibold"
+            fontSize="9"
+            className="fill-slate-400 font-semibold font-sans"
           >
             ${Math.round(minVal + rangeY / 2).toLocaleString()}
           </text>
           <text
-            x={paddingX - 10}
-            y={height - paddingY + 4}
+            x={paddingX - 12}
+            y={height - paddingY + 3}
             textAnchor="end"
-            fontSize="10"
-            className="fill-muted-foreground font-semibold"
+            fontSize="9"
+            className="fill-slate-400 font-semibold font-sans"
           >
             ${Math.round(minVal).toLocaleString()}
           </text>
@@ -141,7 +141,7 @@ export default function TrendChart({ records }: TrendChartProps) {
 
           {/* Line Path */}
           {points.length > 1 && (
-            <path d={linePath} fill="none" stroke="#0F4C4C" strokeWidth="2.5" strokeLinecap="round" />
+            <path d={linePath} fill="none" stroke="#0F4C4C" strokeWidth="2" strokeLinecap="round" />
           )}
 
           {points.map((pt) => {
