@@ -1,6 +1,7 @@
 import Link from "next/link";
 import Button from "../components/Button";
 import Card from "../components/Card";
+import Logo from "../components/Logo";
 
 export default function Home() {
   return (
@@ -8,14 +9,7 @@ export default function Home() {
       {/* Header */}
       <header className="border-b border-slate-200/80 bg-white sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
-          <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center font-heading font-bold text-white shadow-sm">
-              M
-            </div>
-            <span className="font-heading font-bold text-base tracking-wider text-primary">
-              MIZAN WEALTH
-            </span>
-          </div>
+          <Logo variant="full" />
           <div className="flex items-center gap-4">
             <span className="text-[10px] font-bold px-2.5 py-1 rounded-full bg-slate-100 text-slate-600 border border-slate-200/60 select-none uppercase tracking-wide">
               Local-First

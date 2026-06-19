@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import Logo from "./Logo";
 
 interface DashboardShellProps {
   children: React.ReactNode;
@@ -66,13 +67,8 @@ export default function DashboardShell({ children }: DashboardShellProps) {
       {/* Desktop Sidebar */}
       <aside className="hidden md:flex flex-col w-64 bg-white border-r border-slate-200/80 sticky top-0 h-screen">
         {/* Sidebar Header */}
-        <div className="h-16 flex items-center gap-2.5 px-6 border-b border-slate-100">
-          <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center font-heading font-bold text-white shadow-sm select-none">
-            M
-          </div>
-          <span className="font-heading font-bold text-sm tracking-wider text-primary select-none">
-            MIZAN WEALTH
-          </span>
+        <div className="h-16 flex items-center px-6 border-b border-slate-100">
+          <Logo variant="full" />
         </div>
 
         {/* Sidebar Nav */}
@@ -113,14 +109,7 @@ export default function DashboardShell({ children }: DashboardShellProps) {
       <div className="flex-1 flex flex-col min-w-0">
         {/* Mobile Header */}
         <header className="md:hidden h-16 bg-white border-b border-slate-200/80 px-6 flex items-center justify-between sticky top-0 z-40">
-          <div className="flex items-center gap-2">
-            <div className="w-7 h-7 rounded-lg bg-primary flex items-center justify-center font-heading font-bold text-white shadow-sm select-none">
-              M
-            </div>
-            <span className="font-heading font-bold text-sm tracking-wider text-primary select-none">
-              MIZAN WEALTH
-            </span>
-          </div>
+          <Logo variant="full" />
 
           <button
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
@@ -148,13 +137,8 @@ export default function DashboardShell({ children }: DashboardShellProps) {
 
             {/* Content Drawer */}
             <nav className="relative flex flex-col w-4/5 max-w-sm bg-white h-full p-6 shadow-xl space-y-1.5 border-r border-slate-200 animate-slide-in">
-              <div className="flex items-center gap-2.5 mb-6 pb-4 border-b border-slate-100">
-                <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center font-heading font-bold text-white">
-                  M
-                </div>
-                <span className="font-heading font-bold text-base tracking-wider text-primary">
-                  MIZAN WEALTH
-                </span>
+              <div className="flex items-center mb-6 pb-4 border-b border-slate-100">
+                <Logo variant="full" />
               </div>
 
               {navigationItems.map((item) => {
