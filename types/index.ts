@@ -111,3 +111,20 @@ export interface InheritanceCalculationResult {
   unallocatedResidue: number;
   calculationDate: string;
 }
+
+export interface ZakatLiability {
+  id: string;
+  name: string;
+  value: number;
+  notes?: string;
+  createdAt: string;
+}
+
+export interface ZakatRecord {
+  id: string;
+  assets: ZakatAsset[];
+  liabilities: ZakatLiability[];
+  result: ZakatCalculationResult;
+  notes?: string;
+  createdAt: string;
+}

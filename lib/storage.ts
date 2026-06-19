@@ -73,3 +73,51 @@ export function clearAppStorage(): void {
     console.error("Error clearing application storage:", error);
   }
 }
+
+/**
+ * Save data to localStorage with safe JSON serialization (Prompt 5 requirement).
+ */
+export function saveData<T>(key: string, value: T): void {
+  setStorageItem(key, value);
+}
+
+/**
+ * Get data from localStorage with safe JSON parsing (Prompt 5 requirement).
+ */
+export function getData<T>(key: string): T | null;
+export function getData<T>(key: string, defaultValue: T): T;
+export function getData<T>(key: string, defaultValue?: T): T | null {
+  if (defaultValue !== undefined) {
+    return getStorageItem<T>(key, defaultValue);
+  }
+  if (!isClient()) return null;
+  try {
+    const item = window.localStorage.getItem(key);
+    return item ? (JSON.parse(item) as T) : null;
+  } catch (error) {
+    console.error(`Safe storage read error for "${key}":`, error);
+    return null;
+  }
+}
+
+/**
+ * Update existing data in localStorage by performing a partial object merge (Prompt 5 requirement).
+ */
+export function updateData<T extends object>(key: string, partialUpdate: Partial<T>): void {
+  if (!isClient()) return;
+  try {
+    const existing = getData<T>(key);
+    const updated = existing ? { ...existing, ...partialUpdate } : (partialUpdate as T);
+    saveData(key, updated);
+  } catch (error) {
+    console.error(`Safe storage update error for "${key}":`, error);
+  }
+}
+
+/**
+ * Clear an item from localStorage (Prompt 5 requirement).
+ */
+export function clearData(key: string): void {
+  removeStorageItem(key);
+}
+
