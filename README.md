@@ -1,36 +1,93 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Mizan Wealth
 
-## Getting Started
+Mizan Wealth is a premium, local-first Shariah-compliant financial planning and wealth management web application. Designed around Islamic finance principles, Mizan allows users to manage their assets, calculate Zakat obligations, analyze stock compliance, simulate net halal compound yields, and model inheritance distribution legal shares—all with complete privacy as all calculations and records are processed and stored 100% locally in the browser.
 
-First, run the development server:
+---
 
+## 🌟 Key Features
+
+### 1. Zakat Calculation Engine
+* **Nisab Threshold Calculations**: Automatically determines the Nisab limit using live gold (85g standard) or silver (595g standard) spot prices.
+* **Asset Classification**: Computes net eligible wealth across cash, precious metals, stock portfolios, real estate, and business trade inventory.
+* **Hawl Rule Verification**: Safely checks the 354-day lunar holding constraint based on asset acquisition dates, with optional user overrides.
+* **Deduction of Liabilities**: Subtracts short-term debts and bills before applying the standard Zakat rate:
+  $$\text{Zakat Due} = (\text{Total Eligible Assets} - \text{Liabilities}) \times 2.5\%$$
+
+### 2. Stock Compliance & Purification Screener
+* **Financial Ratio Screening**: Evaluates stock tickers against strict Shariah thresholds (debt ratio < 33%, liquid cash ratio < 33%, non-compliant interest ratio < 5%).
+* **Dividend Purification**: Computes the exact amount of dividend income to donate for purification based on compliance reports.
+
+### 3. Growth Projection Modeler
+* **Halal Compound Simulation**: Compounds principal balances and annual additions.
+* **Integrated Deductions**: Simulates long-term net growth trends by optionally deducting annual Zakat (2.5%) and dividend purification ratios (e.g., 0.5%) at each compound interval.
+
+### 4. Islamic Inheritance Modeler
+* **Estate Distribution Calculations**: Deducts funeral expenses, debts, and bequest wills.
+* **Juridical Heirs Allocation**: Computes legal fractions (e.g., $1/8$, $1/6$, $2/3$, or residuary shares) for spouses, parents, siblings, and children based on standard Islamic inheritance law.
+
+### 5. AI Advisor Insights
+* **Gemini AI Integration**: Analyzes assets and outputs tailored recommendations for Shariah positioning, wealth rebalancing, and charity/Sadaqah distribution.
+* **Local Heuristics Fallback**: Runs a local rule engine that generates identical structured JSON guidelines offline if API keys are not supplied.
+
+### 6. Reports & Export
+* Generates formatted PDFs for Zakat compliance certificates.
+* Exports detailed Excel spreadsheets summarizing asset classification and ledgers.
+
+---
+
+## 🛠️ Technology Stack
+* **Framework**: [Next.js 14](https://nextjs.org/) (App Router, Turbopack enabled)
+* **Language**: [TypeScript](https://www.typescriptlang.org/)
+* **Styling**: [Tailwind CSS](https://tailwindcss.com/)
+* **Database/Backend**: None (Local Storage only)
+* **Testing**: [Vitest](https://vitest.dev/) & [React Testing Library](https://testing-library.com/)
+
+---
+
+## ⚙️ Environment Configuration
+
+Copy the template environment variables:
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+cp .env.example .env.local
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Define the keys in `.env.local`:
+* `METAL_PRICE_API_KEY`: API key for fetching dynamic spot rates.
+* `GEMINI_API_KEY` or `GOOGLE_API_KEY`: Google Gemini API key to power the AI advisor.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+---
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## 🚀 Getting Started
 
-## Learn More
+### 1. Installation
+Install the project dependencies:
+```bash
+npm install
+```
 
-To learn more about Next.js, take a look at the following resources:
+### 2. Development Server
+Start the development server with Turbopack:
+```bash
+npm run dev
+```
+Open [http://localhost:3000](http://localhost:3000) in your browser.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### 3. Testing
+Execute the unit testing suites:
+```bash
+npm run test
+```
+To run tests in interactive watch mode:
+```bash
+npm run test:watch
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+### 4. Build for Production
+Create an optimized production bundle:
+```bash
+npm run build
+```
+Verify the build compiles successfully and starts:
+```bash
+npm run start
+```
