@@ -34,7 +34,7 @@ export default function Home() {
           Modern Halal Wealth Management
         </div>
 
-        <h1 className="font-h1 max-w-4xl leading-tight mb-6">
+        <h1 className="font-hero max-w-4xl mb-6">
           Balance Your Wealth with Islamic Principles
         </h1>
 

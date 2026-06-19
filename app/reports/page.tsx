@@ -86,7 +86,7 @@ export default function ReportsPage() {
       <div className="space-y-8 max-w-5xl mx-auto">
         {/* Header */}
         <div>
-          <h1 className="font-h1 text-primary">
+          <h1 className="font-h1">
             Financial Statement Reports
           </h1>
           <p className="text-slate-500 mt-1 text-sm leading-relaxed">

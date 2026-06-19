@@ -255,7 +255,7 @@ export default function DashboardPage() {
         {/* Top Header */}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-2">
           <div>
-            <h1 className="font-h1 text-primary">
+            <h1 className="font-h1">
               Mizan Position Overview
             </h1>
             <p className="text-slate-500 mt-1 text-sm leading-relaxed">
@@ -312,7 +312,7 @@ export default function DashboardPage() {
                 <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider font-heading">
                   Zakat Due (2.5%)
                 </span>
-                <div className="text-4xl font-extrabold text-primary font-heading tracking-tight">
+                <div className="text-5xl font-extrabold text-primary font-heading tracking-tight">
                   ${calculationResult.zakatDue.toLocaleString(undefined, { minimumFractionDigits: 2 })}
                 </div>
               </div>

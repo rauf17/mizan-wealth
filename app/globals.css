@@ -42,6 +42,10 @@ body {
 
 @layer components {
   /* Typography Scale */
+  .font-hero {
+    @apply font-heading font-bold text-slate-900 text-4xl md:text-5xl lg:text-6xl tracking-tight leading-tight;
+  }
+
   .font-h1 {
     @apply font-heading font-bold text-slate-900 text-2xl md:text-3xl tracking-tight;
   }
