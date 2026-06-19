@@ -1,10 +1,12 @@
 "use client";
 
 import React, { useState, useEffect, useCallback } from "react";
-import Link from "next/link";
 import DashboardShell from "../../components/DashboardShell";
 import TrendChart from "../../components/TrendChart";
 import GrowthChart from "../../components/GrowthChart";
+import Button from "../../components/Button";
+import Card from "../../components/Card";
+import Input from "../../components/Input";
 import { getData, saveData, STORAGE_KEYS } from "../../lib/storage";
 import { calculateZakat, getAssetSummary } from "../../lib/zakatEngine";
 import { fetchMetalRates, DEFAULT_METAL_RATES } from "../../lib/api";
@@ -261,19 +263,18 @@ export default function DashboardPage() {
             </p>
           </div>
           <div className="flex gap-3">
-            <button
+            <Button
               onClick={handleSaveSnapshot}
               disabled={assets.length === 0}
-              className="btn-primary"
             >
               Save Declaration
-            </button>
-            <Link
+            </Button>
+            <Button
               href="/assets"
-              className="btn-secondary"
+              variant="secondary"
             >
               Manage Ledger
-            </Link>
+            </Button>
           </div>
         </div>
 
@@ -292,7 +293,7 @@ export default function DashboardPage() {
           {/* Column 1 & 2: Wealth Summary & History */}
           <div className="lg:col-span-2 space-y-8">
             {/* Wealth Summary Card (Top Priority) */}
-            <div className="mizan-card">
+            <Card>
               {/* Zakat Status Panel (Integrated) */}
               <div className="flex items-center justify-between border-b border-slate-100 pb-4 mb-6">
                 <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider font-heading">
@@ -365,21 +366,21 @@ export default function DashboardPage() {
                   )}
                 </div>
               </div>
-            </div>
+            </Card>
 
             {/* Historical Snapshot (If Exists) */}
             {historyRecords.length > 0 && (
-              <div className="mizan-card">
+              <Card>
                 <h3 className="font-h3 text-slate-900 mb-4 font-heading font-bold">Historical Wealth Trend</h3>
                 <TrendChart records={historyRecords} />
-              </div>
+              </Card>
             )}
           </div>
 
           {/* Column 3: Asset Breakdown & Market Rates */}
           <div className="space-y-8">
             {/* Asset Breakdown */}
-            <div className="mizan-card">
+            <Card>
               <h3 className="font-h3 text-slate-900 mb-4 font-heading font-bold">Asset Breakdown</h3>
               {assets.length === 0 ? (
                 <div className="text-center py-6 text-slate-400 text-xs font-semibold">
@@ -405,10 +406,10 @@ export default function DashboardPage() {
                   })}
                 </div>
               )}
-            </div>
+            </Card>
 
             {/* Market Rates Card */}
-            <div className="mizan-card space-y-4">
+            <Card className="space-y-4">
               <h3 className="font-h3 text-slate-900 font-heading font-bold">Precious Metal Rates</h3>
               <p className="text-xs text-slate-400 leading-relaxed">
                 Market rates used to determine Nisab limits (updated dynamically).
@@ -434,7 +435,7 @@ export default function DashboardPage() {
               <div className="text-[10px] text-slate-400 text-center pt-2">
                 Feed updated on: {new Date(rates.lastUpdated).toLocaleTimeString()}
               </div>
-            </div>
+            </Card>
           </div>
         </div>
 
@@ -537,55 +538,35 @@ export default function DashboardPage() {
                   <div className="grid grid-cols-1 md:grid-cols-12 gap-8">
                     {/* Settings Panel */}
                     <div className="md:col-span-4 space-y-4 text-xs">
-                      <div>
-                        <label className="block text-[10px] font-semibold text-slate-400 uppercase tracking-wider mb-1">
-                          Starting Balance ($)
-                        </label>
-                        <input
-                          type="number"
-                          value={growthPrincipal}
-                          onChange={(e) => setGrowthPrincipal(e.target.value)}
-                          className="mizan-input"
-                        />
-                      </div>
+                      <Input
+                        type="number"
+                        label="Starting Balance ($)"
+                        value={growthPrincipal}
+                        onChange={(e) => setGrowthPrincipal(e.target.value)}
+                      />
 
-                      <div>
-                        <label className="block text-[10px] font-semibold text-slate-400 uppercase tracking-wider mb-1">
-                          Annual Contribution ($)
-                        </label>
-                        <input
-                          type="number"
-                          value={annualContribution}
-                          onChange={(e) => setAnnualContribution(e.target.value)}
-                          className="mizan-input"
-                        />
-                      </div>
+                      <Input
+                        type="number"
+                        label="Annual Contribution ($)"
+                        value={annualContribution}
+                        onChange={(e) => setAnnualContribution(e.target.value)}
+                      />
 
                       <div className="grid grid-cols-2 gap-4">
-                        <div>
-                          <label className="block text-[10px] font-semibold text-slate-400 uppercase tracking-wider mb-1">
-                            Return (%)
-                          </label>
-                          <input
-                            type="number"
-                            value={growthExpectedReturn}
-                            onChange={(e) => setGrowthExpectedReturn(e.target.value)}
-                            className="mizan-input"
-                          />
-                        </div>
-                        <div>
-                          <label className="block text-[10px] font-semibold text-slate-400 uppercase tracking-wider mb-1">
-                            Duration (Years)
-                          </label>
-                          <input
-                            type="number"
-                            min="1"
-                            max="30"
-                            value={growthDuration}
-                            onChange={(e) => setGrowthDuration(e.target.value)}
-                            className="mizan-input"
-                          />
-                        </div>
+                        <Input
+                          type="number"
+                          label="Return (%)"
+                          value={growthExpectedReturn}
+                          onChange={(e) => setGrowthExpectedReturn(e.target.value)}
+                        />
+                        <Input
+                          type="number"
+                          min="1"
+                          max="30"
+                          label="Years"
+                          value={growthDuration}
+                          onChange={(e) => setGrowthDuration(e.target.value)}
+                        />
                       </div>
 
                       <div className="space-y-2.5 pt-3 border-t border-slate-100">
@@ -612,15 +593,12 @@ export default function DashboardPage() {
 
                       {deductPurification && (
                         <div className="animate-fade-in">
-                          <label className="block text-[10px] font-semibold text-slate-400 uppercase tracking-wider mb-1">
-                            Purification Rate (%)
-                          </label>
-                          <input
+                          <Input
                             type="number"
                             step="any"
+                            label="Purification Rate (%)"
                             value={purificationRate}
                             onChange={(e) => setPurificationRate(e.target.value)}
-                            className="mizan-input"
                           />
                         </div>
                       )}

@@ -2,6 +2,9 @@
 
 import React, { useState, useEffect } from "react";
 import DashboardShell from "../../components/DashboardShell";
+import Button from "../../components/Button";
+import Card from "../../components/Card";
+import Input from "../../components/Input";
 import { getData, saveData, clearAppStorage, STORAGE_KEYS } from "../../lib/storage";
 import { DEFAULT_METAL_RATES } from "../../lib/api";
 import { MetalRates } from "../../types";
@@ -77,28 +80,28 @@ export default function SettingsPage() {
   if (!mounted) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
-        <span className="text-muted-foreground animate-pulse font-medium">Loading settings...</span>
+        <span className="text-slate-400 animate-pulse font-semibold">Loading settings...</span>
       </div>
     );
   }
 
   return (
     <DashboardShell>
-      <div className="space-y-8">
+      <div className="space-y-8 max-w-5xl mx-auto">
         {/* Header */}
         <div>
-          <h1 className="text-3xl font-heading font-extrabold text-primary tracking-tight">
+          <h1 className="font-h1 text-primary">
             Jurisprudence Settings
           </h1>
-          <p className="text-muted-foreground mt-1 text-sm">
+          <p className="text-slate-500 mt-1 text-sm leading-relaxed">
             Configure calculations limits, Nisab standard, and live rate feeds.
           </p>
         </div>
 
         {/* Status Message */}
         {statusMessage && (
-          <div className="bg-emerald-50 border border-emerald-200 text-emerald-800 rounded-xl px-4 py-3 text-sm flex items-center gap-2">
-            <svg className="w-5 h-5 text-emerald-600 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <div className="bg-slate-50 border border-slate-200 text-slate-700 rounded-lg px-4 py-3 text-xs font-semibold flex items-center gap-2">
+            <svg className="w-4 h-4 text-slate-500 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
             <span>{statusMessage}</span>
@@ -109,8 +112,8 @@ export default function SettingsPage() {
           {/* Settings Form */}
           <form onSubmit={handleSaveSettings} className="lg:col-span-8 space-y-6">
             {/* Nisab settings */}
-            <div className="bg-white rounded-2xl border border-border p-6 shadow-sm space-y-4">
-              <h2 className="text-base font-heading font-bold text-primary pb-3 border-b border-border/40">
+            <Card className="space-y-4">
+              <h2 className="text-sm font-heading font-bold text-slate-800 pb-3 border-b border-slate-100">
                 Nisab Standard Jurisprudence
               </h2>
               <div className="space-y-3">
@@ -124,8 +127,8 @@ export default function SettingsPage() {
                     className="mt-1 text-primary focus:ring-primary focus:ring-offset-0"
                   />
                   <div className="text-sm">
-                    <strong className="block text-primary">Silver Nisab Standard (595 grams) - Recommended</strong>
-                    <span className="text-xs text-muted-foreground">
+                    <strong className="block text-slate-800 font-semibold">Silver Nisab Standard (595 grams) - Recommended</strong>
+                    <span className="text-xs text-slate-400 mt-0.5 block leading-relaxed">
                       Most commonly recommended by contemporary Shariah councils for liquid wealth, as it sets a lower threshold and maximises support for Zakat recipients.
                     </span>
                   </div>
@@ -140,25 +143,25 @@ export default function SettingsPage() {
                     className="mt-1 text-primary focus:ring-primary focus:ring-offset-0"
                   />
                   <div className="text-sm">
-                    <strong className="block text-primary">Gold Nisab Standard (85 grams)</strong>
-                    <span className="text-xs text-muted-foreground">
+                    <strong className="block text-slate-800 font-semibold">Gold Nisab Standard (85 grams)</strong>
+                    <span className="text-xs text-slate-400 mt-0.5 block leading-relaxed">
                       Traditionally preferred for gold jewelry owners or specific financial conditions.
                     </span>
                   </div>
                 </label>
               </div>
-            </div>
+            </Card>
 
             {/* Metal rates settings */}
-            <div className="bg-white rounded-2xl border border-border p-6 shadow-sm space-y-4">
-              <h2 className="text-base font-heading font-bold text-primary pb-3 border-b border-border/40">
+            <Card className="space-y-4">
+              <h2 className="text-sm font-heading font-bold text-slate-800 pb-3 border-b border-slate-100">
                 Precious Metal Rates Source
               </h2>
               
               <div className="flex items-center justify-between pb-2">
-                <div className="text-sm">
-                  <strong className="block text-primary">Use Live Prices Feed</strong>
-                  <span className="text-xs text-muted-foreground">
+                <div className="text-sm pr-4">
+                  <strong className="block text-slate-800 font-semibold">Use Live Prices Feed</strong>
+                  <span className="text-xs text-slate-400 mt-0.5 block leading-relaxed">
                     Automatically retrieve current gold and silver prices.
                   </span>
                 </div>
@@ -166,7 +169,7 @@ export default function SettingsPage() {
                   type="button"
                   onClick={() => setUseLiveRates(!useLiveRates)}
                   className={`relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${
-                    useLiveRates ? "bg-primary" : "bg-border"
+                    useLiveRates ? "bg-primary" : "bg-slate-200"
                   }`}
                 >
                   <span
@@ -178,61 +181,48 @@ export default function SettingsPage() {
               </div>
 
               {!useLiveRates && (
-                <div className="grid grid-cols-2 gap-4 pt-3 border-t border-border/40 animate-fade-in">
-                  <div>
-                    <label className="block text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-1">
-                      Gold Price ($ per gram)
-                    </label>
-                    <input
-                      type="number"
-                      required
-                      step="any"
-                      min="0"
-                      value={goldPrice}
-                      onChange={(e) => setGoldPrice(e.target.value)}
-                      className="w-full rounded-xl border border-border bg-background px-3.5 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-primary"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-1">
-                      Silver Price ($ per gram)
-                    </label>
-                    <input
-                      type="number"
-                      required
-                      step="any"
-                      min="0"
-                      value={silverPrice}
-                      onChange={(e) => setSilverPrice(e.target.value)}
-                      className="w-full rounded-xl border border-border bg-background px-3.5 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-primary"
-                    />
-                  </div>
+                <div className="grid grid-cols-2 gap-4 pt-4 border-t border-slate-100 animate-fade-in">
+                  <Input
+                    type="number"
+                    required
+                    step="any"
+                    min="0"
+                    label="Gold Price ($ per gram)"
+                    value={goldPrice}
+                    onChange={(e) => setGoldPrice(e.target.value)}
+                  />
+                  <Input
+                    type="number"
+                    required
+                    step="any"
+                    min="0"
+                    label="Silver Price ($ per gram)"
+                    value={silverPrice}
+                    onChange={(e) => setSilverPrice(e.target.value)}
+                  />
                 </div>
               )}
-            </div>
+            </Card>
 
-            <button
-              type="submit"
-              className="px-6 py-3 rounded-xl bg-primary text-white font-semibold hover:bg-primary/95 shadow-md shadow-primary/10 transition-colors text-sm"
-            >
+            <Button type="submit">
               Update Configuration
-            </button>
+            </Button>
           </form>
 
           {/* Core System Reset Options */}
-          <div className="lg:col-span-4 bg-white rounded-2xl border border-border p-6 shadow-sm space-y-4">
-            <h2 className="text-base font-heading font-bold text-red-700">Danger Zone</h2>
-            <p className="text-xs text-muted-foreground leading-relaxed">
+          <Card className="lg:col-span-4 space-y-4">
+            <h2 className="text-sm font-heading font-bold text-red-600">Danger Zone</h2>
+            <p className="text-xs text-slate-400 leading-relaxed">
               Clear browser database memory. This will purge all logged assets, calculations logs, and overrides completely.
             </p>
             <button
               type="button"
               onClick={handleClearAllData}
-              className="w-full py-2.5 border border-red-200 hover:bg-red-50 text-red-600 font-semibold rounded-xl text-sm transition-colors text-center"
+              className="w-full py-2.5 border border-red-200 hover:bg-red-50 text-red-600 font-bold rounded-lg text-xs tracking-wide transition-colors text-center uppercase"
             >
               Flush All App Data
             </button>
-          </div>
+          </Card>
         </div>
       </div>
     </DashboardShell>

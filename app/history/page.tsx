@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import DashboardShell from "../../components/DashboardShell";
+import Card from "../../components/Card";
 import { getData, saveData, STORAGE_KEYS } from "../../lib/storage";
 import { ZakatRecord } from "../../types";
 
@@ -29,7 +30,7 @@ export default function HistoryPage() {
   if (!mounted) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
-        <span className="text-muted-foreground animate-pulse font-medium">Loading history...</span>
+        <span className="text-slate-400 animate-pulse font-semibold">Loading history...</span>
       </div>
     );
   }
@@ -47,26 +48,26 @@ export default function HistoryPage() {
 
   return (
     <DashboardShell>
-      <div className="space-y-8">
+      <div className="space-y-8 max-w-5xl mx-auto">
         {/* Header */}
         <div>
-          <h1 className="text-3xl font-heading font-extrabold text-primary tracking-tight">
+          <h1 className="font-h1 text-primary">
             Declaration Log Book
           </h1>
-          <p className="text-muted-foreground mt-1 text-sm">
+          <p className="text-slate-500 mt-1 text-sm leading-relaxed">
             Review historically compiled snapshots of your wealth balances.
           </p>
         </div>
 
         {/* Records Checklist */}
-        <div className="bg-white rounded-2xl border border-border p-6 shadow-sm">
+        <Card>
           {records.length === 0 ? (
-            <div className="text-center py-16 border-2 border-dashed border-border/80 rounded-xl">
-              <svg className="w-10 h-10 text-muted-foreground/60 mx-auto mb-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <div className="text-center py-16 border border-dashed border-slate-200 rounded-xl">
+              <svg className="w-10 h-10 text-slate-400 mx-auto mb-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
               </svg>
-              <h3 className="font-bold text-primary mb-1">No Saved Declarations</h3>
-              <p className="text-muted-foreground text-xs max-w-sm mx-auto leading-relaxed">
+              <h3 className="font-bold text-slate-800 mb-1">No Saved Declarations</h3>
+              <p className="text-slate-400 text-xs max-w-sm mx-auto leading-relaxed">
                 Calculate your position and select &ldquo;Save Declaration&rdquo; on the Overview screen to create historical logs.
               </p>
             </div>
@@ -85,38 +86,38 @@ export default function HistoryPage() {
                 return (
                   <div
                     key={record.id}
-                    className="border border-border/60 rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-shadow cursor-pointer bg-white"
+                    className="border border-slate-100 rounded-lg overflow-hidden transition-colors cursor-pointer bg-white"
                     onClick={() => toggleExpand(record.id)}
                   >
                     {/* Header Row */}
-                    <div className="p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-muted/20 hover:bg-muted/30 transition-colors">
+                    <div className="p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-slate-50/50 hover:bg-slate-50/80 transition-colors">
                       <div className="space-y-1">
                         <div className="flex items-center gap-2">
-                          <span className="font-heading font-bold text-primary text-sm tracking-wide">
+                          <span className="font-heading font-bold text-slate-800 text-sm tracking-wide">
                             Declaration Snapshot
                           </span>
-                          <span className="text-[10px] px-2 py-0.5 rounded-full bg-primary/5 text-primary border border-primary/10">
+                          <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-primary/5 text-primary border border-primary/10 select-none">
                             {record.assets.length} Assets
                           </span>
                         </div>
-                        <div className="text-xs text-muted-foreground">{dateString}</div>
+                        <div className="text-xs text-slate-400 font-medium">{dateString}</div>
                       </div>
 
                       <div className="flex items-center gap-8">
                         {/* Net Zakatable */}
                         <div className="text-right">
-                          <span className="text-[10px] text-muted-foreground uppercase font-bold block">
+                          <span className="text-[10px] text-slate-400 uppercase font-bold block mb-0.5">
                             Net Assets
                           </span>
-                          <span className="text-sm font-bold text-primary">
+                          <span className="text-sm font-bold text-slate-800">
                             ${record.result.netZakatable.toLocaleString(undefined, { minimumFractionDigits: 2 })}
                           </span>
                         </div>
 
                         {/* Zakat Due */}
                         <div className="text-right">
-                          <span className="text-[10px] text-accent uppercase font-bold block">
-                            Zakat Paid/Due
+                          <span className="text-[10px] text-accent uppercase font-bold block mb-0.5">
+                            Zakat Due
                           </span>
                           <span className="text-sm font-extrabold text-primary">
                             ${record.result.zakatDue.toLocaleString(undefined, { minimumFractionDigits: 2 })}
@@ -124,24 +125,24 @@ export default function HistoryPage() {
                         </div>
 
                         {/* Actions */}
-                        <div className="flex items-center gap-2">
+                        <div className="flex items-center gap-3">
                           <button
                             onClick={(e) => handleDeleteRecord(record.id, e)}
-                            className="p-2 hover:bg-red-50 text-red-500 rounded-lg transition-colors"
+                            className="p-1.5 rounded-lg hover:bg-slate-100 text-slate-400 hover:text-slate-700 transition-colors"
                             title="Delete snapshot log"
                           >
                             <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                             </svg>
                           </button>
-                          <span className="text-muted-foreground/60">
+                          <span className="text-slate-400">
                             {isExpanded ? (
-                              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
+                              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 15l7-7 7 7" />
                               </svg>
                             ) : (
-                              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M19 9l-7 7-7-7" />
                               </svg>
                             )}
                           </span>
@@ -151,25 +152,25 @@ export default function HistoryPage() {
 
                     {/* Expandable Asset and Liability Breakdown */}
                     {isExpanded && (
-                      <div className="p-5 border-t border-border/40 bg-white grid grid-cols-1 md:grid-cols-2 gap-8 cursor-default" onClick={(e) => e.stopPropagation()}>
+                      <div className="p-5 border-t border-slate-100 bg-white grid grid-cols-1 md:grid-cols-2 gap-8 cursor-default" onClick={(e) => e.stopPropagation()}>
                         {/* Assets list */}
                         <div>
-                          <h4 className="font-heading font-bold text-sm text-primary mb-3">Recorded Assets</h4>
+                          <h4 className="font-heading font-bold text-xs text-slate-800 uppercase tracking-wider mb-3">Recorded Assets</h4>
                           {record.assets.length === 0 ? (
-                            <p className="text-xs text-muted-foreground">No assets in this declaration.</p>
+                            <p className="text-xs text-slate-400">No assets in this declaration.</p>
                           ) : (
                             <div className="space-y-2">
                               {record.assets.map((asset) => (
-                                <div key={asset.id} className="flex justify-between items-center text-xs p-2 rounded-lg bg-muted/40">
+                                <div key={asset.id} className="flex justify-between items-center text-xs p-2.5 rounded-lg bg-slate-50/80 border border-slate-100">
                                   <div>
-                                    <span className="font-semibold text-primary">{asset.name}</span>
-                                    <span className="text-[10px] text-muted-foreground block">
+                                    <span className="font-bold text-slate-700">{asset.name}</span>
+                                    <span className="text-[10px] text-slate-400 block mt-0.5">
                                       {assetTypeNames[asset.type]} &bull; Held since: {asset.acquisitionDate}
                                     </span>
                                   </div>
                                   <div className="text-right">
-                                    <span className="block font-medium">${asset.value.toLocaleString(undefined, { minimumFractionDigits: 2 })}</span>
-                                    <span className="text-[10px] text-emerald-800 font-semibold block">
+                                    <span className="block font-semibold text-slate-800">${asset.value.toLocaleString(undefined, { minimumFractionDigits: 2 })}</span>
+                                    <span className="text-[10px] text-primary font-bold block mt-0.5">
                                       Zakatable: ${asset.zakatableAmount.toLocaleString(undefined, { minimumFractionDigits: 2 })}
                                     </span>
                                   </div>
@@ -181,15 +182,15 @@ export default function HistoryPage() {
 
                         {/* Liabilities list */}
                         <div>
-                          <h4 className="font-heading font-bold text-sm text-primary mb-3">Deducted Liabilities</h4>
+                          <h4 className="font-heading font-bold text-xs text-slate-800 uppercase tracking-wider mb-3">Deducted Liabilities</h4>
                           {record.liabilities.length === 0 ? (
-                            <p className="text-xs text-muted-foreground">No liabilities in this declaration.</p>
+                            <p className="text-xs text-slate-400">No liabilities in this declaration.</p>
                           ) : (
                             <div className="space-y-2">
                               {record.liabilities.map((item) => (
-                                <div key={item.id} className="flex justify-between items-center text-xs p-2 rounded-lg bg-muted/40">
-                                  <span className="font-semibold text-primary">{item.name}</span>
-                                  <span className="font-medium text-red-600">
+                                <div key={item.id} className="flex justify-between items-center text-xs p-2.5 rounded-lg bg-slate-50/80 border border-slate-100">
+                                  <span className="font-bold text-slate-700">{item.name}</span>
+                                  <span className="font-semibold text-slate-600">
                                     -${item.value.toLocaleString(undefined, { minimumFractionDigits: 2 })}
                                   </span>
                                 </div>
@@ -204,7 +205,7 @@ export default function HistoryPage() {
               })}
             </div>
           )}
-        </div>
+        </Card>
       </div>
     </DashboardShell>
   );

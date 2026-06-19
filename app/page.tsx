@@ -1,4 +1,6 @@
 import Link from "next/link";
+import Button from "../components/Button";
+import Card from "../components/Card";
 
 export default function Home() {
   return (
@@ -18,9 +20,9 @@ export default function Home() {
             <span className="text-[10px] font-bold px-2.5 py-1 rounded-full bg-slate-100 text-slate-600 border border-slate-200/60 select-none uppercase tracking-wide">
               Local-First
             </span>
-            <Link href="/dashboard" className="btn-primary">
+            <Button href="/dashboard">
               Enter Dashboard
-            </Link>
+            </Button>
           </div>
         </div>
       </header>
@@ -43,67 +45,63 @@ export default function Home() {
         {/* Feature Cards Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 w-full max-w-6xl text-left">
           {/* Card 1: Zakat */}
-          <Link
-            href="/dashboard"
-            className="mizan-card group hover:border-slate-300"
-          >
-            <div className="w-12 h-12 rounded-lg bg-slate-50 border border-slate-200/80 flex items-center justify-center text-primary mb-5 group-hover:scale-105 transition-transform duration-200">
-              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
-              </svg>
-            </div>
-            <h3 className="font-h3 mb-2">Zakat Calculator</h3>
-            <p className="font-body text-xs">
-              Calculate Nisab values in real-time, deduct liabilities, and track different asset classes seamlessly.
-            </p>
+          <Link href="/dashboard" className="block group">
+            <Card className="hover:border-slate-300">
+              <div className="w-12 h-12 rounded-lg bg-slate-50 border border-slate-200/80 flex items-center justify-center text-primary mb-5 group-hover:scale-105 transition-transform duration-200">
+                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                </svg>
+              </div>
+              <h3 className="font-h3 mb-2">Zakat Calculator</h3>
+              <p className="font-body text-xs">
+                Calculate Nisab values in real-time, deduct liabilities, and track different asset classes seamlessly.
+              </p>
+            </Card>
           </Link>
 
           {/* Card 2: Stock Purity */}
-          <Link
-            href="/dashboard"
-            className="mizan-card group hover:border-slate-300"
-          >
-            <div className="w-12 h-12 rounded-lg bg-slate-50 border border-slate-200/80 flex items-center justify-center text-primary mb-5 group-hover:scale-105 transition-transform duration-200">
-              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-              </svg>
-            </div>
-            <h3 className="font-h3 mb-2">Purity Screener</h3>
-            <p className="font-body text-xs">
-              Assess stock portfolios based on debt, cash, interest income ratios, and purify non-compliant gains.
-            </p>
+          <Link href="/dashboard" className="block group">
+            <Card className="hover:border-slate-300">
+              <div className="w-12 h-12 rounded-lg bg-slate-50 border border-slate-200/80 flex items-center justify-center text-primary mb-5 group-hover:scale-105 transition-transform duration-200">
+                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                </svg>
+              </div>
+              <h3 className="font-h3 mb-2">Purity Screener</h3>
+              <p className="font-body text-xs">
+                Assess stock portfolios based on debt, cash, interest income ratios, and purify non-compliant gains.
+              </p>
+            </Card>
           </Link>
 
           {/* Card 3: Growth */}
-          <Link
-            href="/dashboard"
-            className="mizan-card group hover:border-slate-300"
-          >
-            <div className="w-12 h-12 rounded-lg bg-slate-50 border border-slate-200/80 flex items-center justify-center text-primary mb-5 group-hover:scale-105 transition-transform duration-200">
-              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
-              </svg>
-            </div>
-            <h3 className="font-h3 mb-2">Growth Projection</h3>
-            <p className="font-body text-xs">
-              Model compound growth, simulate regular contributions, and deduct Zakat/purification rates to see net halal yield.
-            </p>
+          <Link href="/dashboard" className="block group">
+            <Card className="hover:border-slate-300">
+              <div className="w-12 h-12 rounded-lg bg-slate-50 border border-slate-200/80 flex items-center justify-center text-primary mb-5 group-hover:scale-105 transition-transform duration-200">
+                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+                </svg>
+              </div>
+              <h3 className="font-h3 mb-2">Growth Projection</h3>
+              <p className="font-body text-xs">
+                Model compound growth, simulate regular contributions, and deduct Zakat/purification rates to see net halal yield.
+              </p>
+            </Card>
           </Link>
 
           {/* Card 4: Inheritance */}
-          <Link
-            href="/dashboard"
-            className="mizan-card group hover:border-slate-300"
-          >
-            <div className="w-12 h-12 rounded-lg bg-slate-50 border border-slate-200/80 flex items-center justify-center text-primary mb-5 group-hover:scale-105 transition-transform duration-200">
-              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
-              </svg>
-            </div>
-            <h3 className="font-h3 mb-2">Inheritance Modeler</h3>
-            <p className="font-body text-xs">
-              Calculate legal shares of your estate for heirs automatically based on Islamic jurisprudence rules.
-            </p>
+          <Link href="/dashboard" className="block group">
+            <Card className="hover:border-slate-300">
+              <div className="w-12 h-12 rounded-lg bg-slate-50 border border-slate-200/80 flex items-center justify-center text-primary mb-5 group-hover:scale-105 transition-transform duration-200">
+                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+                </svg>
+              </div>
+              <h3 className="font-h3 mb-2">Inheritance Modeler</h3>
+              <p className="font-body text-xs">
+                Calculate legal shares of your estate for heirs automatically based on Islamic jurisprudence rules.
+              </p>
+            </Card>
           </Link>
         </div>
       </main>
