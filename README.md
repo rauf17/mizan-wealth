@@ -6,11 +6,11 @@
 
   [![Next.js](https://img.shields.io/badge/Next.js-14-black?style=for-the-badge&logo=next.js)](https://nextjs.org/)
   [![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-3-38B2AC?style=for-the-badge&logo=tailwind-css)](https://tailwindcss.com/)
-  [![Privacy First](https://img.shields.io/badge/Privacy-Local_First-4CAF50?style=for-the-badge&logo=shield)](https://github.com/rauf17/mizan-wealth)
-  [![Vercel Deploy](https://img.shields.io/badge/Deployed_on-Vercel-black?style=for-the-badge&logo=vercel)](https://mizan-wealth.vercel.app/)
+  [![Google Gemini](https://img.shields.io/badge/AI_Powered-Google_Gemini-4285F4?style=for-the-badge&logo=google-gemini)](https://aistudio.google.com/)
+  [![MetalPrice API](https://img.shields.io/badge/Live_Rates-MetalPrice_API-FFD700?style=for-the-badge&logo=api)](https://metalpriceapi.com/)
 
   <p align="center">
-    A privacy-first, beautiful, and completely offline-capable Islamic finance dashboard built by Muslims, for Muslims.
+    A browser-native, beautiful, and completely offline-capable Islamic finance dashboard built by Muslims, for Muslims.
   </p>
 </div>
 
@@ -19,15 +19,13 @@
 > *"And establish prayer and give Zakat, and whatever good you put forward for yourselves – you will find it with Allah."* 
 > — (Surah Al-Baqarah 2:110)
 
-## 🌙 Assalamu Alaikum, Brother!
+Welcome to **Mizan Wealth**. Calculating Zakat, screening stocks for Shariah compliance, and managing your halal wealth shouldn't require complex spreadsheets or uploading your net worth to an external server.
 
-Welcome to **Mizan Wealth**. Calculating Zakat, screening stocks for Shariah compliance, and managing your halal wealth shouldn't require complex spreadsheets or compromising your privacy by uploading your net worth to a random server.
-
-Mizan Wealth is a unified, strictly local-first dashboard that respects your privacy and adheres to authentic Islamic jurisprudence (Fiqh). We built this so you can confidently calculate what you owe, purify your investments, and plan your financial future—all in one gorgeous interface.
+Mizan Wealth is a unified, strictly local-first dashboard that adheres to authentic Islamic jurisprudence (Fiqh). It is designed to help you confidently calculate your Zakat obligations, purify your investments, and plan your financial future—all within a clean, utility-driven interface.
 
 ### 🌟 Why Choose Mizan Wealth?
 
-* **100% Private (Local-First):** Your financial data is sensitive. We use the browser's `localStorage` to save your assets and liabilities. Your net worth **never** leaves your device.
+* **100% Local-First (Browser-Native):** Your financial data is sensitive. The application uses the browser's `localStorage` to save your assets and liabilities locally. Your net worth **never** leaves your device.
 * **Exact Shariah Standards:** Automatically calculates Nisab using precise South Asian *Tola* conversions: **87.48g** for Gold and **612.36g** for Silver.
 * **Hawl Automation:** Input when you acquired an asset, and Mizan will calculate if a full lunar year (354 days) has passed.
 * **Multi-Lingual:** Full support for both English and **Urdu (اردو)**, with stunning Noto Nastaliq typography and full Right-To-Left (RTL) layout.
@@ -100,19 +98,18 @@ Make sure you have Node.js 18+ installed.
    ```bash
    npm run dev
    ```
-   Open [http://localhost:3000](http://localhost:3000) in your browser.
+   Open the local address displayed in your terminal.
 
 ---
 
-## 🌐 Deploy Your Own
+## 🌐 Deployment Instructions
 
-You can deploy your own private instance of Mizan Wealth to Vercel in 1 click for free:
+You can easily deploy your own instance of Mizan Wealth to Vercel:
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/rauf17/mizan-wealth)
-
-1. Click the button above to clone and deploy.
-2. In the Vercel setup, paste your `.env.local` keys into the Environment Variables section.
-3. Deploy!
+1. Import your GitHub repository into Vercel.
+2. Ensure the framework preset is set to **Next.js**.
+3. In the Vercel setup, paste your `.env.local` keys into the **Environment Variables** section.
+4. Click **Deploy**.
 
 ---
 
