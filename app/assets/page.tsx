@@ -6,10 +6,12 @@ import Button from "../../components/Button";
 import Card from "../../components/Card";
 import Input from "../../components/Input";
 import Select from "../../components/Select";
+import { useCurrency } from "../../context/CurrencyContext";
 import { getData, saveData, STORAGE_KEYS } from "../../lib/storage";
 import { ZakatAsset, ZakatLiability, AssetType } from "../../types";
 
 export default function AssetsPage() {
+  const { currency, convert, format } = useCurrency();
   // Client state loading protection
   const [mounted, setMounted] = useState(false);
   const [assets, setAssets] = useState<ZakatAsset[]>([]);
@@ -304,21 +306,21 @@ export default function AssetsPage() {
                       </div>
 
                       <div className="flex items-center justify-between sm:justify-end gap-8">
-                        <div className="text-right">
-                          <span className="text-[10px] text-slate-400 uppercase font-semibold block mb-0.5">
-                            Market Value
+                        <div className="text-right hidden sm:block">
+                          <span className="block font-semibold text-slate-700">
+                            {format(convert(item.value, "USD", currency))}
                           </span>
-                          <span className="text-xs sm:text-sm font-bold text-slate-700">
-                            ${item.value.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                          <span className="block text-[10px] text-slate-400 uppercase">
+                            Market Value
                           </span>
                         </div>
 
-                        <div className="text-right">
-                          <span className="text-[10px] text-primary uppercase font-bold block mb-0.5">
-                            Zakatable Amount
+                        <div className="text-right hidden sm:block">
+                          <span className="block font-semibold text-primary">
+                            {format(convert(item.zakatableAmount, "USD", currency))}
                           </span>
-                          <span className="text-xs sm:text-sm font-extrabold text-primary">
-                            ${item.zakatableAmount.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                          <span className="block text-[10px] text-slate-400 uppercase">
+                            Zakatable
                           </span>
                         </div>
 
@@ -327,7 +329,7 @@ export default function AssetsPage() {
                           className="p-2 rounded-lg hover:bg-slate-100 text-slate-400 hover:text-slate-700 transition-colors"
                           title="Delete asset"
                         >
-                          <svg className="w-4.5 h-4.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                           </svg>
                         </button>
@@ -369,11 +371,11 @@ export default function AssetsPage() {
 
                       <div className="flex items-center gap-6">
                         <div className="text-right">
-                          <span className="text-[10px] text-slate-400 uppercase font-semibold block mb-0.5">
-                            Deducted Amount
+                          <span className="block font-semibold text-slate-800">
+                            {format(convert(item.value, "USD", currency))}
                           </span>
-                          <span className="text-xs sm:text-sm font-bold text-slate-600">
-                            -${item.value.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                          <span className="block text-[10px] text-slate-400 uppercase">
+                            Deducted
                           </span>
                         </div>
 
@@ -382,7 +384,7 @@ export default function AssetsPage() {
                           className="p-2 rounded-lg hover:bg-slate-100 text-slate-400 hover:text-slate-700 transition-colors"
                           title="Delete liability"
                         >
-                          <svg className="w-4.5 h-4.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                           </svg>
                         </button>
