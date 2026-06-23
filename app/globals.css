@@ -36,8 +36,21 @@
 
 body {
   color: var(--foreground);
-  background: var(--background);
+  background: radial-gradient(circle at top, #FAFAF8 0%, rgba(15, 76, 76, 0.03) 100%), #FAFAF8;
   font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+}
+
+html[lang="ur"] body,
+html[lang="ur"] .font-sans {
+  font-family: 'Noto Nastaliq Urdu', var(--font-inter), sans-serif;
+}
+
+html[lang="ur"] .font-heading,
+html[lang="ur"] .font-hero,
+html[lang="ur"] .font-h1,
+html[lang="ur"] .font-h2,
+html[lang="ur"] .font-h3 {
+  font-family: 'Noto Nastaliq Urdu', var(--font-outfit), sans-serif;
 }
 
 @layer components {
@@ -70,7 +83,43 @@ body {
   
   /* Cards */
   .mizan-card {
-    @apply bg-white rounded-xl border border-slate-200/80 p-6 shadow-[0_1px_3px_0_rgba(15,23,42,0.03),0_1px_2px_-1px_rgba(15,23,42,0.03)] transition-all duration-200;
+    @apply bg-white rounded-xl border border-slate-200/80 p-6 transition-all duration-300 ease-out;
+    box-shadow: 0 10px 30px rgba(15, 76, 76, 0.04), 0 1px 2px rgba(15, 76, 76, 0.02);
+  }
+  .mizan-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 20px 40px rgba(15, 76, 76, 0.07), 0 2px 4px rgba(15, 76, 76, 0.02);
+    border-color: rgba(15, 76, 76, 0.15);
+  }
+
+  .mizan-hero-card {
+    @apply relative overflow-hidden bg-white/80 backdrop-blur-md rounded-2xl border border-slate-200/60 p-7 transition-all duration-300 ease-out;
+    box-shadow: 0 20px 40px rgba(15, 76, 76, 0.06), 0 1px 3px rgba(15, 76, 76, 0.02) !important;
+  }
+  .mizan-hero-card:hover {
+    transform: translateY(-2.5px) !important;
+    box-shadow: 0 30px 60px rgba(15, 76, 76, 0.09), 0 2px 6px rgba(15, 76, 76, 0.03) !important;
+    border-color: rgba(15, 76, 76, 0.25) !important;
+  }
+  
+  .hero-glow-blob {
+    position: absolute;
+    width: 280px;
+    height: 280px;
+    background: radial-gradient(circle, rgba(15, 76, 76, 0.04) 0%, rgba(201, 162, 39, 0.025) 50%, transparent 100%);
+    filter: blur(40px);
+    top: -60px;
+    left: -60px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .text-glow-accent {
+    text-shadow: 0 0 15px rgba(201, 162, 39, 0.15), 0 0 2px rgba(201, 162, 39, 0.2);
+  }
+
+  .text-gradient-teal {
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-primary to-[#052929];
   }
 
   /* Inputs & Selects */
@@ -85,25 +134,28 @@ body {
   /* Buttons */
   .btn-primary {
     @apply inline-flex items-center justify-center px-5 py-2.5 rounded-lg bg-primary text-white text-sm font-semibold transition-all duration-150 disabled:opacity-50 disabled:cursor-not-allowed select-none;
-    &:hover:not(:disabled) {
-      background-color: #0c3d3d; /* slightly darker deep teal */
-    }
+  }
+  
+  .btn-primary:hover:not(:disabled) {
+    background-color: #0c3d3d; /* slightly darker deep teal */
   }
   
   .btn-secondary {
     @apply inline-flex items-center justify-center px-5 py-2.5 rounded-lg border border-slate-200 bg-white text-slate-700 text-sm font-semibold transition-all duration-150 disabled:opacity-50 disabled:cursor-not-allowed select-none;
-    &:hover:not(:disabled) {
-      background-color: var(--slate-50);
-      border-color: var(--slate-300);
-    }
+  }
+  
+  .btn-secondary:hover:not(:disabled) {
+    background-color: var(--slate-50);
+    border-color: var(--slate-300);
   }
   
   .btn-ghost {
     @apply inline-flex items-center justify-center px-4 py-2 rounded-lg text-slate-500 text-sm font-semibold transition-all duration-150 disabled:opacity-50 select-none;
-    &:hover:not(:disabled) {
-      color: var(--slate-900);
-      background-color: var(--slate-100);
-    }
+  }
+  
+  .btn-ghost:hover:not(:disabled) {
+    color: var(--slate-900);
+    background-color: var(--slate-100);
   }
 
   .animate-fade-in {
@@ -133,4 +185,9 @@ body {
   to {
     transform: translateX(0);
   }
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% center; }
+  100% { background-position: 200% center; }
 }
