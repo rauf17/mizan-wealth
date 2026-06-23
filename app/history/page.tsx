@@ -3,10 +3,12 @@
 import React, { useState, useEffect } from "react";
 import DashboardShell from "../../components/DashboardShell";
 import Card from "../../components/Card";
+import { useCurrency } from "../../context/CurrencyContext";
 import { getData, saveData, STORAGE_KEYS } from "../../lib/storage";
 import { ZakatRecord } from "../../types";
 
 export default function HistoryPage() {
+  const { currency, convert, format } = useCurrency();
   const [mounted, setMounted] = useState(false);
   const [records, setRecords] = useState<ZakatRecord[]>([]);
   const [expandedId, setExpandedId] = useState<string | null>(null);
@@ -86,7 +88,7 @@ export default function HistoryPage() {
                 return (
                   <div
                     key={record.id}
-                    className="border border-slate-100 rounded-lg overflow-hidden transition-colors cursor-pointer bg-white"
+                    className="mizan-card overflow-hidden transition-all duration-200 cursor-pointer p-0"
                     onClick={() => toggleExpand(record.id)}
                   >
                     {/* Header Row */}
@@ -106,22 +108,18 @@ export default function HistoryPage() {
                       <div className="flex items-center gap-8">
                         {/* Net Zakatable */}
                         <div className="text-right">
-                          <span className="text-[10px] text-slate-400 uppercase font-bold block mb-0.5">
-                            Net Assets
-                          </span>
-                          <span className="text-sm font-bold text-slate-800">
-                            ${record.result.netZakatable.toLocaleString(undefined, { minimumFractionDigits: 2 })}
-                          </span>
+                          <span className="text-xs text-slate-500 font-medium block mb-0.5">Net Zakatable</span>
+                          <strong className="text-sm font-bold text-slate-900">
+                            {format(convert(record.result.netZakatable, "USD", currency))}
+                          </strong>
                         </div>
 
                         {/* Zakat Due */}
                         <div className="text-right">
-                          <span className="text-[10px] text-slate-400 uppercase font-bold block mb-0.5">
-                            Zakat Due
-                          </span>
-                          <span className="text-sm font-extrabold text-accent">
-                            ${record.result.zakatDue.toLocaleString(undefined, { minimumFractionDigits: 2 })}
-                          </span>
+                          <span className="text-xs text-slate-500 font-medium block mb-0.5">Zakat Due</span>
+                          <strong className="text-sm font-bold text-accent">
+                            {format(convert(record.result.zakatDue, "USD", currency))}
+                          </strong>
                         </div>
 
                         {/* Actions */}
@@ -161,7 +159,7 @@ export default function HistoryPage() {
                           ) : (
                             <div className="space-y-2">
                               {record.assets.map((asset) => (
-                                <div key={asset.id} className="flex justify-between items-center text-xs p-2.5 rounded-lg bg-slate-50/80 border border-slate-100">
+                                <div key={asset.id} className="mizan-glass flex justify-between items-center text-xs p-2.5 rounded-lg border border-slate-100/50 shadow-sm hover:shadow-md transition-shadow">
                                   <div>
                                     <span className="font-bold text-slate-700">{asset.name}</span>
                                     <span className="text-[10px] text-slate-400 block mt-0.5">
@@ -169,9 +167,9 @@ export default function HistoryPage() {
                                     </span>
                                   </div>
                                   <div className="text-right">
-                                    <span className="block font-semibold text-slate-800">${asset.value.toLocaleString(undefined, { minimumFractionDigits: 2 })}</span>
-                                    <span className="text-[10px] text-primary font-bold block mt-0.5">
-                                      Zakatable: ${asset.zakatableAmount.toLocaleString(undefined, { minimumFractionDigits: 2 })}
+                                    <span className="block font-semibold text-slate-800">{format(convert(asset.value, "USD", currency))}</span>
+                                    <span className="block text-[10px] text-slate-400">
+                                      Zakatable: {format(convert(asset.zakatableAmount, "USD", currency))}
                                     </span>
                                   </div>
                                 </div>
@@ -188,11 +186,13 @@ export default function HistoryPage() {
                           ) : (
                             <div className="space-y-2">
                               {record.liabilities.map((item) => (
-                                <div key={item.id} className="flex justify-between items-center text-xs p-2.5 rounded-lg bg-slate-50/80 border border-slate-100">
+                                <div key={item.id} className="mizan-glass flex justify-between items-center text-xs p-2.5 rounded-lg border border-slate-100/50 shadow-sm hover:shadow-md transition-shadow">
                                   <span className="font-bold text-slate-700">{item.name}</span>
-                                  <span className="font-semibold text-slate-600">
-                                    -${item.value.toLocaleString(undefined, { minimumFractionDigits: 2 })}
-                                  </span>
+                                  <div className="text-right">
+                                    <span className="block font-semibold text-slate-800">
+                                      -{format(convert(item.value, "USD", currency))}
+                                    </span>
+                                  </div>
                                 </div>
                               ))}
                             </div>
