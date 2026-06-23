@@ -6,8 +6,32 @@ interface InsightRequestPayload {
   calculation: ZakatCalculationResult;
 }
 
+const rateLimitMap = new Map<string, { count: number; resetAt: number }>();
+const RATE_LIMIT_MAX = 10;
+const RATE_LIMIT_WINDOW_MS = 60 * 60 * 1000; // 1 hour
+
 export async function POST(req: Request) {
   try {
+    const ip = req.headers.get("x-forwarded-for") || "unknown";
+    const now = Date.now();
+    
+    const rateData = rateLimitMap.get(ip);
+    if (rateData) {
+      if (now > rateData.resetAt) {
+        rateLimitMap.set(ip, { count: 1, resetAt: now + RATE_LIMIT_WINDOW_MS });
+      } else {
+        if (rateData.count >= RATE_LIMIT_MAX) {
+          return NextResponse.json(
+            { error: "Rate limit exceeded" },
+            { status: 429 }
+          );
+        }
+        rateData.count += 1;
+      }
+    } else {
+      rateLimitMap.set(ip, { count: 1, resetAt: now + RATE_LIMIT_WINDOW_MS });
+    }
+
     const body: InsightRequestPayload = await req.json();
     const { assets, calculation } = body;
 
@@ -63,7 +87,7 @@ You MUST respond ONLY with a raw JSON object in this format (do not wrap in mark
 
       try {
         const geminiRes = await fetch(
-          `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`,
+          `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`,
           {
             method: "POST",
             headers: { "Content-Type": "application/json" },
