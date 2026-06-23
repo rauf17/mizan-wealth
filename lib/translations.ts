@@ -17,7 +17,22 @@ export const en: Record<string, string> = {
   secureLocal: "Secure Local Storage",
   localDesc: "Calculations are processed 100% locally on your device.",
   screener: "Screener",
-  inheritance: "Inheritance"
+  inheritance: "Inheritance",
+  dashboardTitle: "Mizan Position Overview",
+  wealthSummary: "Wealth Balance Summary",
+  nisabMultiplier: "Nisab Multiplier",
+  assetBreakdown: "Asset Breakdown",
+  assetBreakdownEmpty: "Add assets in the inventory ledger to see distribution metrics.",
+  metalRates: "Precious Metal Rates",
+  metalRatesDesc: "Market rates used to determine Nisab limits (updated dynamically).",
+  goldPrice: "Gold Price (24k)",
+  silverPrice: "Silver Price",
+  goldNisab: "Calculated Gold Nisab (85g)",
+  silverNisab: "Calculated Silver Nisab (595g)",
+  nisabReachedText: "Your net eligible assets of {amount} exceed the Nisab threshold of {threshold} by {multiplier}x. Zakat is due.",
+  nisabNotReachedText: "Your net eligible assets of {amount} are below the Nisab threshold of {threshold}. Zakat is not currently due.",
+  aiInsights: "AI Advisor Insights",
+  growthSimulator: "Compound Growth Simulator"
 };
 
 export const ur: Record<string, string> = {
@@ -39,7 +54,22 @@ export const ur: Record<string, string> = {
   secureLocal: "محفوظ مقامی ذخیرہ",
   localDesc: "تمام حسابات آپ کے آلے پر مقامی طور پر ہوتے ہیں۔",
   screener: "اسکرینر",
-  inheritance: "وراثت"
+  inheritance: "وراثت",
+  dashboardTitle: "میزان پوزیشن کا جائزہ",
+  wealthSummary: "دولت کا خلاصہ",
+  nisabMultiplier: "نصاب ضارب",
+  assetBreakdown: "اثاثوں کی تقسیم",
+  assetBreakdownEmpty: "تقسیم دیکھنے کے لیے لیجر میں اثاثے شامل کریں۔",
+  metalRates: "قیمتی دھاتوں کی شرح",
+  metalRatesDesc: "نصاب کی حد جاننے کے لیے بازار کی شرحیں (متحرک طور پر)۔",
+  goldPrice: "سونے کی قیمت (٢٤ کیرٹ)",
+  silverPrice: "چاندی کی قیمت",
+  goldNisab: "سونے کا نصاب (٨٥ گرام)",
+  silverNisab: "چاندی کا نصاب (٥٩٥ گرام)",
+  nisabReachedText: "آپ کے خالص اثاثے {amount} نصاب کی حد {threshold} سے {multiplier} گنا زیادہ ہیں۔ زکوٰة واجب ہے۔",
+  nisabNotReachedText: "آپ کے خالص اثاثے {amount} نصاب کی حد {threshold} سے کم ہیں۔ زکوٰة واجب نہیں۔",
+  aiInsights: "اے آئی مشاورتی بصیرت",
+  growthSimulator: "مرکب نمو شبیہ ساز"
 };
 
 export const translations: Record<string, Record<string, string>> = {
