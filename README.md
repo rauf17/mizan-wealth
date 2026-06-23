@@ -1,195 +1,125 @@
-# Mizan Wealth
+<div align="center">
+  <img src="https://raw.githubusercontent.com/rauf17/mizan-wealth/master/app/icon.svg" width="100" height="100" alt="Mizan Wealth Logo"/>
 
-> **Balance your wealth. Know what’s due.**
+  # Mizan Wealth
+  **Balance your wealth. Know what’s due.**
 
-Mizan Wealth is a privacy-first, local-first financial planning and Zakat calculation tool built for modern Islamic ethical finance. Built around the concept of *Mizan* (the balance scale of justice and measurement), the application provides individuals with structured tools to track assets, screen stock portfolios for compliance, model compound returns, and calculate estate inheritance shares—all with complete privacy as user data never leaves the browser.
+  [![Next.js](https://img.shields.io/badge/Next.js-14-black?style=for-the-badge&logo=next.js)](https://nextjs.org/)
+  [![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-3-38B2AC?style=for-the-badge&logo=tailwind-css)](https://tailwindcss.com/)
+  [![Privacy First](https://img.shields.io/badge/Privacy-Local_First-4CAF50?style=for-the-badge&logo=shield)](https://github.com/rauf17/mizan-wealth)
+  [![Vercel Deploy](https://img.shields.io/badge/Deployed_on-Vercel-black?style=for-the-badge&logo=vercel)](https://mizan-wealth.vercel.app/)
 
----
-
-### Project Badges
-
-![Next.js](https://img.shields.io/badge/Next.js-14-000000?style=flat-square&logo=next.js)
-![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6?style=flat-square&logo=typescript)
-![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-3-38B2AC?style=flat-square&logo=tailwind-css)
-![Vitest](https://img.shields.io/badge/Vitest-4-6E9F18?style=flat-square&logo=vitest)
-![Gemini AI](https://img.shields.io/badge/Gemini_AI-2.5_Flash-4285F4?style=flat-square&logo=google-gemini)
-![License](https://img.shields.io/badge/License-MIT-green?style=flat-square)
-
----
-
-## The Problem
-
-Calculating Zakat and managing Shariah-compliant wealth involves multiple technical calculations that lead to user confusion or errors:
-* **Fluctuating Nisab Thresholds**: The minimum wealth threshold (Nisab) depends on live spot prices of gold (85g) or silver (595g), requiring manual calculation and conversions.
-* **Asset Classification Rules**: Different asset classes (liquid cash, stock portfolios, physical precious metals, rental real estate, business inventory) carry distinct zakatable ratios and treatment.
-* **Temporal Rules (Hawl)**: Assets must be held for a full lunar year (354 days) before Zakat is due, requiring tracking of acquisition timelines.
-* **Liability Deductions**: Determining which short-term debts, bills, or loans can be legally deducted from gross eligible wealth is complex.
-* **Purification Screeners**: Stock assets must be screened against debt, cash, and interest income ratios, and non-compliant dividend portions must be purified through charity.
-* **Privacy Concerns**: Personal financial ledger data is sensitive; uploading balance sheets to external databases deters users from utilizing digital planners.
-
-## The Solution
-
-Mizan Wealth addresses these challenges by introducing a unified, local-first web application:
-1. **Live Rate Integration**: Retrieves spot commodity market rates automatically to compute exact Nisab limits.
-2. **Hawl Rule Automation**: Automatically tracks lunar year holding requirements based on recorded acquisition dates.
-3. **Structured Portfolio Ledgers**: Replaces basic spreadsheets with structured card inventories that distinguish gross market value from zakatable amounts.
-4. **Integrated Growth Modeler**: Simulates net wealth growth over time by auto-deducting Zakat (2.5%) and stock purification allocations.
-5. **Privacy-First Architecture**: Stores all balance records, ledger items, and configuration settings offline using the browser's localStorage.
+  <p align="center">
+    A privacy-first, beautiful, and completely offline-capable Islamic finance dashboard built by Muslims, for Muslims.
+  </p>
+</div>
 
 ---
 
-## Philosophy & Core Principles
+> *"And establish prayer and give Zakat, and whatever good you put forward for yourselves – you will find it with Allah."* 
+> — (Surah Al-Baqarah 2:110)
 
-* **Trust & Privacy**: Personal wealth statistics should remain private. Mizan operates entirely client-side. The application does not require user accounts, tracking cookies, or external backend databases.
-* **Juridical Accuracy**: Calculations utilize standard Shariah principles for asset valuation and liability deductions. The Silver Nisab standard is recommended as the default to maximize support for eligible recipients.
-* **Clarity over Complexity**: Financial planning interfaces should feel calm, structured, and informative. The design system uses muted teals and golds with clear typography to support analytical focus.
+## 🌙 Assalamu Alaikum, Brother!
 
----
+Welcome to **Mizan Wealth**. Calculating Zakat, screening stocks for Shariah compliance, and managing your halal wealth shouldn't require complex spreadsheets or compromising your privacy by uploading your net worth to a random server.
 
-## Core Modules
+Mizan Wealth is a unified, strictly local-first dashboard that respects your privacy and adheres to authentic Islamic jurisprudence (Fiqh). We built this so you can confidently calculate what you owe, purify your investments, and plan your financial future—all in one gorgeous interface.
 
-### 1. Zakat Engine
-* **Dynamic Nisab Standards**: Supports both Gold (85g) and Silver (595g) standards.
-* **Short-Term Debt Deduction**: Formulates net zakatable positions:
-  $$\text{Net Zakatable} = \max(0, \text{Eligible Assets} - \text{Liabilities})$$
-* **Hawl Verification**: Performs day-difference calculations to verify if a lunar year has passed since asset acquisition.
+### 🌟 Why Choose Mizan Wealth?
 
-### 2. Stock Compliance Screener
-* **Financial Ratio Testing**: Screens equities based on standard AAOIFI compliance criteria (debt to market value, liquid cash to assets, and interest income).
-* **Purification Calculator**: Directs the user on exact purification amounts required for dividend distributions.
-
-### 3. Growth Simulator
-* **Deduction-Aware Projections**: Simulates compound return yields over 1 to 30 years while accounting for the erosion effects of annual Zakat (2.5%) and custom purification percentages.
-
-### 4. Inheritance Modeler
-* **Estate Distribution**: Calculates legal fractions for immediate heirs (spouses, parents, children, and siblings) in accordance with Islamic estate jurisprudence.
-
-### 5. AI Advisor Insights
-* **Gemini Integration**: Uses a server-side API proxy to compile custom portfolio summaries and suggestions.
-* **Local Fallback**: Automatically falls back to a local heuristic rules engine if Gemini credentials are not supplied, ensuring full offline functionality.
+* **100% Private (Local-First):** Your financial data is sensitive. We use the browser's `localStorage` to save your assets and liabilities. Your net worth **never** leaves your device.
+* **Exact Shariah Standards:** Automatically calculates Nisab using precise South Asian *Tola* conversions: **87.48g** for Gold and **612.36g** for Silver.
+* **Hawl Automation:** Input when you acquired an asset, and Mizan will calculate if a full lunar year (354 days) has passed.
+* **Multi-Lingual:** Full support for both English and **Urdu (اردو)**, with stunning Noto Nastaliq typography and full Right-To-Left (RTL) layout.
+* **Dynamic Dark Mode:** A premium dark mode designed with muted gold and deep teal (Mizan colors) for night-time finance tracking.
 
 ---
 
-## Technical Architecture
+## 🚀 Features
 
-```mermaid
-graph TD
-    A[Browser Client] -->|Reads/Writes| B[(Local Storage)]
-    A -->|API Request| C[Next.js Edge Proxy API]
-    C -->|Fetch Metal Rates| D[Metalprice API / Gold Price Feed]
-    C -->|Fetch Insights| E[Google Gemini AI Models]
-    
-    subgraph Privacy Boundary (Local Device)
-        A
-        B
-    end
-```
+### 1. 📊 Advanced Zakat Engine
+Enter your cash, business inventory, gold, silver, and deductable short-term liabilities. The engine connects to live metal spot prices to determine your exact Nisab threshold and calculates your 2.5% Zakat obligation down to the penny.
 
-The application is structured to decouple sensitive data from network requests:
-* **Local Processing**: All ledger records, calculations, calculations history logs, and overrides reside solely in the user's browser memory via the Web Storage API.
-* **Serverless Proxies**: Server routes (`/api/prices` and `/api/ai/insights`) act as transient, stateless proxies to retrieve external rates or generate AI recommendations. No financial figures or user inputs are logged on the server.
+### 2. 📈 Stock Purity Screener
+Not all stocks are Halal to invest in. Our built-in screener checks companies against standard AAOIFI compliance criteria:
+- **Debt Ratio:** Must be < 33%
+- **Interest Income Ratio:** Must be < 5%
+- **Liquid Assets Ratio:** Must be < 33%
+*Automatically estimates the **Dividend Purification Rate** so you know exactly how much charity to give to cleanse your returns.*
 
----
+### 3. 🌱 Halal Growth Simulator
+Project your financial future with a compound interest simulator that mathematically subtracts the annual 2.5% wealth tax (Zakat) and purification rates, giving you realistic Shariah-compliant growth models.
 
-## Screenshots
+### 4. 📜 Mawarith (Inheritance) Modeler
+A simple calculator to divide your estate according to explicit Quranic shares for spouses, parents, and children.
 
-*Below are visual layouts of the primary user interfaces in Mizan Wealth.*
-
-### 1. Position Overview Dashboard
-```
-┌────────────────────────────────────────────────────────────────────────┐
-│  Mizan Position Overview                                               │
-├────────────────────────────────────────────────────────────────────────┤
-│  ZAKAT DUE (2.5%)                                       [ ABOVE NISAB ]│
-│  $1,245.50                                                             │
-├──────────────────────────────────────┬─────────────────────────────────┤
-│  Gross Assets: $55,000.00            │  Precious Metal Rates           │
-│  Liabilities: -$5,180.00             │  Gold: $75.50/g                 │
-│  Net Zakatable: $49,820.00           │  Silver: $0.95/g                │
-└──────────────────────────────────────┴─────────────────────────────────┘
-```
-*(Placeholder for: `/public/screenshots/dashboard_overview.png`)*
-
-### 2. Asset & Liability Inventory Ledger
-```
-┌────────────────────────────────────────────────────────────────────────┐
-│  Asset & Liability Ledger                                              │
-├──────────────────────────────────────┬─────────────────────────────────┤
-│  [ Add Asset ]                       │  Asset Inventory Ledger         │
-│  Type: Cash / Bank savings           │  Chase Savings Account (Cash)   │
-│  Description: Chase Savings          │  Value: $10,000.00              │
-│  Value ($): 10000.00                 │  Zakatable: $10,000.00          │
-│  Zakatable %: 100                    │                                 │
-└──────────────────────────────────────┴─────────────────────────────────┘
-```
-*(Placeholder for: `/public/screenshots/assets_ledger.png`)*
+### 5. 🤖 AI Advisory Insights (Optional)
+Connect your own Google Gemini API key to get personalized, actionable financial advice based purely on Islamic principles.
 
 ---
 
-## Technology Stack
+## 🛠️ Technology Stack
 
-* **Framework**: Next.js 14 (React Server Components, App Router)
-* **Language**: TypeScript (Strict typing configuration)
-* **Styling**: Tailwind CSS (CSS variables design tokens system)
-* **Charts**: SVG-based custom mathematical visualization graphs (no heavy third-party graphing libraries)
-* **Testing**: Vitest & React Testing Library
-* **Build Tool**: Next.js Compiler (SWC)
+Mizan Wealth is built with the most modern web technologies to ensure lightning-fast performance and a premium user experience:
 
----
-
-## Getting Started
-
-### 1. Prerequisites
-Ensure you have Node.js 18.x or later installed on your system.
-
-### 2. Environment Configuration
-Create a `.env.local` configuration file in the project root:
-```bash
-cp .env.example .env.local
-```
-
-Define the optional keys:
-```env
-# Optional: API key to retrieve live spot metal rates (metalpriceapi.com)
-METAL_PRICE_API_KEY=your_api_key_here
-
-# Optional: Google Gemini API key to activate AI Advisory recommendations
-GEMINI_API_KEY=your_gemini_api_key_here
-```
-
-### 3. Installation
-Install the required packages:
-```bash
-npm install
-```
-
-### 4. Run Development Server
-Launch the development environment:
-```bash
-npm run dev
-```
-Open [http://localhost:3000](http://localhost:3000) in your browser.
-
-### 5. Run Test Suite
-Validate calculations, state changes, and edge-case behaviors:
-```bash
-npm run test
-```
+- **Framework:** [Next.js 14](https://nextjs.org/) (React App Router)
+- **Styling:** [Tailwind CSS v3](https://tailwindcss.com/) with native CSS variable color mapping
+- **Testing:** [Vitest](https://vitest.dev/)
+- **AI Integration:** Google Gemini Flash Models
+- **Icons:** Lucide React
 
 ---
 
-## Deployment
+## ⚙️ Getting Started (Run it Locally)
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/YOUR_USERNAME/mizan-wealth)
-<!-- Note: Please replace YOUR_USERNAME in the URL above with your actual GitHub username -->
+Want to run this yourself or contribute? It's easy!
 
-1. Push to GitHub
-2. Connect repo on vercel.com
-3. Add GEMINI_API_KEY and METAL_PRICE_API_KEY in Vercel project Settings → Environment Variables (both are optional)
-4. Deploy
+### Prerequisites
+Make sure you have Node.js 18+ installed.
+
+### Installation
+
+1. **Clone the repository:**
+   ```bash
+   git clone https://github.com/rauf17/mizan-wealth.git
+   cd mizan-wealth
+   ```
+
+2. **Install dependencies:**
+   ```bash
+   npm install
+   ```
+
+3. **Set up Environment Variables:**
+   ```bash
+   cp .env.example .env.local
+   ```
+   *Optional:* Open `.env.local` and add your `METAL_PRICE_API_KEY` for live gold/silver prices, and `GEMINI_API_KEY` for AI features. If you skip this, the app gracefully falls back to reliable mock data.
+
+4. **Run the local server:**
+   ```bash
+   npm run dev
+   ```
+   Open [http://localhost:3000](http://localhost:3000) in your browser.
 
 ---
 
-## Disclaimer
+## 🌐 Deploy Your Own
 
-Mizan Wealth is a financial planning calculation tool. The calculated outputs, simulated growth projections, and advisory responses generated by the Gemini model or fallback heuristic engine are provided for educational and illustrative purposes. They do not constitute formal religious rulings (Fatwa) or certified financial planning declarations. Users are advised to cross-reference calculations with local scholars or financial advisors.
+You can deploy your own private instance of Mizan Wealth to Vercel in 1 click for free:
+
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/rauf17/mizan-wealth)
+
+1. Click the button above to clone and deploy.
+2. In the Vercel setup, paste your `.env.local` keys into the Environment Variables section.
+3. Deploy!
+
+---
+
+## ⚖️ Disclaimer
+*Mizan Wealth is a financial planning and calculation tool. The calculated outputs, stock purity results, and simulated projections are provided for educational and organizational purposes. They do not constitute formal religious rulings (Fatwa) or certified financial advice. We always advise cross-referencing complex Zakat cases with local certified Islamic scholars.*
+
+<div align="center">
+  <br>
+  <b>Built with Barakah. May Allah bless your wealth.</b>
+</div>
