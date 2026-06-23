@@ -121,3 +121,82 @@ export function clearData(key: string): void {
   removeStorageItem(key);
 }
 
+/**
+ * Export all data from localStorage
+ */
+export function exportAllData(): void {
+  if (!isClient()) return;
+  
+  const data = {
+    assets: getData(STORAGE_KEYS.ZAKAT_ASSETS, null),
+    liabilities: getData(STORAGE_KEYS.ZAKAT_LIABILITIES, null),
+    portfolioStocks: getData(STORAGE_KEYS.PORTFOLIO_STOCKS, null),
+    metalRates: getData(STORAGE_KEYS.METAL_RATES, null),
+    calculationHistory: getData(STORAGE_KEYS.CALCULATION_HISTORY, null),
+    settings: getData(STORAGE_KEYS.SETTINGS, null),
+  };
+
+  const backup = {
+    version: "1.0",
+    exportedAt: new Date().toISOString(),
+    data,
+  };
+
+  const jsonStr = JSON.stringify(backup, null, 2);
+  const blob = new Blob([jsonStr], { type: "application/json" });
+  const url = URL.createObjectURL(blob);
+  
+  const a = document.createElement("a");
+  a.href = url;
+  const dateStr = new Date().toISOString().split("T")[0];
+  a.download = `mizan-wealth-backup-${dateStr}.json`;
+  
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+/**
+ * Import backup file
+ */
+export async function importAllData(file: File): Promise<{ success: boolean; message: string }> {
+  if (!isClient()) return { success: false, message: "Client only" };
+  
+  try {
+    const text = await file.text();
+    const backup = JSON.parse(text);
+    
+    if (!backup.data) {
+      return { success: false, message: "Invalid backup file — no data was imported." };
+    }
+    
+    const { data } = backup;
+    const knownKeys: Record<string, string> = {
+      assets: STORAGE_KEYS.ZAKAT_ASSETS,
+      liabilities: STORAGE_KEYS.ZAKAT_LIABILITIES,
+      portfolioStocks: STORAGE_KEYS.PORTFOLIO_STOCKS,
+      metalRates: STORAGE_KEYS.METAL_RATES,
+      calculationHistory: STORAGE_KEYS.CALCULATION_HISTORY,
+      settings: STORAGE_KEYS.SETTINGS,
+    };
+    
+    let importedAny = false;
+    
+    for (const [key, storageKey] of Object.entries(knownKeys)) {
+      if (data[key] !== undefined && data[key] !== null) {
+        saveData(storageKey, data[key]);
+        importedAny = true;
+      }
+    }
+    
+    if (!importedAny) {
+      return { success: false, message: "Invalid backup file — no data was imported." };
+    }
+    
+    return { success: true, message: "Data imported successfully. Refresh the page to see your changes." };
+  } catch {
+    return { success: false, message: "Invalid backup file — no data was imported." };
+  }
+}
+
