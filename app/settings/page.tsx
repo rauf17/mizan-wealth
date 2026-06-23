@@ -5,7 +5,7 @@ import DashboardShell from "../../components/DashboardShell";
 import Button from "../../components/Button";
 import Card from "../../components/Card";
 import Input from "../../components/Input";
-import { getData, saveData, clearAppStorage, STORAGE_KEYS } from "../../lib/storage";
+import { getData, saveData, clearAppStorage, STORAGE_KEYS, exportAllData, importAllData } from "../../lib/storage";
 import { DEFAULT_METAL_RATES } from "../../lib/api";
 import { MetalRates } from "../../types";
 
@@ -19,6 +19,16 @@ export default function SettingsPage() {
   const [silverPrice, setSilverPrice] = useState("0.95");
   
   const [statusMessage, setStatusMessage] = useState<string | null>(null);
+
+  const handleImport = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    
+    const result = await importAllData(file);
+    setStatusMessage(result.message);
+    setTimeout(() => setStatusMessage(null), 4000);
+    e.target.value = "";
+  };
 
   useEffect(() => {
     setMounted(true);
@@ -109,8 +119,9 @@ export default function SettingsPage() {
         )}
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-          {/* Settings Form */}
-          <form onSubmit={handleSaveSettings} className="lg:col-span-8 space-y-6">
+          <div className="lg:col-span-8 space-y-6">
+            {/* Settings Form */}
+            <form onSubmit={handleSaveSettings} className="space-y-6">
             {/* Nisab settings */}
             <Card className="space-y-4">
               <h2 className="text-sm font-heading font-bold text-slate-800 pb-3 border-b border-slate-100">
@@ -208,6 +219,26 @@ export default function SettingsPage() {
               Update Configuration
             </Button>
           </form>
+
+          {/* Data Portability */}
+          <Card className="space-y-4">
+            <h2 className="text-sm font-heading font-bold text-slate-800 pb-3 border-b border-slate-100">
+              Data Portability
+            </h2>
+            <p className="text-xs text-slate-400 leading-relaxed pb-2">
+              Export all your settings, assets, liabilities, history, and portfolio to a JSON backup file. You can restore this backup on another device.
+            </p>
+            <div className="flex gap-4">
+              <Button type="button" variant="secondary" onClick={() => exportAllData()}>
+                Export All Data
+              </Button>
+              <label className="btn-secondary cursor-pointer flex items-center justify-center m-0">
+                Import Backup
+                <input type="file" accept=".json" className="hidden" onChange={handleImport} />
+              </label>
+            </div>
+          </Card>
+        </div>
 
           {/* Core System Reset Options */}
           <Card className="lg:col-span-4 space-y-4">
