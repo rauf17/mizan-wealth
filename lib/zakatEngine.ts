@@ -1,8 +1,8 @@
 import { ZakatAsset, ZakatCalculationResult, MetalRates } from "../types";
 
 export const SHARIAH_CONSTANTS = {
-  GOLD_NISAB_GRAMS: 85,
-  SILVER_NISAB_GRAMS: 595,
+  GOLD_NISAB_GRAMS: 87.48, // ~7.5 Tola
+  SILVER_NISAB_GRAMS: 612.36, // ~52.5 Tola
   ZAKAT_RATE: 0.025, // 2.5%
 };
 

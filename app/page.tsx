@@ -241,7 +241,7 @@ export default function Home() {
                     <li>Assets must have been held for one full lunar year (Hawl) to be zakatable.</li>
                     <li>Zakat is 2.5% of net eligible wealth above the Nisab.</li>
                   </ul>
-                  <p><strong>Nisab standards explained:</strong> Silver (612g, ~$565 today) vs Gold (87.48g, ~$6,400 today) — silver standard is recommended as it maximises support for Zakat recipients.</p>
+                  <p><strong>Nisab standards explained:</strong> Silver (612.36g, ~$565 today) vs Gold (87.48g, ~$6,400 today) — silver standard is recommended as it maximises support for Zakat recipients.</p>
                   <p><strong>Quick example:</strong> &quot;$50,000 cash held for 1+ year &rarr; above silver Nisab &rarr; 2.5% = $1,250 due&quot;</p>
                 </div>
                 <div className="flex gap-3 justify-end mt-6">

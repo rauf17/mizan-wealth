@@ -138,7 +138,7 @@ export default function SettingsPage() {
                     className="mt-1 text-primary focus:ring-primary focus:ring-offset-0"
                   />
                   <div className="text-sm">
-                    <strong className="block text-slate-800 font-semibold">Silver Nisab Standard (595 grams) - Recommended</strong>
+                    <strong className="block text-slate-800 font-semibold">Silver Nisab Standard (612.36 grams) - Recommended</strong>
                     <span className="text-xs text-slate-400 mt-0.5 block leading-relaxed">
                       Most commonly recommended by contemporary Shariah councils for liquid wealth, as it sets a lower threshold and maximises support for Zakat recipients.
                     </span>
@@ -154,7 +154,7 @@ export default function SettingsPage() {
                     className="mt-1 text-primary focus:ring-primary focus:ring-offset-0"
                   />
                   <div className="text-sm">
-                    <strong className="block text-slate-800 font-semibold">Gold Nisab Standard (85 grams)</strong>
+                    <strong className="block text-slate-800 font-semibold">Gold Nisab Standard (87.48 grams)</strong>
                     <span className="text-xs text-slate-400 mt-0.5 block leading-relaxed">
                       Traditionally preferred for gold jewelry owners or specific financial conditions.
                     </span>
