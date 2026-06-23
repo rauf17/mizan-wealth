@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 import Logo from "./Logo";
 import { useCurrency } from "../context/CurrencyContext";
 import { useLang } from "../context/LanguageContext";
+import { useTheme } from "../context/ThemeContext";
 
 interface DashboardShellProps {
   children: React.ReactNode;
@@ -16,6 +17,7 @@ export default function DashboardShell({ children }: DashboardShellProps) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const { currency, setCurrency } = useCurrency();
   const { lang, setLang, t } = useLang();
+  const { theme, toggleTheme } = useTheme();
 
   const navigationItems = [
     {
@@ -87,7 +89,7 @@ export default function DashboardShell({ children }: DashboardShellProps) {
   return (
     <div className="min-h-screen flex bg-background text-foreground font-sans">
       {/* Desktop Sidebar */}
-      <aside className="hidden md:flex flex-col w-64 bg-white border-r border-slate-200/80 sticky top-0 h-screen">
+      <aside className="hidden md:flex flex-col w-64 bg-card border-r border-slate-200/80 sticky top-0 h-screen">
         {/* Sidebar Header */}
         <div className="h-16 flex items-center px-6 border-b border-slate-100">
           <Logo variant="full" />
@@ -116,6 +118,26 @@ export default function DashboardShell({ children }: DashboardShellProps) {
 
         {/* Sidebar Footer */}
         <div className="p-6 border-t border-slate-100 space-y-4">
+          <button
+            onClick={toggleTheme}
+            className="w-full flex items-center justify-center gap-2 rounded-lg border border-slate-200 px-3 py-2 text-xs font-semibold text-slate-600 hover:bg-slate-50 transition-colors"
+          >
+            {theme === "dark" ? (
+              <>
+                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+                </svg>
+                Light Mode
+              </>
+            ) : (
+              <>
+                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+                </svg>
+                Dark Mode
+              </>
+            )}
+          </button>
           <button
             onClick={() => setLang(lang === "en" ? "ur" : "en")}
             className="rounded-lg border border-slate-200 px-3 py-1.5 text-xs font-semibold text-slate-600 hover:bg-slate-50 w-full text-center transition-colors"
@@ -150,7 +172,7 @@ export default function DashboardShell({ children }: DashboardShellProps) {
       {/* Mobile Shell Content */}
       <div className="flex-1 flex flex-col min-w-0">
         {/* Mobile Header */}
-        <header className="md:hidden h-16 bg-white border-b border-slate-200/80 px-6 flex items-center justify-between sticky top-0 z-40">
+        <header className="md:hidden h-16 bg-card border-b border-slate-200/80 px-6 flex items-center justify-between sticky top-0 z-40">
           <Logo variant="full" />
 
           <button
@@ -178,7 +200,7 @@ export default function DashboardShell({ children }: DashboardShellProps) {
             />
 
             {/* Content Drawer */}
-            <nav className="relative flex flex-col w-4/5 max-w-sm bg-white h-full p-6 shadow-xl space-y-1.5 border-r border-slate-200 animate-slide-in">
+            <nav className="relative flex flex-col w-4/5 max-w-sm bg-card h-full p-6 shadow-xl space-y-1.5 border-r border-slate-200 animate-slide-in">
               <div className="flex items-center mb-6 pb-4 border-b border-slate-100">
                 <Logo variant="full" />
               </div>
@@ -202,7 +224,27 @@ export default function DashboardShell({ children }: DashboardShellProps) {
                 );
               })}
 
-              <div className="absolute bottom-8 left-6 right-6 space-y-4 text-center">
+              <div className="absolute bottom-8 left-6 right-6 space-y-4 text-center overflow-y-auto max-h-[40vh] pb-4">
+                <button
+                  onClick={toggleTheme}
+                  className="w-full flex items-center justify-center gap-2 rounded-lg border border-slate-200 px-3 py-2 text-xs font-semibold text-slate-600 hover:bg-slate-50 transition-colors"
+                >
+                  {theme === "dark" ? (
+                    <>
+                      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+                      </svg>
+                      Light Mode
+                    </>
+                  ) : (
+                    <>
+                      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+                      </svg>
+                      Dark Mode
+                    </>
+                  )}
+                </button>
                 <button
                   onClick={() => setLang(lang === "en" ? "ur" : "en")}
                   className="rounded-lg border border-slate-200 px-3 py-1.5 text-xs font-semibold text-slate-600 hover:bg-slate-50 w-full text-center transition-colors"
