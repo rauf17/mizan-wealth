@@ -4,6 +4,8 @@ import React, { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import Logo from "./Logo";
+import { useCurrency } from "../context/CurrencyContext";
+import { useLang } from "../context/LanguageContext";
 
 interface DashboardShellProps {
   children: React.ReactNode;
@@ -12,10 +14,12 @@ interface DashboardShellProps {
 export default function DashboardShell({ children }: DashboardShellProps) {
   const pathname = usePathname();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const { currency, setCurrency } = useCurrency();
+  const { lang, setLang, t } = useLang();
 
   const navigationItems = [
     {
-      name: "Overview",
+      name: t("dashboard"),
       href: "/dashboard",
       icon: (
         <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -24,7 +28,7 @@ export default function DashboardShell({ children }: DashboardShellProps) {
       ),
     },
     {
-      name: "Asset Inventory",
+      name: t("assets"),
       href: "/assets",
       icon: (
         <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -33,7 +37,25 @@ export default function DashboardShell({ children }: DashboardShellProps) {
       ),
     },
     {
-      name: "History",
+      name: t("screener"),
+      href: "/screener",
+      icon: (
+        <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
+        </svg>
+      ),
+    },
+    {
+      name: t("inheritance"),
+      href: "/inheritance",
+      icon: (
+        <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+        </svg>
+      ),
+    },
+    {
+      name: t("history"),
       href: "/history",
       icon: (
         <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -42,7 +64,7 @@ export default function DashboardShell({ children }: DashboardShellProps) {
       ),
     },
     {
-      name: "Reports",
+      name: t("reports"),
       href: "/reports",
       icon: (
         <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -51,7 +73,7 @@ export default function DashboardShell({ children }: DashboardShellProps) {
       ),
     },
     {
-      name: "Settings",
+      name: t("settings"),
       href: "/settings",
       icon: (
         <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -93,13 +115,33 @@ export default function DashboardShell({ children }: DashboardShellProps) {
         </nav>
 
         {/* Sidebar Footer */}
-        <div className="p-6 border-t border-slate-100">
+        <div className="p-6 border-t border-slate-100 space-y-4">
+          <button
+            onClick={() => setLang(lang === "en" ? "ur" : "en")}
+            className="rounded-lg border border-slate-200 px-3 py-1.5 text-xs font-semibold text-slate-600 hover:bg-slate-50 w-full text-center transition-colors"
+          >
+            {lang === "en" ? "اردو" : <span className="font-medium">English</span>}
+          </button>
+          <div className="flex bg-slate-100 rounded-lg p-1">
+            <button
+              onClick={() => setCurrency("USD")}
+              className={`flex-1 py-1.5 text-xs font-semibold rounded-md transition-colors ${currency === "USD" ? "bg-primary text-white shadow-sm" : "text-slate-500 hover:text-slate-900"}`}
+            >
+              $ USD
+            </button>
+            <button
+              onClick={() => setCurrency("PKR")}
+              className={`flex-1 py-1.5 text-xs font-semibold rounded-md transition-colors ${currency === "PKR" ? "bg-primary text-white shadow-sm" : "text-slate-500 hover:text-slate-900"}`}
+            >
+              ₨ PKR
+            </button>
+          </div>
           <div className="text-center">
             <span className="text-[10px] font-semibold text-accent uppercase tracking-wider block mb-1 font-heading">
-              Secure Local Storage
+              {t("secureLocal")}
             </span>
             <p className="text-[11px] text-slate-400 leading-relaxed">
-              Calculations are processed 100% locally on your device.
+              {t("localDesc")}
             </p>
           </div>
         </div>
@@ -160,13 +202,35 @@ export default function DashboardShell({ children }: DashboardShellProps) {
                 );
               })}
 
-              <div className="absolute bottom-8 left-6 right-6 text-center">
-                <span className="text-[10px] font-semibold text-accent uppercase tracking-wider block mb-1 font-heading">
-                  Secure Local Storage
-                </span>
-                <p className="text-[11px] text-slate-400 leading-relaxed">
-                  Processed 100% locally on your device.
-                </p>
+              <div className="absolute bottom-8 left-6 right-6 space-y-4 text-center">
+                <button
+                  onClick={() => setLang(lang === "en" ? "ur" : "en")}
+                  className="rounded-lg border border-slate-200 px-3 py-1.5 text-xs font-semibold text-slate-600 hover:bg-slate-50 w-full text-center transition-colors"
+                >
+                  {lang === "en" ? "اردو" : <span className="font-medium">English</span>}
+                </button>
+                <div className="flex bg-slate-100 rounded-lg p-1">
+                  <button
+                    onClick={() => setCurrency("USD")}
+                    className={`flex-1 py-1.5 text-xs font-semibold rounded-md transition-colors ${currency === "USD" ? "bg-primary text-white shadow-sm" : "text-slate-500 hover:text-slate-900"}`}
+                  >
+                    $ USD
+                  </button>
+                  <button
+                    onClick={() => setCurrency("PKR")}
+                    className={`flex-1 py-1.5 text-xs font-semibold rounded-md transition-colors ${currency === "PKR" ? "bg-primary text-white shadow-sm" : "text-slate-500 hover:text-slate-900"}`}
+                  >
+                    ₨ PKR
+                  </button>
+                </div>
+                <div>
+                  <span className="text-[10px] font-semibold text-accent uppercase tracking-wider block mb-1 font-heading">
+                    {t("secureLocal")}
+                  </span>
+                  <p className="text-[11px] text-slate-400 leading-relaxed">
+                    {t("localDesc")}
+                  </p>
+                </div>
               </div>
             </nav>
           </div>
