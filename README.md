@@ -9,6 +9,8 @@
   [![Google Gemini](https://img.shields.io/badge/AI_Powered-Google_Gemini-4285F4?style=for-the-badge&logo=google-gemini)](https://aistudio.google.com/)
   [![MetalPrice API](https://img.shields.io/badge/Live_Rates-MetalPrice_API-FFD700?style=for-the-badge&logo=api)](https://metalpriceapi.com/)
 
+### 🌐 [Launch Mizan Wealth](https://mizanwealth.vercel.app/)
+
   <p align="center">
     A browser-native, beautiful, and completely offline-capable Islamic finance dashboard built by Muslims, for Muslims.
   </p>
