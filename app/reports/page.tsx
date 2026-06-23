@@ -4,6 +4,7 @@ import React, { useState, useEffect } from "react";
 import DashboardShell from "../../components/DashboardShell";
 import Button from "../../components/Button";
 import Card from "../../components/Card";
+import { useCurrency } from "../../context/CurrencyContext";
 import { getData, STORAGE_KEYS } from "../../lib/storage";
 import { calculateZakat } from "../../lib/zakatEngine";
 import { fetchMetalRates, DEFAULT_METAL_RATES } from "../../lib/api";
@@ -12,6 +13,7 @@ import { exportToExcel } from "../../lib/excelExport";
 import { ZakatAsset, ZakatLiability, MetalRates, ZakatCalculationResult } from "../../types";
 
 export default function ReportsPage() {
+  const { currency, convert, format } = useCurrency();
   const [mounted, setMounted] = useState(false);
   const [assets, setAssets] = useState<ZakatAsset[]>([]);
   const [liabilities, setLiabilities] = useState<ZakatLiability[]>([]);
@@ -158,22 +160,22 @@ export default function ReportsPage() {
           <h3 className="text-sm font-heading font-bold text-slate-800 pb-3 border-b border-slate-100">
             Statement Metadata Preview
           </h3>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-xs">
-            <div>
-              <span className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider block mb-1">Gross Assets</span>
-              <strong className="text-base font-bold text-slate-900">${result.totalAssets.toLocaleString(undefined, { minimumFractionDigits: 2 })}</strong>
+          <div className="grid grid-cols-1 gap-4 text-xs">
+            <div className="flex justify-between items-center py-2.5">
+              <span className="text-slate-500 font-medium">Gross Assets</span>
+              <strong className="text-base sm:text-lg font-bold text-slate-900">{format(convert(result.totalAssets, "USD", currency))}</strong>
             </div>
-            <div>
-              <span className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider block mb-1">Total Deductions</span>
-              <strong className="text-base font-bold text-slate-700">${result.totalLiabilities.toLocaleString(undefined, { minimumFractionDigits: 2 })}</strong>
+            <div className="flex justify-between items-center py-2.5">
+              <span className="text-slate-500 font-medium">Liabilities Deduction</span>
+              <strong className="text-base sm:text-lg font-bold text-slate-700">-{format(convert(result.totalLiabilities, "USD", currency))}</strong>
             </div>
-            <div>
-              <span className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider block mb-1">Net Zakat Value</span>
-              <strong className="text-base font-bold text-slate-900">${result.netZakatable.toLocaleString(undefined, { minimumFractionDigits: 2 })}</strong>
+            <div className="flex justify-between items-center py-2.5 bg-slate-50 -mx-6 px-6 border-y border-slate-100">
+              <span className="text-slate-700 font-semibold">Net Zakatable Wealth</span>
+              <strong className="text-base sm:text-lg font-bold text-slate-900">{format(convert(result.netZakatable, "USD", currency))}</strong>
             </div>
-            <div>
-              <span className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider block mb-1">Zakat Obligation</span>
-              <strong className="text-base font-extrabold text-accent">${result.zakatDue.toLocaleString(undefined, { minimumFractionDigits: 2 })}</strong>
+            <div className="flex justify-between items-center pt-2.5">
+              <span className="text-slate-900 font-bold uppercase tracking-wider font-heading">Total Zakat Due</span>
+              <strong className="text-base sm:text-lg font-extrabold text-accent">{format(convert(result.zakatDue, "USD", currency))}</strong>
             </div>
           </div>
         </Card>
