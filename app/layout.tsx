@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { Inter, Outfit } from "next/font/google";
 import "./globals.css";
+import { CurrencyProvider } from "../context/CurrencyContext";
+import { LanguageProvider } from "../context/LanguageContext";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -24,10 +26,18 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className="scroll-smooth">
+      <head>
+        {/* eslint-disable-next-line @next/next/no-page-custom-font */}
+        <link href="https://fonts.googleapis.com/css2?family=Noto+Nastaliq+Urdu&display=swap" rel="stylesheet" />
+      </head>
       <body
         className={`${inter.variable} ${outfit.variable} font-sans antialiased bg-background text-foreground`}
       >
-        {children}
+        <CurrencyProvider>
+          <LanguageProvider>
+            {children}
+          </LanguageProvider>
+        </CurrencyProvider>
       </body>
     </html>
   );
