@@ -45,12 +45,24 @@ html[lang="ur"] .font-sans {
   font-family: 'Noto Nastaliq Urdu', var(--font-inter), sans-serif;
 }
 
-html[lang="ur"] .font-heading,
+html[lang="ur"] {
+  font-family: 'Noto Nastaliq Urdu', var(--font-inter), sans-serif;
+  /* Nastaliq naturally renders smaller, so bump base size */
+  font-size: 18px;
+}
 html[lang="ur"] .font-hero,
 html[lang="ur"] .font-h1,
 html[lang="ur"] .font-h2,
 html[lang="ur"] .font-h3 {
   font-family: 'Noto Nastaliq Urdu', var(--font-outfit), sans-serif;
+  line-height: 1.8;
+  font-weight: 700;
+}
+html[lang="ur"] .font-body,
+html[lang="ur"] p,
+html[lang="ur"] span {
+  line-height: 2.2;
+  letter-spacing: 0.01em;
 }
 
 @layer components {
@@ -190,4 +202,82 @@ html[lang="ur"] .font-h3 {
 @keyframes shimmer {
   0% { background-position: -200% center; }
   100% { background-position: 200% center; }
+}
+
+@keyframes tiltScale {
+  0% { transform: rotate(0deg); }
+  25% { transform: rotate(-8deg); }
+  50% { transform: rotate(8deg); }
+  75% { transform: rotate(-3deg); }
+  100% { transform: rotate(0deg); }
+}
+
+@keyframes progressFill { 
+  from { width: 0%; } 
+  to { width: 100%; } 
+}
+
+@keyframes fadeOut { 
+  from { opacity: 1; } 
+  to { opacity: 0; } 
+}
+
+.animate-fade-out {
+  animation: fadeOut 0.3s ease-out forwards;
+}
+
+@keyframes goldShimmer {
+  0% { background-position: 0% center; }
+  100% { background-position: 200% center; }
+}
+
+.text-gold-shimmer {
+  background: linear-gradient(135deg, #0F4C4C 0%, #C9A227 45%, #0F4C4C 100%);
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: goldShimmer 4s linear infinite;
+}
+
+@keyframes blink { 
+  0%, 100% { opacity: 1; } 
+  50% { opacity: 0; } 
+}
+
+/* Dark Mode Variables */
+[data-theme="dark"] {
+  --background: #0F1117;
+  --foreground: #F1F5F9;
+  --card: #1A1F2E;
+  --card-foreground: #F1F5F9;
+  --primary: #2DD4BF;          /* lighter teal for dark bg */
+  --primary-foreground: #0F1117;
+  --accent: #D4A843;           /* slightly warmer gold on dark */
+  --accent-foreground: #0F1117;
+  --border: #2D3748;
+  --muted: #1E2533;
+  --muted-foreground: #94A3B8;
+  --slate-50: #1A1F2E;
+  --slate-100: #1E2533;
+  --slate-200: #2D3748;
+  --slate-300: #4A5568;
+  --slate-400: #718096;
+  --slate-500: #94A3B8;
+  --slate-600: #CBD5E0;
+  --slate-700: #E2E8F0;
+  --slate-800: #EDF2F7;
+  --slate-900: #F7FAFC;
+}
+
+[data-theme="dark"] body {
+  background: radial-gradient(circle at top, #0F1117 0%, rgba(45,212,191,0.03) 100%), #0F1117;
+}
+
+[data-theme="dark"] .mizan-card {
+  box-shadow: 0 10px 30px rgba(0,0,0,0.3), 0 1px 2px rgba(0,0,0,0.2);
+}
+
+[data-theme="dark"] .mizan-hero-card {
+  background: rgba(26,31,46,0.9) !important;
 }
