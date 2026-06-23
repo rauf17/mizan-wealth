@@ -1,33 +1,26 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 
-export function useCountUp(endValue: number, duration: number = 800) {
+export function useCountUp(target: number, duration = 900) {
   const [value, setValue] = useState(0);
+  const startRef = useRef<number | null>(null);
+  const frameRef = useRef<number>();
 
   useEffect(() => {
-    let startTime: number | null = null;
-    let animationFrameId: number;
-
+    if (target === 0) { setValue(0); return; }
+    startRef.current = null;
     const animate = (timestamp: number) => {
-      if (!startTime) startTime = timestamp;
-      const progress = timestamp - startTime;
-      const percentage = Math.min(progress / duration, 1);
-      
-      // Easing out function for smoother stop
-      const easeOut = 1 - Math.pow(1 - percentage, 3);
-      
-      setValue(endValue * easeOut);
-
-      if (percentage < 1) {
-        animationFrameId = requestAnimationFrame(animate);
-      } else {
-        setValue(endValue);
-      }
+      if (!startRef.current) startRef.current = timestamp;
+      const elapsed = timestamp - startRef.current;
+      const progress = Math.min(elapsed / duration, 1);
+      // Ease out cubic
+      const eased = 1 - Math.pow(1 - progress, 3);
+      setValue(target * eased);
+      if (progress < 1) frameRef.current = requestAnimationFrame(animate);
+      else setValue(target);
     };
-
-    animationFrameId = requestAnimationFrame(animate);
-
-    return () => cancelAnimationFrame(animationFrameId);
-  }, [endValue, duration]);
+    frameRef.current = requestAnimationFrame(animate);
+    return () => { if (frameRef.current) cancelAnimationFrame(frameRef.current); };
+  }, [target, duration]);
 
   return value;
 }
