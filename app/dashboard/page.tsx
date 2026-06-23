@@ -274,7 +274,7 @@ export default function DashboardPage() {
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-2">
           <div>
             <h1 className="font-h1">
-              {t("appName")} - {t("dashboard")}
+              {t("appName")} &mdash; {t("dashboard")}
             </h1>
             <p className="text-slate-500 mt-1 text-sm leading-relaxed">
               {t("tagline")}
@@ -336,7 +336,7 @@ export default function DashboardPage() {
               {/* Zakat Status Panel (Integrated) */}
               <div className="relative z-10 flex items-center justify-between border-b border-slate-100 pb-4 mb-6">
                 <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider font-heading">
-                  Wealth Balance Summary
+                  {t("wealthSummary")}
                 </span>
                 <div className="flex items-center gap-2">
                   <span className={`w-2.5 h-2.5 rounded-full ${calculationResult.isNisabReached ? "bg-accent" : "bg-slate-300"}`} />
@@ -371,7 +371,7 @@ export default function DashboardPage() {
                     {t("liabilities")}
                   </span>
                   <strong className="text-base sm:text-lg font-bold text-slate-600 block">
-                    -{format(convert(calculationResult.totalLiabilities, "USD", currency))}
+                    {format(convert(calculationResult.totalLiabilities, "USD", currency))}
                   </strong>
                 </div>
                 <div>
@@ -384,7 +384,7 @@ export default function DashboardPage() {
                 </div>
                 <div className="bg-primary/5 border border-primary/10 rounded-lg p-2 -m-2">
                   <span className="text-[10px] font-semibold text-primary/70 uppercase tracking-wider block mb-1">
-                    Nisab Multiplier
+                    {t("nisabMultiplier")}
                   </span>
                   <strong className="text-base sm:text-lg font-bold text-primary block">
                     {calculationResult.isNisabReached ? `${(calculationResult.netZakatable / calculationResult.nisabThreshold).toFixed(1)}×` : "—"}
@@ -404,11 +404,16 @@ export default function DashboardPage() {
                 <div className="text-xs text-slate-500 leading-relaxed">
                   {calculationResult.isNisabReached ? (
                     <span>
-                      Your net eligible assets of <strong className="text-slate-700">{format(convert(calculationResult.netZakatable, "USD", currency))}</strong> exceed the Nisab threshold (<strong className="text-slate-700">{format(convert(calculationResult.nisabThreshold, "USD", currency))}</strong> using the {settings.nisabStandard} standard) by <strong className="text-accent">{(calculationResult.netZakatable / calculationResult.nisabThreshold).toFixed(1)}x</strong>. Zakat is due.
+                      {t("nisabReachedText")
+                        .replace("{amount}", format(convert(calculationResult.netZakatable, "USD", currency)))
+                        .replace("{threshold}", format(convert(calculationResult.nisabThreshold, "USD", currency)))
+                        .replace("{multiplier}", (calculationResult.netZakatable / calculationResult.nisabThreshold).toFixed(1))}
                     </span>
                   ) : (
                     <span>
-                      Your net eligible assets of <strong className="text-slate-700">{format(convert(calculationResult.netZakatable, "USD", currency))}</strong> are below the Nisab threshold (<strong className="text-slate-700">{format(convert(calculationResult.nisabThreshold, "USD", currency))}</strong> using the {settings.nisabStandard} standard). Zakat is not due.
+                      {t("nisabNotReachedText")
+                        .replace("{amount}", format(convert(calculationResult.netZakatable, "USD", currency)))
+                        .replace("{threshold}", format(convert(calculationResult.nisabThreshold, "USD", currency)))}
                     </span>
                   )}
                 </div>
@@ -428,10 +433,10 @@ export default function DashboardPage() {
           <div className="space-y-8">
             {/* Asset Breakdown */}
             <Card className="min-h-[280px]">
-              <h3 className="font-h3 text-slate-900 mb-4 font-heading font-bold">Asset Breakdown</h3>
+              <h3 className="font-h3 text-slate-900 mb-4 font-heading font-bold">{t("assetBreakdown")}</h3>
               {assets.length === 0 ? (
                 <div className="text-center py-6 text-slate-400 text-xs font-semibold">
-                  Add assets in the inventory ledger to see distribution metrics.
+                  {t("assetBreakdownEmpty")}
                 </div>
               ) : (
                 <div className="space-y-4">
@@ -460,9 +465,9 @@ export default function DashboardPage() {
 
             {/* Market Rates Card */}
             <Card className="space-y-4 min-h-[280px]">
-              <h3 className="font-h3 text-slate-900 font-heading font-bold">Precious Metal Rates</h3>
+              <h3 className="font-h3 text-slate-900 font-heading font-bold">{t("metalRates")}</h3>
               <p className="text-xs text-slate-400 leading-relaxed">
-                Market rates used to determine Nisab limits (updated dynamically).
+                {t("metalRatesDesc")}
               </p>
               
               {/* Premium Side-by-Side Commodity pricing boxes */}
@@ -474,7 +479,7 @@ export default function DashboardPage() {
                 }}>
                   <div className="relative z-10">
                     <span className="text-[10px] text-slate-400 font-semibold uppercase tracking-wider block mb-1">
-                      Gold Price (24k)
+                      {t("goldPrice")}
                     </span>
                     <strong className="text-base font-bold text-slate-900">
                       {format(convert(rates.goldPerGram, "USD", currency))}<span className="text-[10px] text-slate-400 font-normal">/g</span>
@@ -483,7 +488,7 @@ export default function DashboardPage() {
                 </div>
                 <div className="mizan-card border-accent/20 rounded-lg p-3 text-center shadow-sm">
                   <span className="text-[10px] text-slate-400 font-semibold uppercase tracking-wider block mb-1">
-                    Silver Price
+                    {t("silverPrice")}
                   </span>
                   <strong className="text-base font-bold text-slate-900">
                     {format(convert(rates.silverPerGram, "USD", currency))}<span className="text-[10px] text-slate-400 font-normal">/g</span>
@@ -494,11 +499,11 @@ export default function DashboardPage() {
               {/* Calculated standard thresholds */}
               <div className="divide-y divide-slate-100 text-xs pt-2">
                 <div className="py-2.5 flex justify-between text-slate-500 font-medium">
-                  <span>Calculated Gold Nisab (85g)</span>
+                  <span>{t("goldNisab")}</span>
                   <span className="font-bold text-slate-800">{format(convert(rates.goldPerGram * 85, "USD", currency))}</span>
                 </div>
                 <div className="py-2.5 flex justify-between text-slate-500 font-medium">
-                  <span>Calculated Silver Nisab (595g)</span>
+                  <span>{t("silverNisab")}</span>
                   <span className="font-bold text-slate-800">{format(convert(rates.silverPerGram * 595, "USD", currency))}</span>
                 </div>
               </div>
@@ -524,7 +529,7 @@ export default function DashboardPage() {
                     <svg className="w-5 h-5 text-accent" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
                     </svg>
-                    <span className="font-heading font-bold text-slate-800 text-sm">AI Advisor Insights</span>
+                    <span className="font-heading font-bold text-slate-800 text-sm">{t("aiInsights")}</span>
                   </div>
                   <svg className={`w-5 h-5 text-slate-400 transition-transform duration-200 ${showAI ? "rotate-180" : ""}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
@@ -603,7 +608,7 @@ export default function DashboardPage() {
                   <svg className="w-5 h-5 text-slate-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
                   </svg>
-                  <span className="font-heading font-bold text-slate-800 text-sm">Compound Growth Simulator</span>
+                  <span className="font-heading font-bold text-slate-800 text-sm">{t("growthSimulator")}</span>
                 </div>
                 <svg className={`w-5 h-5 text-slate-400 transition-transform duration-200 ${showGrowth ? "rotate-180" : ""}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
