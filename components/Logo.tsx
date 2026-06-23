@@ -9,11 +9,12 @@ interface LogoProps {
 
 export default function Logo({ variant = "full", className = "" }: LogoProps) {
   return (
-    <Link
-      href="/"
-      className={`group inline-flex items-center gap-2.5 select-none focus:outline-none ${className}`}
-      title="Mizan Wealth Home Page"
-    >
+    <div className={`relative group inline-block ${className}`}>
+      <Link
+        href="/"
+        className={`group inline-flex items-center gap-2.5 select-none focus:outline-none`}
+        title="Mizan Wealth Home Page"
+      >
       {/* Lucide Scale Vector Icon - Colored & Interactive */}
       <div className="relative w-6 h-6 flex items-center justify-center">
         <svg
@@ -55,6 +56,27 @@ export default function Logo({ variant = "full", className = "" }: LogoProps) {
           <span className="font-light ml-1 text-slate-500">Wealth</span>
         </span>
       )}
-    </Link>
+      </Link>
+
+      <div 
+        className="absolute left-0 top-full mt-2 w-56 bg-white border border-slate-200 rounded-xl shadow-xl p-4 opacity-0 group-hover:opacity-100 pointer-events-none transition-all duration-200 group-hover:translate-y-0 translate-y-1 z-50 text-left"
+        lang="ur"
+        dir="ltr"
+      >
+        <div className="font-bold text-lg text-primary" style={{ fontFamily: "'Noto Nastaliq Urdu', serif", lineHeight: 1.8 }}>
+          میزان
+        </div>
+        <div className="text-slate-500 text-xs italic mt-1">
+          Mizan
+        </div>
+        <div className="text-slate-400 text-[10px] mt-0.5">
+          Arabic: The Scale of Justice
+        </div>
+        <div className="w-full h-px bg-slate-100 my-2"></div>
+        <div className="text-slate-500 text-[11px]">
+          Balance your wealth. Know what&apos;s due.
+        </div>
+      </div>
+    </div>
   );
 }
