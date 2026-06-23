@@ -7,6 +7,9 @@ import GrowthChart from "../../components/GrowthChart";
 import Button from "../../components/Button";
 import Card from "../../components/Card";
 import Input from "../../components/Input";
+import { useCountUp } from "../../hooks/useCountUp";
+import { useCurrency } from "../../context/CurrencyContext";
+import { useLang } from "../../context/LanguageContext";
 import { getData, saveData, STORAGE_KEYS } from "../../lib/storage";
 import { calculateZakat, getAssetSummary } from "../../lib/zakatEngine";
 import { fetchMetalRates, DEFAULT_METAL_RATES } from "../../lib/api";
@@ -20,7 +23,10 @@ import {
 } from "../../types";
 
 export default function DashboardPage() {
+  const { currency, convert, format } = useCurrency();
+  const { t } = useLang();
   const [mounted, setMounted] = useState(false);
+  const [showPrivacyNotice, setShowPrivacyNotice] = useState(false);
   const [assets, setAssets] = useState<ZakatAsset[]>([]);
   const [liabilities, setLiabilities] = useState<ZakatLiability[]>([]);
   const [rates, setRates] = useState<MetalRates>(DEFAULT_METAL_RATES);
@@ -133,6 +139,10 @@ export default function DashboardPage() {
   useEffect(() => {
     setMounted(true);
 
+    if (!window.localStorage.getItem("mizan_privacy_dismissed")) {
+      setShowPrivacyNotice(true);
+    }
+
     // Load local storage states
     const localAssets = getData<ZakatAsset[]>(STORAGE_KEYS.ZAKAT_ASSETS, []);
     const localLiabilities = getData<ZakatLiability[]>(STORAGE_KEYS.ZAKAT_LIABILITIES, []);
@@ -166,38 +176,42 @@ export default function DashboardPage() {
     generateGrowthProjection();
   }, [mounted, generateGrowthProjection]);
 
-  // Fetch AI insights when assets change
-  useEffect(() => {
-    if (!mounted || assets.length === 0) return;
+  const hasFetched = React.useRef(false);
 
-    const getInsights = async () => {
-      setLoadingInsights(true);
-      try {
-        const totalLiabilitiesVal = liabilities.reduce((sum, item) => sum + item.value, 0);
-        const calculationResult = calculateZakat(assets, totalLiabilitiesVal, rates, settings.nisabStandard);
-        
-        const response = await fetch("/api/ai/insights", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            assets,
-            calculation: calculationResult,
-          }),
-        });
-        if (response.ok) {
-          const data = await response.json();
-          setAiInsights(data.insights);
-          setInsightsSource(data.source || "");
-        }
-      } catch (err) {
-        console.error("Failed to load insights:", err);
-      } finally {
-        setLoadingInsights(false);
+  // Generate AI Insights manually
+  const generateInsights = async () => {
+    if (assets.length === 0 || hasFetched.current) return;
+
+    setLoadingInsights(true);
+    try {
+      const totalLiabilitiesVal = liabilities.reduce((sum, item) => sum + item.value, 0);
+      const calculationResult = calculateZakat(assets, totalLiabilitiesVal, rates, settings.nisabStandard);
+      
+      const response = await fetch("/api/ai/insights", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          assets,
+          calculation: calculationResult,
+        }),
+      });
+      if (response.ok) {
+        const data = await response.json();
+        setAiInsights(data.insights);
+        setInsightsSource(data.source || "");
+        hasFetched.current = true;
       }
-    };
+    } catch (err) {
+      console.error("Failed to load insights:", err);
+    } finally {
+      setLoadingInsights(false);
+    }
+  };
 
-    getInsights();
-  }, [mounted, assets, liabilities, rates, settings.nisabStandard]);
+  // Reset fetch flag if inputs change
+  useEffect(() => {
+    hasFetched.current = false;
+  }, [assets, liabilities, rates, settings.nisabStandard]);
 
   // Calculate sum of liabilities
   const totalLiabilitiesVal = liabilities.reduce((sum, item) => sum + item.value, 0);
@@ -209,6 +223,10 @@ export default function DashboardPage() {
     rates,
     settings.nisabStandard
   );
+
+  const animatedZakatDue = useCountUp(calculationResult.zakatDue);
+  const animatedTotalAssets = useCountUp(calculationResult.totalAssets);
+  const animatedNetZakatable = useCountUp(calculationResult.netZakatable);
 
   const assetSummary = getAssetSummary(assets);
 
@@ -251,15 +269,15 @@ export default function DashboardPage() {
 
   return (
     <DashboardShell>
-      <div className="space-y-8 max-w-5xl mx-auto">
+      <div className="animate-fade-in space-y-8 max-w-5xl mx-auto">
         {/* Top Header */}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-2">
           <div>
             <h1 className="font-h1">
-              Mizan Position Overview
+              {t("appName")} - {t("dashboard")}
             </h1>
             <p className="text-slate-500 mt-1 text-sm leading-relaxed">
-              Balance your wealth. Know what&apos;s due.
+              {t("tagline")}
             </p>
           </div>
           <div className="flex gap-3">
@@ -267,16 +285,35 @@ export default function DashboardPage() {
               onClick={handleSaveSnapshot}
               disabled={assets.length === 0}
             >
-              Save Declaration
+              {t("saveDeclaration")}
             </Button>
             <Button
               href="/assets"
               variant="secondary"
             >
-              Manage Ledger
+              {t("manageLedger")}
             </Button>
           </div>
         </div>
+
+        {/* Privacy Notice Banner */}
+        {showPrivacyNotice && (
+          <div className="bg-slate-50 border border-slate-200 text-slate-700 rounded-lg p-4 text-sm relative animate-fade-in flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <span className="leading-relaxed pr-8">
+              Your data stays in this browser — nothing is sent to a server except anonymous calculation totals when you use AI Insights. Back up your data anytime in Settings.
+            </span>
+            <Button 
+              variant="secondary"
+              onClick={() => {
+                window.localStorage.setItem("mizan_privacy_dismissed", "1");
+                setShowPrivacyNotice(false);
+              }}
+              className="flex-shrink-0"
+            >
+              Got it
+            </Button>
+          </div>
+        )}
 
         {/* Save Status Banner */}
         {saveStatus && (
@@ -293,54 +330,64 @@ export default function DashboardPage() {
           {/* Column 1 & 2: Wealth Summary & History */}
           <div className="lg:col-span-2 space-y-8">
             {/* Wealth Summary Card (Top Priority) */}
-            <Card>
+            <Card className="mizan-hero-card">
+              <div className="hero-glow-blob" />
+              
               {/* Zakat Status Panel (Integrated) */}
-              <div className="flex items-center justify-between border-b border-slate-100 pb-4 mb-6">
+              <div className="relative z-10 flex items-center justify-between border-b border-slate-100 pb-4 mb-6">
                 <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider font-heading">
                   Wealth Balance Summary
                 </span>
                 <div className="flex items-center gap-2">
                   <span className={`w-2.5 h-2.5 rounded-full ${calculationResult.isNisabReached ? "bg-accent" : "bg-slate-300"}`} />
                   <span className={`text-xs font-bold uppercase tracking-wider select-none ${calculationResult.isNisabReached ? "text-accent" : "text-slate-500"}`}>
-                    {calculationResult.isNisabReached ? "Above Nisab" : "Below Nisab"}
+                    {calculationResult.isNisabReached ? t("aboveNisab") : t("belowNisab")}
                   </span>
                 </div>
               </div>
 
               {/* Core Zakat Figure */}
-              <div className="space-y-1.5 mb-6">
-                <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider font-heading">
-                  Zakat Due (2.5%)
+              <div className="relative z-10 space-y-1.5 mb-6">
+                <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider font-heading flex items-center gap-2">
+                  {t("zakatDue")}
+                  <span className="px-1.5 py-0.5 rounded-full bg-slate-100 text-slate-500 text-[10px] tracking-widest">{currency}</span>
                 </span>
-                <div className="text-5xl font-extrabold text-accent font-heading tracking-tight">
-                  ${calculationResult.zakatDue.toLocaleString(undefined, { minimumFractionDigits: 2 })}
+                <div className="text-5xl font-extrabold text-accent font-heading tracking-tight text-glow-accent select-all">
+                  {format(convert(animatedZakatDue, "USD", currency))}
                 </div>
               </div>
 
-              {/* Sub-Metrics Grid */}
-              <div className="grid grid-cols-3 gap-4 pt-6 border-t border-slate-100">
+              <div className="relative z-10 grid grid-cols-2 sm:grid-cols-4 gap-4 pt-6 border-t border-slate-100">
                 <div>
                   <span className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider block mb-1">
-                    Gross Assets
+                    {t("grossAssets")}
                   </span>
-                  <strong className="text-base sm:text-lg font-bold text-slate-900">
-                    ${calculationResult.totalAssets.toLocaleString(undefined, { minimumFractionDigits: 2 })}
+                  <strong className="text-base sm:text-lg font-bold text-gradient-teal block">
+                    {format(convert(animatedTotalAssets, "USD", currency))}
                   </strong>
                 </div>
                 <div>
                   <span className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider block mb-1">
-                    Liabilities
+                    {t("liabilities")}
                   </span>
-                  <strong className="text-base sm:text-lg font-bold text-slate-600">
-                    -${calculationResult.totalLiabilities.toLocaleString(undefined, { minimumFractionDigits: 2 })}
+                  <strong className="text-base sm:text-lg font-bold text-slate-600 block">
+                    -{format(convert(calculationResult.totalLiabilities, "USD", currency))}
                   </strong>
                 </div>
                 <div>
                   <span className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider block mb-1">
-                    Net Zakatable
+                    {t("netZakatable")}
                   </span>
-                  <strong className="text-base sm:text-lg font-bold text-slate-900">
-                    ${calculationResult.netZakatable.toLocaleString(undefined, { minimumFractionDigits: 2 })}
+                  <strong className="text-base sm:text-lg font-bold text-gradient-teal block">
+                    {format(convert(animatedNetZakatable, "USD", currency))}
+                  </strong>
+                </div>
+                <div className="bg-primary/5 border border-primary/10 rounded-lg p-2 -m-2">
+                  <span className="text-[10px] font-semibold text-primary/70 uppercase tracking-wider block mb-1">
+                    Nisab Multiplier
+                  </span>
+                  <strong className="text-base sm:text-lg font-bold text-primary block">
+                    {calculationResult.isNisabReached ? `${(calculationResult.netZakatable / calculationResult.nisabThreshold).toFixed(1)}×` : "—"}
                   </strong>
                 </div>
               </div>
@@ -357,11 +404,11 @@ export default function DashboardPage() {
                 <div className="text-xs text-slate-500 leading-relaxed">
                   {calculationResult.isNisabReached ? (
                     <span>
-                      Your net eligible assets of <strong className="text-slate-700">${calculationResult.netZakatable.toLocaleString(undefined, { minimumFractionDigits: 2 })}</strong> exceed the Nisab threshold (<strong className="text-slate-700">${calculationResult.nisabThreshold.toLocaleString(undefined, { minimumFractionDigits: 2 })}</strong> using the {settings.nisabStandard} standard) by <strong className="text-accent">{(calculationResult.netZakatable / calculationResult.nisabThreshold).toFixed(1)}x</strong>. Zakat is due.
+                      Your net eligible assets of <strong className="text-slate-700">{format(convert(calculationResult.netZakatable, "USD", currency))}</strong> exceed the Nisab threshold (<strong className="text-slate-700">{format(convert(calculationResult.nisabThreshold, "USD", currency))}</strong> using the {settings.nisabStandard} standard) by <strong className="text-accent">{(calculationResult.netZakatable / calculationResult.nisabThreshold).toFixed(1)}x</strong>. Zakat is due.
                     </span>
                   ) : (
                     <span>
-                      Your net eligible assets of <strong className="text-slate-700">${calculationResult.netZakatable.toLocaleString(undefined, { minimumFractionDigits: 2 })}</strong> are below the Nisab threshold (<strong className="text-slate-700">${calculationResult.nisabThreshold.toLocaleString(undefined, { minimumFractionDigits: 2 })}</strong> using the {settings.nisabStandard} standard). Zakat is not due.
+                      Your net eligible assets of <strong className="text-slate-700">{format(convert(calculationResult.netZakatable, "USD", currency))}</strong> are below the Nisab threshold (<strong className="text-slate-700">{format(convert(calculationResult.nisabThreshold, "USD", currency))}</strong> using the {settings.nisabStandard} standard). Zakat is not due.
                     </span>
                   )}
                 </div>
@@ -380,7 +427,7 @@ export default function DashboardPage() {
           {/* Column 3: Asset Breakdown & Market Rates */}
           <div className="space-y-8">
             {/* Asset Breakdown */}
-            <Card>
+            <Card className="min-h-[280px]">
               <h3 className="font-h3 text-slate-900 mb-4 font-heading font-bold">Asset Breakdown</h3>
               {assets.length === 0 ? (
                 <div className="text-center py-6 text-slate-400 text-xs font-semibold">
@@ -392,14 +439,17 @@ export default function DashboardPage() {
                     const percent = Math.round((summary.value / calculationResult.totalAssets) * 100) || 0;
                     return (
                       <div key={type} className="space-y-1.5">
-                        <div className="flex justify-between text-xs font-semibold">
-                          <span className="text-slate-700">{assetTypeNames[type] || type}</span>
+                        <div className="flex justify-between text-xs font-semibold items-center">
+                          <div className="flex items-center gap-2">
+                            <span className="w-2 h-2 rounded-full bg-accent flex-shrink-0"></span>
+                            <span className="text-slate-700">{assetTypeNames[type] || type}</span>
+                          </div>
                           <span className="text-slate-500 font-medium">
-                            ${summary.value.toLocaleString(undefined, { maximumFractionDigits: 2 })} ({percent}%)
+                            {format(convert(summary.value, "USD", currency))} ({percent}%)
                           </span>
                         </div>
-                        <div className="w-full bg-slate-50 h-1.5 rounded-full overflow-hidden border border-slate-100">
-                          <div className="bg-primary h-full rounded-full transition-all duration-300" style={{ width: `${percent}%` }} />
+                         <div className="w-full bg-slate-100/50 h-1.5 rounded-full overflow-hidden border border-slate-200/50 shadow-inner">
+                          <div className="bg-accent h-full rounded-full transition-all duration-700 ease-out" style={{ width: mounted ? `${percent}%` : "0%" }} />
                         </div>
                       </div>
                     );
@@ -409,7 +459,7 @@ export default function DashboardPage() {
             </Card>
 
             {/* Market Rates Card */}
-            <Card className="space-y-4">
+            <Card className="space-y-4 min-h-[280px]">
               <h3 className="font-h3 text-slate-900 font-heading font-bold">Precious Metal Rates</h3>
               <p className="text-xs text-slate-400 leading-relaxed">
                 Market rates used to determine Nisab limits (updated dynamically).
@@ -417,20 +467,26 @@ export default function DashboardPage() {
               
               {/* Premium Side-by-Side Commodity pricing boxes */}
               <div className="grid grid-cols-2 gap-4 pt-2">
-                <div className="bg-slate-50/80 border border-slate-100 rounded-lg p-3 text-center">
-                  <span className="text-[10px] text-slate-400 font-semibold uppercase tracking-wider block mb-1">
-                    Gold Price (24k)
-                  </span>
-                  <strong className="text-base font-bold text-slate-900">
-                    ${rates.goldPerGram.toFixed(2)}<span className="text-[10px] text-slate-400 font-normal">/g</span>
-                  </strong>
+                <div className="mizan-card border-accent/20 rounded-lg p-3 text-center shadow-sm relative overflow-hidden" style={{
+                  background: "linear-gradient(90deg, transparent 0%, rgba(201,162,39,0.06) 50%, transparent 100%)",
+                  backgroundSize: "200% auto",
+                  animation: "shimmer 3s linear infinite"
+                }}>
+                  <div className="relative z-10">
+                    <span className="text-[10px] text-slate-400 font-semibold uppercase tracking-wider block mb-1">
+                      Gold Price (24k)
+                    </span>
+                    <strong className="text-base font-bold text-slate-900">
+                      {format(convert(rates.goldPerGram, "USD", currency))}<span className="text-[10px] text-slate-400 font-normal">/g</span>
+                    </strong>
+                  </div>
                 </div>
-                <div className="bg-slate-50/80 border border-slate-100 rounded-lg p-3 text-center">
+                <div className="mizan-card border-accent/20 rounded-lg p-3 text-center shadow-sm">
                   <span className="text-[10px] text-slate-400 font-semibold uppercase tracking-wider block mb-1">
                     Silver Price
                   </span>
                   <strong className="text-base font-bold text-slate-900">
-                    ${rates.silverPerGram.toFixed(2)}<span className="text-[10px] text-slate-400 font-normal">/g</span>
+                    {format(convert(rates.silverPerGram, "USD", currency))}<span className="text-[10px] text-slate-400 font-normal">/g</span>
                   </strong>
                 </div>
               </div>
@@ -439,15 +495,15 @@ export default function DashboardPage() {
               <div className="divide-y divide-slate-100 text-xs pt-2">
                 <div className="py-2.5 flex justify-between text-slate-500 font-medium">
                   <span>Calculated Gold Nisab (85g)</span>
-                  <span className="font-bold text-slate-800">${(rates.goldPerGram * 85).toLocaleString(undefined, { maximumFractionDigits: 2 })}</span>
+                  <span className="font-bold text-slate-800">{format(convert(rates.goldPerGram * 85, "USD", currency))}</span>
                 </div>
                 <div className="py-2.5 flex justify-between text-slate-500 font-medium">
                   <span>Calculated Silver Nisab (595g)</span>
-                  <span className="font-bold text-slate-800">${(rates.silverPerGram * 595).toLocaleString(undefined, { maximumFractionDigits: 2 })}</span>
+                  <span className="font-bold text-slate-800">{format(convert(rates.silverPerGram * 595, "USD", currency))}</span>
                 </div>
               </div>
 
-              <div className="text-[10px] text-slate-400 text-center pt-2 select-none">
+              <div suppressHydrationWarning className="text-[10px] text-slate-400 text-center pt-2 select-none">
                 Feed updated: {new Date(rates.lastUpdated).toLocaleTimeString()}
               </div>
             </Card>
@@ -459,7 +515,7 @@ export default function DashboardPage() {
           <div className="flex flex-col gap-4">
             {/* AI Insights Accordion */}
             {assets.length > 0 && (
-              <div className="border border-slate-200/60 rounded-xl bg-white overflow-hidden">
+              <div className="mizan-card overflow-hidden p-0">
                 <button
                   onClick={() => setShowAI(!showAI)}
                   className="w-full flex items-center justify-between px-6 py-4 text-left hover:bg-slate-50/50 transition-colors"
@@ -477,6 +533,12 @@ export default function DashboardPage() {
                 
                 {showAI && (
                   <div className="px-6 pb-6 pt-2 border-t border-slate-100 animate-fade-in">
+                    {!aiInsights && !loadingInsights && (
+                      <div className="py-6 flex justify-center">
+                        <Button onClick={generateInsights}>Generate Insights</Button>
+                      </div>
+                    )}
+
                     {insightsSource && !loadingInsights && (
                       <div className="flex justify-end mb-4 pt-4">
                         <span className="text-[10px] bg-slate-100 border border-slate-200/60 px-2.5 py-1 rounded-full text-slate-500 font-semibold uppercase tracking-wider select-none">
@@ -532,7 +594,7 @@ export default function DashboardPage() {
             )}
 
             {/* Growth Modeler Accordion */}
-            <div className="border border-slate-200/60 rounded-xl bg-white overflow-hidden">
+            <div className="mizan-card overflow-hidden p-0">
               <button
                 onClick={() => setShowGrowth(!showGrowth)}
                 className="w-full flex items-center justify-between px-6 py-4 text-left hover:bg-slate-50/50 transition-colors"
@@ -627,19 +689,19 @@ export default function DashboardPage() {
                       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-xs pt-4 border-t border-slate-100">
                         <div>
                           <span className="text-slate-400 block font-medium">Contributions</span>
-                          <strong className="text-slate-900 text-sm font-bold">${Math.round(totalSimulatedContributions).toLocaleString()}</strong>
+                          <strong className="text-slate-900 text-sm font-bold">{format(convert(totalSimulatedContributions, "USD", currency))}</strong>
                         </div>
                         <div>
                           <span className="text-slate-400 block font-medium">Investment Gains</span>
-                          <strong className="text-slate-900 text-sm font-bold">${Math.round(totalSimulatedGains).toLocaleString()}</strong>
+                          <strong className="text-slate-900 text-sm font-bold">{format(convert(totalSimulatedGains, "USD", currency))}</strong>
                         </div>
                         <div>
                           <span className="text-slate-400 block font-medium">Zakat Deductions</span>
-                          <strong className="text-accent text-sm font-bold">${Math.round(totalSimulatedZakat).toLocaleString()}</strong>
+                          <strong className="text-accent text-sm font-bold">{format(convert(totalSimulatedZakat, "USD", currency))}</strong>
                         </div>
                         <div>
                           <span className="text-slate-500 block font-bold">Final Balance</span>
-                          <strong className="text-slate-900 text-sm font-extrabold">${Math.round(finalBalance).toLocaleString()}</strong>
+                          <strong className="text-slate-900 text-sm font-extrabold">{format(convert(finalBalance, "USD", currency))}</strong>
                         </div>
                       </div>
                     </div>
