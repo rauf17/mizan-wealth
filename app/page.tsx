@@ -1,19 +1,28 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import Link from "next/link";
+import { useRouter } from "next/navigation";
 import Button from "../components/Button";
 import Card from "../components/Card";
 import Logo from "../components/Logo";
 import { useLang } from "../context/LanguageContext";
+import { useTheme } from "../context/ThemeContext";
+import { useTypingEffect } from "../hooks/useTypingEffect";
 
 export default function Home() {
   const { lang, setLang } = useLang();
-  const [activePopup, setActivePopup] = useState<string | null>(null);
+  const { theme, toggleTheme } = useTheme();
+  const router = useRouter();
+  const [activeModal, setActiveModal] = useState<string | null>(null);
+
+  const { displayedText, isTyping } = useTypingEffect(
+    "A suite of local-first tools to calculate Zakat, evaluate stock purification, project compound growth, and model inheritance. All data is processed and stored locally in your browser.",
+    18
+  );
 
   useEffect(() => {
     const handleClickOutside = () => {
-      setActivePopup(null);
+      setActiveModal(null);
     };
     document.addEventListener("click", handleClickOutside);
     return () => document.removeEventListener("click", handleClickOutside);
@@ -22,18 +31,17 @@ export default function Home() {
   const handleInfoClick = (e: React.MouseEvent, id: string) => {
     e.preventDefault();
     e.stopPropagation();
-    setActivePopup(activePopup === id ? null : id);
+    setActiveModal(activeModal === id ? null : id);
   };
 
-  const handlePopupClick = (e: React.MouseEvent) => {
-    e.preventDefault();
+  const handleModalClick = (e: React.MouseEvent) => {
     e.stopPropagation();
   };
 
   return (
     <div className="relative min-h-screen flex flex-col justify-between bg-background text-foreground font-sans">
       {/* Header */}
-      <header className="border-b border-slate-200/80 bg-white sticky top-0 z-50">
+      <header className="border-b border-slate-200/80 bg-card sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
           <Logo variant="full" />
           <div className="flex items-center gap-4">
@@ -41,6 +49,24 @@ export default function Home() {
               <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
               Local-First
             </span>
+            <span className="hidden sm:inline-flex text-[10px] font-bold px-2.5 py-1 rounded-full bg-amber-50 text-amber-700 border border-amber-200/60 select-none uppercase tracking-wide">
+              1446 AH
+            </span>
+            <button
+              onClick={toggleTheme}
+              className="text-slate-500 hover:text-slate-900 transition-colors"
+              title={theme === "dark" ? "Light Mode" : "Dark Mode"}
+            >
+              {theme === "dark" ? (
+                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+                </svg>
+              ) : (
+                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+                </svg>
+              )}
+            </button>
             <button
               onClick={() => setLang(lang === "en" ? "ur" : "en")}
               className="text-xs font-semibold text-slate-500 hover:text-slate-900 transition-colors"
@@ -62,22 +88,23 @@ export default function Home() {
         </div>
 
         <div className="animate-fade-in opacity-0" style={{ animationDelay: "0ms" }}>
-          <h1 className="font-hero max-w-4xl mb-6">
+          <h1 className="font-hero max-w-4xl mb-6 text-gold-shimmer">
             Balance Your Wealth with Islamic Principles
           </h1>
         </div>
 
-        <div className="animate-fade-in opacity-0" style={{ animationDelay: "100ms" }}>
+        <div className="animate-fade-in opacity-0 min-h-[80px]" style={{ animationDelay: "100ms" }}>
           <p className="text-slate-500 text-base md:text-lg max-w-2xl mb-12 leading-relaxed">
-            A suite of local-first tools to calculate Zakat, evaluate stock purification, project compound growth, and model inheritance. All data is processed and stored locally in your browser.
+            {displayedText}
+            {isTyping && <span className="animate-[blink_0.8s_ease-in-out_infinite]">|</span>}
           </p>
         </div>
 
         {/* Feature Cards Grid */}
-        <div className="animate-fade-in opacity-0 w-full flex justify-center" style={{ animationDelay: "200ms" }}>
+        <div className="w-full flex justify-center">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 w-full max-w-6xl text-left">
           {/* Card 1: Zakat */}
-          <Link href="/dashboard" className="block group h-full">
+          <div onClick={() => router.push("/dashboard")} className="block group h-full cursor-pointer animate-fade-in opacity-0" style={{ animationDelay: "0ms" }}>
             <Card className="hover:border-slate-300 relative h-full flex flex-col">
               <button
                 className="absolute top-3 right-3 w-6 h-6 flex items-center justify-center text-slate-400 hover:text-primary z-10"
@@ -88,16 +115,6 @@ export default function Home() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
               </button>
-              
-              {activePopup === "zakat" && (
-                <div 
-                  className="absolute top-10 right-3 bg-white border border-slate-200 rounded-xl p-4 shadow-xl w-72 text-xs text-slate-600 leading-relaxed z-20 animate-fade-in"
-                  onClick={handlePopupClick}
-                >
-                  <h4 className="font-heading font-bold text-slate-900 text-sm mb-2">Zakat Calculator</h4>
-                  Calculate your annual Zakat obligation using live gold and silver prices. Add your assets (cash, gold, stocks, real estate) and liabilities. The engine checks the Hawl rule (1 lunar year holding period) and compares your net wealth against the Nisab threshold to determine if Zakat is due and at what amount.
-                </div>
-              )}
 
               <div className="w-12 h-12 rounded-lg bg-slate-50 border border-slate-200/80 flex items-center justify-center text-primary mb-5 group-hover:scale-105 group-hover:bg-primary/5 group-hover:border-primary/20 transition-all duration-200">
                 <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -109,10 +126,10 @@ export default function Home() {
                 Calculate Nisab thresholds using live rates, list liabilities, and track different asset classes.
               </p>
             </Card>
-          </Link>
+          </div>
 
           {/* Card 2: Stock Purity */}
-          <Link href="/screener" className="block group h-full">
+          <div onClick={() => router.push("/screener")} className="block group h-full cursor-pointer animate-fade-in opacity-0" style={{ animationDelay: "120ms" }}>
             <Card className="hover:border-slate-300 relative h-full flex flex-col">
               <button
                 className="absolute top-3 right-3 w-6 h-6 flex items-center justify-center text-slate-400 hover:text-primary z-10"
@@ -123,16 +140,6 @@ export default function Home() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
               </button>
-              
-              {activePopup === "screener" && (
-                <div 
-                  className="absolute top-10 right-3 bg-white border border-slate-200 rounded-xl p-4 shadow-xl w-72 text-xs text-slate-600 leading-relaxed z-20 animate-fade-in"
-                  onClick={handlePopupClick}
-                >
-                  <h4 className="font-heading font-bold text-slate-900 text-sm mb-2">Stock Purity Screener</h4>
-                  Screen equity investments against standard Shariah compliance criteria: debt-to-market-cap ratio (&lt; 33%), cash ratio (&lt; 33%), and interest income ratio (&lt; 5%). For compliant stocks, calculates the exact dividend purification percentage required.
-                </div>
-              )}
 
               <div className="w-12 h-12 rounded-lg bg-slate-50 border border-slate-200/80 flex items-center justify-center text-primary mb-5 group-hover:scale-105 group-hover:bg-primary/5 group-hover:border-primary/20 transition-all duration-200">
                 <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -144,10 +151,10 @@ export default function Home() {
                 Screen stock assets against debt, cash, and interest income thresholds to identify required purification amounts.
               </p>
             </Card>
-          </Link>
+          </div>
 
           {/* Card 3: Growth */}
-          <Link href="/dashboard" className="block group h-full">
+          <div onClick={() => router.push("/dashboard")} className="block group h-full cursor-pointer animate-fade-in opacity-0" style={{ animationDelay: "240ms" }}>
             <Card className="hover:border-slate-300 relative h-full flex flex-col">
               <button
                 className="absolute top-3 right-3 w-6 h-6 flex items-center justify-center text-slate-400 hover:text-primary z-10"
@@ -158,16 +165,6 @@ export default function Home() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
               </button>
-              
-              {activePopup === "growth" && (
-                <div 
-                  className="absolute top-10 right-3 bg-white border border-slate-200 rounded-xl p-4 shadow-xl w-72 text-xs text-slate-600 leading-relaxed z-20 animate-fade-in"
-                  onClick={handlePopupClick}
-                >
-                  <h4 className="font-heading font-bold text-slate-900 text-sm mb-2">Compound Growth Simulator</h4>
-                  Model your wealth growth over 1–30 years with configurable annual return rate and contributions. Optionally deduct annual Zakat (2.5%) and dividend purification rates to see their real long-term effect on your net wealth trajectory.
-                </div>
-              )}
 
               <div className="w-12 h-12 rounded-lg bg-slate-50 border border-slate-200/80 flex items-center justify-center text-primary mb-5 group-hover:scale-105 group-hover:bg-primary/5 group-hover:border-primary/20 transition-all duration-200">
                 <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -179,10 +176,10 @@ export default function Home() {
                 Model wealth growth over time by projecting contributions and deducting Zakat or purification rates.
               </p>
             </Card>
-          </Link>
+          </div>
 
           {/* Card 4: Inheritance */}
-          <Link href="/inheritance" className="block group h-full">
+          <div onClick={() => router.push("/inheritance")} className="block group h-full cursor-pointer animate-fade-in opacity-0" style={{ animationDelay: "360ms" }}>
             <Card className="hover:border-slate-300 relative h-full flex flex-col">
               <button
                 className="absolute top-3 right-3 w-6 h-6 flex items-center justify-center text-slate-400 hover:text-primary z-10"
@@ -193,16 +190,6 @@ export default function Home() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
               </button>
-              
-              {activePopup === "inheritance" && (
-                <div 
-                  className="absolute top-10 right-3 bg-white border border-slate-200 rounded-xl p-4 shadow-xl w-72 text-xs text-slate-600 leading-relaxed z-20 animate-fade-in"
-                  onClick={handlePopupClick}
-                >
-                  <h4 className="font-heading font-bold text-slate-900 text-sm mb-2">Inheritance Modeler</h4>
-                  Calculate the distribution of an estate among heirs according to Islamic jurisprudence (Fard fixed shares + Asabah residuary). Supports spouse, parents, sons, and daughters. Applies Awl proportional reduction if fixed shares exceed the estate.
-                </div>
-              )}
 
               <div className="w-12 h-12 rounded-lg bg-slate-50 border border-slate-200/80 flex items-center justify-center text-primary mb-5 group-hover:scale-105 group-hover:bg-primary/5 group-hover:border-primary/20 transition-all duration-200">
                 <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -214,13 +201,13 @@ export default function Home() {
                 Calculate inheritance distributions based on Islamic jurisprudence rules.
               </p>
             </Card>
-          </Link>
+          </div>
           </div>
         </div>
       </main>
 
       {/* Footer */}
-      <footer className="border-t border-slate-200 bg-white py-8">
+      <footer className="border-t border-slate-200 bg-card py-8">
         <div className="max-w-7xl mx-auto px-6 flex flex-col md:flex-row items-center justify-between gap-4 text-xs text-slate-500">
           <div>
             &copy; 2026 Mizan Wealth. Balance your wealth. Know what&apos;s due.
@@ -233,6 +220,117 @@ export default function Home() {
           Built with <span className="text-accent">♥</span> for the Muslim community
         </div>
       </footer>
+      {/* Modal Overlay */}
+      {activeModal && (
+        <div 
+          className="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center animate-fade-in"
+          onClick={() => setActiveModal(null)}
+        >
+          <div 
+            className="bg-card rounded-2xl max-w-md w-full mx-4 p-6 shadow-2xl animate-fade-in"
+            onClick={handleModalClick}
+          >
+            {activeModal === "zakat" && (
+              <>
+                <div className="flex justify-between items-center mb-4">
+                  <h2 className="font-h2 text-foreground">Zakat Calculator</h2>
+                  <button onClick={() => setActiveModal(null)} className="text-slate-400 hover:text-slate-600">
+                    <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                  </button>
+                </div>
+                <div className="font-body space-y-3 mb-6 text-sm text-slate-600">
+                  <p><strong>How it works:</strong></p>
+                  <ul className="list-disc pl-5 space-y-1">
+                    <li>Live gold/silver prices from GoldAPI determine the Nisab threshold.</li>
+                    <li>Assets must have been held for one full lunar year (Hawl) to be zakatable.</li>
+                    <li>Zakat is 2.5% of net eligible wealth above the Nisab.</li>
+                  </ul>
+                  <p><strong>Nisab standards explained:</strong> Silver (612g, ~$565 today) vs Gold (87.48g, ~$6,400 today) — silver standard is recommended as it maximises support for Zakat recipients.</p>
+                  <p><strong>Quick example:</strong> &quot;$50,000 cash held for 1+ year &rarr; above silver Nisab &rarr; 2.5% = $1,250 due&quot;</p>
+                </div>
+                <div className="flex gap-3 justify-end mt-6">
+                  <Button variant="secondary" onClick={() => setActiveModal(null)}>Close</Button>
+                  <Button onClick={() => router.push("/dashboard")}>Go to Calculator</Button>
+                </div>
+              </>
+            )}
+
+            {activeModal === "screener" && (
+              <>
+                <div className="flex justify-between items-center mb-4">
+                  <h2 className="font-h2 text-foreground">Purity Screener</h2>
+                  <button onClick={() => setActiveModal(null)} className="text-slate-400 hover:text-slate-600">
+                    <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                  </button>
+                </div>
+                <div className="font-body space-y-3 mb-6 text-sm text-slate-600">
+                  <p><strong>Three screening criteria with thresholds:</strong></p>
+                  <ul className="list-disc pl-5 space-y-1">
+                    <li>Debt/Market Cap &lt; 33%</li>
+                    <li>Cash/Assets &lt; 33%</li>
+                    <li>Interest Income/Revenue &lt; 5%</li>
+                  </ul>
+                  <p><strong>Purification explained:</strong> if a compliant stock generates some interest income, you donate that percentage of your dividends received to charity — not the stock value itself.</p>
+                  <p className="text-xs text-slate-400 italic">Note: the screener uses standard AAOIFI-based criteria. Complex cases may differ.</p>
+                </div>
+                <div className="flex gap-3 justify-end mt-6">
+                  <Button variant="secondary" onClick={() => setActiveModal(null)}>Close</Button>
+                  <Button onClick={() => router.push("/screener")}>Go to Screener</Button>
+                </div>
+              </>
+            )}
+
+            {activeModal === "growth" && (
+              <>
+                <div className="flex justify-between items-center mb-4">
+                  <h2 className="font-h2 text-foreground">Growth Projection</h2>
+                  <button onClick={() => setActiveModal(null)} className="text-slate-400 hover:text-slate-600">
+                    <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                  </button>
+                </div>
+                <div className="font-body space-y-3 mb-6 text-sm text-slate-600">
+                  <p><strong>What the simulator models:</strong> starting balance + annual contributions, compounded at your chosen return rate, over 1–30 years.</p>
+                  <p><strong>Zakat deduction impact:</strong> deducting 2.5% annually shows the true long-term wealth trajectory after obligations — typically 15–20% lower over 20 years vs ignoring Zakat.</p>
+                  <p><strong>Purification rate:</strong> an additional % deducted annually, representing stock dividend purification for equity-heavy portfolios.</p>
+                </div>
+                <div className="flex gap-3 justify-end mt-6">
+                  <Button variant="secondary" onClick={() => setActiveModal(null)}>Close</Button>
+                  <Button onClick={() => router.push("/dashboard")}>Go to Projection</Button>
+                </div>
+              </>
+            )}
+
+            {activeModal === "inheritance" && (
+              <>
+                <div className="flex justify-between items-center mb-4">
+                  <h2 className="font-h2 text-foreground">Inheritance Modeler</h2>
+                  <button onClick={() => setActiveModal(null)} className="text-slate-400 hover:text-slate-600">
+                    <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                  </button>
+                </div>
+                <div className="font-body space-y-3 mb-6 text-sm text-slate-600">
+                  <p><strong>Fard (fixed shares) vs Asabah (residuary):</strong></p>
+                  <p>Some heirs get a fixed fraction first (e.g. wife gets 1/8 if children exist), the remainder goes to Asabah heirs (sons/daughters).</p>
+                  <p><strong>Awl:</strong> if fixed shares sum to more than 100%, they are reduced proportionally.</p>
+                  <p className="text-xs text-slate-400 italic">Limitation note: covers common scenarios (spouse + parents + children). Complex cases with grandparents, siblings, or multiple generations need a scholar.</p>
+                </div>
+                <div className="flex gap-3 justify-end mt-6">
+                  <Button variant="secondary" onClick={() => setActiveModal(null)}>Close</Button>
+                  <Button onClick={() => router.push("/inheritance")}>Go to Modeler</Button>
+                </div>
+              </>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 }
