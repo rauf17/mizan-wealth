@@ -12,7 +12,7 @@ Mizan Wealth is a privacy-first, local-first financial planning and Zakat calcul
 ![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6?style=flat-square&logo=typescript)
 ![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-3-38B2AC?style=flat-square&logo=tailwind-css)
 ![Vitest](https://img.shields.io/badge/Vitest-4-6E9F18?style=flat-square&logo=vitest)
-![Gemini AI](https://img.shields.io/badge/Gemini_AI-1.5_Flash-4285F4?style=flat-square&logo=google-gemini)
+![Gemini AI](https://img.shields.io/badge/Gemini_AI-2.5_Flash-4285F4?style=flat-square&logo=google-gemini)
 ![License](https://img.shields.io/badge/License-MIT-green?style=flat-square)
 
 ---
@@ -178,14 +178,15 @@ npm run test
 
 ---
 
-## Deployment (Vercel)
+## Deployment
 
-Mizan Wealth is designed for rapid serverless hosting. To deploy the application to Vercel:
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/YOUR_USERNAME/mizan-wealth)
+<!-- Note: Please replace YOUR_USERNAME in the URL above with your actual GitHub username -->
 
-1. Push your repository to GitHub, GitLab, or Bitbucket.
-2. Link your repository inside the Vercel Dashboard.
-3. Configure the environment variables (`METAL_PRICE_API_KEY` and `GEMINI_API_KEY`) under **Settings > Environment Variables**.
-4. Click **Deploy**. Vercel will build and host the static pages and API proxy edge functions.
+1. Push to GitHub
+2. Connect repo on vercel.com
+3. Add GEMINI_API_KEY and METAL_PRICE_API_KEY in Vercel project Settings → Environment Variables (both are optional)
+4. Deploy
 
 ---
 
