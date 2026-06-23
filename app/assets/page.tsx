@@ -17,6 +17,10 @@ export default function AssetsPage() {
   const [assets, setAssets] = useState<ZakatAsset[]>([]);
   const [liabilities, setLiabilities] = useState<ZakatLiability[]>([]);
 
+  // Editing state
+  const [editingAssetId, setEditingAssetId] = useState<string | null>(null);
+  const [editingLiabilityId, setEditingLiabilityId] = useState<string | null>(null);
+
   // Asset Form State
   const [assetType, setAssetType] = useState<AssetType>("cash");
   const [assetName, setAssetName] = useState("");
@@ -56,21 +60,33 @@ export default function AssetsPage() {
     const pct = Math.min(100, Math.max(0, Number(zakatablePercent))) / 100;
     const zakAmount = val * pct;
 
-    const newAsset: ZakatAsset = {
-      id: `asset_${Date.now()}`,
-      type: assetType,
-      name: assetName.trim(),
-      value: val,
-      zakatableAmount: zakAmount,
-      acquisitionDate: acquisitionDate || new Date().toISOString().split("T")[0],
-      createdAt: new Date().toISOString(),
-    };
-
-    saveAssetsToStorage([...assets, newAsset]);
+    if (editingAssetId) {
+      const updated = assets.map(a => 
+        a.id === editingAssetId 
+          ? { ...a, type: assetType, name: assetName.trim(), value: val, zakatableAmount: zakAmount, acquisitionDate: acquisitionDate || a.acquisitionDate } 
+          : a
+      );
+      saveAssetsToStorage(updated);
+      setEditingAssetId(null);
+    } else {
+      const newAsset: ZakatAsset = {
+        id: `asset_${Date.now()}`,
+        type: assetType,
+        name: assetName.trim(),
+        value: val,
+        zakatableAmount: zakAmount,
+        acquisitionDate: acquisitionDate || new Date().toISOString().split("T")[0],
+        createdAt: new Date().toISOString(),
+      };
+      saveAssetsToStorage([...assets, newAsset]);
+    }
 
     // Reset Form fields
     setAssetName("");
     setAssetValue("");
+    setZakatablePercent("100");
+    setAssetType("cash");
+    setAcquisitionDate(new Date().toISOString().split("T")[0]);
   };
 
   // Liability Form Submission
@@ -80,14 +96,23 @@ export default function AssetsPage() {
 
     const val = Math.max(0, Number(liabilityValue));
 
-    const newLiability: ZakatLiability = {
-      id: `liability_${Date.now()}`,
-      name: liabilityName.trim(),
-      value: val,
-      createdAt: new Date().toISOString(),
-    };
-
-    saveLiabilitiesToStorage([...liabilities, newLiability]);
+    if (editingLiabilityId) {
+      const updated = liabilities.map(l => 
+        l.id === editingLiabilityId 
+          ? { ...l, name: liabilityName.trim(), value: val } 
+          : l
+      );
+      saveLiabilitiesToStorage(updated);
+      setEditingLiabilityId(null);
+    } else {
+      const newLiability: ZakatLiability = {
+        id: `liability_${Date.now()}`,
+        name: liabilityName.trim(),
+        value: val,
+        createdAt: new Date().toISOString(),
+      };
+      saveLiabilitiesToStorage([...liabilities, newLiability]);
+    }
 
     // Reset Form fields
     setLiabilityName("");
@@ -104,6 +129,34 @@ export default function AssetsPage() {
   const handleDeleteLiability = (id: string) => {
     const updated = liabilities.filter((item) => item.id !== id);
     saveLiabilitiesToStorage(updated);
+  };
+
+  // Edit Handlers
+  const handleEditAsset = (asset: ZakatAsset) => {
+    setAssetType(asset.type);
+    setAssetName(asset.name);
+    setAssetValue(asset.value.toString());
+    setZakatablePercent(Math.round((asset.zakatableAmount / asset.value) * 100).toString());
+    setAcquisitionDate(asset.acquisitionDate);
+    setEditingAssetId(asset.id);
+  };
+
+  const handleEditLiability = (liability: ZakatLiability) => {
+    setLiabilityName(liability.name);
+    setLiabilityValue(liability.value.toString());
+    setEditingLiabilityId(liability.id);
+  };
+
+  const cancelAssetEdit = () => {
+    setEditingAssetId(null);
+    setAssetName("");
+    setAssetValue("");
+  };
+
+  const cancelLiabilityEdit = () => {
+    setEditingLiabilityId(null);
+    setLiabilityName("");
+    setLiabilityValue("");
   };
 
   // Set default zakatable ratio on asset type change
@@ -204,7 +257,7 @@ export default function AssetsPage() {
                       required
                       min="0"
                       step="any"
-                      label="Value ($)"
+                      label={`Value (${currency})`}
                       placeholder="0.00"
                       value={assetValue}
                       onChange={(e) => setAssetValue(e.target.value)}
@@ -230,9 +283,16 @@ export default function AssetsPage() {
                   />
                 </div>
 
-                <Button type="submit" className="w-full">
-                  Record Asset
-                </Button>
+                <div className="flex gap-3">
+                  <Button type="submit" className="flex-1">
+                    {editingAssetId ? "Update Asset" : "Record Asset"}
+                  </Button>
+                  {editingAssetId && (
+                    <Button type="button" variant="secondary" onClick={cancelAssetEdit}>
+                      Cancel
+                    </Button>
+                  )}
+                </div>
               </form>
             </Card>
 
@@ -259,15 +319,22 @@ export default function AssetsPage() {
                   required
                   min="0"
                   step="any"
-                  label="Amount ($)"
+                  label={`Amount (${currency})`}
                   placeholder="0.00"
                   value={liabilityValue}
                   onChange={(e) => setLiabilityValue(e.target.value)}
                 />
 
-                <Button type="submit" className="w-full">
-                  Record Liability
-                </Button>
+                <div className="flex gap-3">
+                  <Button type="submit" className="flex-1">
+                    {editingLiabilityId ? "Update Liability" : "Record Liability"}
+                  </Button>
+                  {editingLiabilityId && (
+                    <Button type="button" variant="secondary" onClick={cancelLiabilityEdit}>
+                      Cancel
+                    </Button>
+                  )}
+                </div>
               </form>
             </Card>
           </div>
@@ -324,15 +391,26 @@ export default function AssetsPage() {
                           </span>
                         </div>
 
-                        <button
-                          onClick={() => handleDeleteAsset(item.id)}
-                          className="p-2 rounded-lg hover:bg-slate-100 text-slate-400 hover:text-slate-700 transition-colors"
-                          title="Delete asset"
-                        >
-                          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                          </svg>
-                        </button>
+                        <div className="flex items-center">
+                          <button
+                            onClick={() => handleEditAsset(item)}
+                            className="p-2 rounded-lg hover:bg-slate-100 text-slate-400 hover:text-primary transition-colors"
+                            title="Edit asset"
+                          >
+                            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                            </svg>
+                          </button>
+                          <button
+                            onClick={() => handleDeleteAsset(item.id)}
+                            className="p-2 rounded-lg hover:bg-slate-100 text-slate-400 hover:text-slate-700 transition-colors"
+                            title="Delete asset"
+                          >
+                            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                            </svg>
+                          </button>
+                        </div>
                       </div>
                     </div>
                   ))}
@@ -379,15 +457,26 @@ export default function AssetsPage() {
                           </span>
                         </div>
 
-                        <button
-                          onClick={() => handleDeleteLiability(item.id)}
-                          className="p-2 rounded-lg hover:bg-slate-100 text-slate-400 hover:text-slate-700 transition-colors"
-                          title="Delete liability"
-                        >
-                          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                          </svg>
-                        </button>
+                        <div className="flex items-center">
+                          <button
+                            onClick={() => handleEditLiability(item)}
+                            className="p-2 rounded-lg hover:bg-slate-100 text-slate-400 hover:text-primary transition-colors"
+                            title="Edit liability"
+                          >
+                            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                            </svg>
+                          </button>
+                          <button
+                            onClick={() => handleDeleteLiability(item.id)}
+                            className="p-2 rounded-lg hover:bg-slate-100 text-slate-400 hover:text-slate-700 transition-colors"
+                            title="Delete liability"
+                          >
+                            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                            </svg>
+                          </button>
+                        </div>
                       </div>
                     </div>
                   ))}

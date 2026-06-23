@@ -35,7 +35,7 @@ export async function fetchMetalRates(): Promise<MetalRates> {
 }
 
 // Local mock database of screened stocks for demonstration and offline screening
-const MOCK_STOCK_SCREENER_DB: Record<string, Omit<StockPurityInfo, "ticker">> = {
+export const MOCK_STOCK_SCREENER_DB: Record<string, Omit<StockPurityInfo, "ticker">> = {
   AAPL: {
     name: "Apple Inc.",
     compliant: true,

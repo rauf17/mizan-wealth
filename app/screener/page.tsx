@@ -5,7 +5,7 @@ import DashboardShell from "../../components/DashboardShell";
 import Card from "../../components/Card";
 import Input from "../../components/Input";
 import Button from "../../components/Button";
-import { screenStock } from "../../lib/api";
+import { screenStock, MOCK_STOCK_SCREENER_DB } from "../../lib/api";
 import { getData, saveData, STORAGE_KEYS } from "../../lib/storage";
 import { StockPurityInfo, PortfolioStock } from "../../types";
 
@@ -150,6 +150,31 @@ export default function ScreenerPage() {
                 )}
               </form>
             </Card>
+
+            {/* Supported Assets List */}
+            <div className="bg-card border border-slate-200 p-4 rounded-xl space-y-3">
+              <h3 className="text-xs font-bold text-foreground uppercase tracking-wider">Supported Asset Examples</h3>
+              <p className="text-[11px] text-slate-500 leading-relaxed">
+                Click any of the examples below to instantly load their Shariah compliance report. Note: Any other ticker typed will generate realistic mocked data.
+              </p>
+              <div className="max-h-56 overflow-y-auto pr-1 space-y-2">
+                {Object.entries(MOCK_STOCK_SCREENER_DB).map(([ticker, info]) => (
+                  <button
+                    key={ticker}
+                    onClick={() => setTickerInput(ticker)}
+                    className="w-full flex items-center justify-between p-2.5 rounded-lg border border-slate-200 bg-card hover:border-primary transition-colors text-left"
+                  >
+                    <div>
+                      <div className="font-bold text-sm text-foreground">{ticker}</div>
+                      <div className="text-[10px] text-slate-500 mt-0.5">{info.name}</div>
+                    </div>
+                    <div className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${info.compliant ? 'bg-primary/10 text-primary' : 'bg-red-500/10 text-red-600'}`}>
+                      {info.compliant ? 'Pass' : 'Fail'}
+                    </div>
+                  </button>
+                ))}
+              </div>
+            </div>
 
             {/* Result Card */}
             {result && (

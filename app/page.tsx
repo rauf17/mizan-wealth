@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import Button from "../components/Button";
 import Card from "../components/Card";
@@ -20,13 +20,7 @@ export default function Home() {
     18
   );
 
-  useEffect(() => {
-    const handleClickOutside = () => {
-      setActiveModal(null);
-    };
-    document.addEventListener("click", handleClickOutside);
-    return () => document.removeEventListener("click", handleClickOutside);
-  }, []);
+
 
   const handleInfoClick = (e: React.MouseEvent, id: string) => {
     e.preventDefault();

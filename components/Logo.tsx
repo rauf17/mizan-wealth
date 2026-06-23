@@ -51,15 +51,15 @@ export default function Logo({ variant = "full", className = "" }: LogoProps) {
 
       {/* Wordmark: Mizan Wealth */}
       {variant === "full" && (
-        <span className="font-sans text-slate-900 select-none text-sm tracking-wide leading-none flex items-center">
-          <span className="font-semibold text-slate-800">Mizan</span>
-          <span className="font-light ml-1 text-slate-500">Wealth</span>
+        <span className="font-heading select-none text-xl md:text-2xl flex items-baseline">
+          <span className="font-bold text-slate-900 tracking-tight">Mizan</span>
+          <span className="font-light ml-1.5 text-accent">Wealth</span>
         </span>
       )}
       </Link>
 
       <div 
-        className="absolute left-0 top-full mt-2 w-56 bg-white border border-slate-200 rounded-xl shadow-xl p-4 opacity-0 group-hover:opacity-100 pointer-events-none transition-all duration-200 group-hover:translate-y-0 translate-y-1 z-50 text-left"
+        className="absolute left-0 top-full mt-2 w-56 bg-card border border-slate-200 rounded-xl shadow-xl p-4 opacity-0 group-hover:opacity-100 pointer-events-none transition-all duration-200 group-hover:translate-y-0 translate-y-1 z-50 text-left"
         lang="ur"
         dir="ltr"
       >
