@@ -12,7 +12,7 @@
 ### 🌐 [Launch Mizan Wealth](https://mizanwealth.vercel.app/)
 
   <p align="center">
-    A browser-native, beautiful, and completely offline-capable Islamic finance dashboard built by Muslims, for Muslims.
+    A browser-native, beautiful, and completely offline-capable Islamic finance dashboard built by a Muslim, for Muslims.
   </p>
 </div>
 
